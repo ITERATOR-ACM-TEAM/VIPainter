@@ -1,5 +1,13 @@
 <RCC>
     <qresource prefix="/">
-        <file>icon/pencil.png</file>
+        <file>icon/cursor.png</file>
+        <file>icon/eraser.png</file>
+        <file>icon/mover.png</file>
+        <file>icon/pen.png</file>
+        <file>icon/redo.png</file>
+        <file>icon/undo.png</file>
+        <file>icon/zoomin.png</file>
+        <file>icon/zoomout.png</file>
+        <file>icon/zoomzero.png</file>
     </qresource>
 </RCC>

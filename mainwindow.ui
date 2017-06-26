@@ -40,21 +40,22 @@
     <enum>TopToolBarArea</enum>
    </attribute>
    <attribute name="toolBarBreak">
-    <bool>true</bool>
+    <bool>false</bool>
    </attribute>
    <addaction name="actionPen"/>
+   <addaction name="actionMove"/>
+   <addaction name="actionUndo"/>
+   <addaction name="actionRedo"/>
+   <addaction name="actionChoose"/>
    <addaction name="actionZoomIn"/>
    <addaction name="actionZoomOut"/>
-   <addaction name="actionCancel"/>
    <addaction name="actionResume"/>
-   <addaction name="actionChoose"/>
-   <addaction name="actionMove"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionPen">
    <property name="icon">
     <iconset resource="icon.qrc">
-     <normaloff>:/icon/pencil.png</normaloff>:/icon/pencil.png</iconset>
+     <normaloff>:/icon/pen.png</normaloff>:/icon/pen.png</iconset>
    </property>
    <property name="text">
     <string>画笔</string>
@@ -107,6 +108,10 @@
    </property>
   </action>
   <action name="actionZoomIn">
+   <property name="icon">
+    <iconset resource="icon.qrc">
+     <normaloff>:/icon/zoomin.png</normaloff>:/icon/zoomin.png</iconset>
+   </property>
    <property name="text">
     <string>放大</string>
    </property>
@@ -114,10 +119,14 @@
     <string>放大</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+Shift+I</string>
+    <string>Ctrl+=</string>
    </property>
   </action>
   <action name="actionZoomOut">
+   <property name="icon">
+    <iconset resource="icon.qrc">
+     <normaloff>:/icon/zoomout.png</normaloff>:/icon/zoomout.png</iconset>
+   </property>
    <property name="text">
     <string>缩小</string>
    </property>
@@ -125,10 +134,14 @@
     <string>缩小</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+Shift+O</string>
+    <string>Ctrl+-</string>
    </property>
   </action>
-  <action name="actionCancel">
+  <action name="actionUndo">
+   <property name="icon">
+    <iconset resource="icon.qrc">
+     <normaloff>:/icon/undo.png</normaloff>:/icon/undo.png</iconset>
+   </property>
    <property name="text">
     <string>撤销</string>
    </property>
@@ -139,7 +152,11 @@
     <string>Ctrl+Z</string>
    </property>
   </action>
-  <action name="actionResume">
+  <action name="actionRedo">
+   <property name="icon">
+    <iconset resource="icon.qrc">
+     <normaloff>:/icon/redo.png</normaloff>:/icon/redo.png</iconset>
+   </property>
    <property name="text">
     <string>恢复</string>
    </property>
@@ -151,6 +168,10 @@
    </property>
   </action>
   <action name="actionChoose">
+   <property name="icon">
+    <iconset resource="icon.qrc">
+     <normaloff>:/icon/cursor.png</normaloff>:/icon/cursor.png</iconset>
+   </property>
    <property name="text">
     <string>选择</string>
    </property>
@@ -159,11 +180,27 @@
    </property>
   </action>
   <action name="actionMove">
+   <property name="icon">
+    <iconset resource="icon.qrc">
+     <normaloff>:/icon/mover.png</normaloff>:/icon/mover.png</iconset>
+   </property>
    <property name="text">
     <string>移动</string>
    </property>
    <property name="toolTip">
     <string>移动</string>
+   </property>
+  </action>
+  <action name="actionResume">
+   <property name="icon">
+    <iconset resource="icon.qrc">
+     <normaloff>:/icon/zoomzero.png</normaloff>:/icon/zoomzero.png</iconset>
+   </property>
+   <property name="text">
+    <string>还原</string>
+   </property>
+   <property name="toolTip">
+    <string>还原</string>
    </property>
   </action>
  </widget>
