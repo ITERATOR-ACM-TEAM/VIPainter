@@ -1,5 +1,8 @@
 #include "vpolygon.h"
 
-VPolygon::QList<VPoint> toImage(int w,int h,int alpha){
+QList<VPoint> VPolygon::toImage(int w,int h,double alpha){
+}
+
+VPolygon::~VPolygon(){
 
 }

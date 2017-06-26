@@ -18,11 +18,14 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     vpoint.cpp \
-    vpolygon.cpp
+    vpolygon.cpp \
+    vellipse.cpp \
+    vshape.cpp
 
 HEADERS  += mainwindow.h \
     vpoint.h \
     vpolygon.h \
-    vshape.h
+    vshape.h \
+    vellipse.h
 
 FORMS    += mainwindow.ui

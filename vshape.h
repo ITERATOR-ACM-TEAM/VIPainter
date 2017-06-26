@@ -2,15 +2,12 @@
 #define VSHAPE_H
 
 #include <QList>
-#include <pair>
 #include "vpoint.h"
 
 class VShape{
 public:
-    virtual QList<VPoint> toImage(int w,int h,int alpha)=0;
-    VShape();
-    VShape(const VShape &shape);
-    virtual ~VShape()=0;
+    virtual QList<VPoint> toImage(int w,int h,double alpha)=0;
+    virtual ~VShape();
 };
 
 #endif //#ifndef VSHAPE_H
