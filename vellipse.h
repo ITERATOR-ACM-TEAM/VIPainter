@@ -9,6 +9,7 @@ private:
 public:
     VEllipse();
     VEllipse(const VEllipse &shape);
+    ~VEllipse();
     const VEllipse& operator=(const VEllipse &shape);
 };
 

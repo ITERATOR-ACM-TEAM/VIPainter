@@ -6,7 +6,6 @@
 
 class VShape{
 public:
-    virtual QList<VPoint> toImage(int w,int h,double alpha)=0;
     virtual ~VShape();
 };
 
