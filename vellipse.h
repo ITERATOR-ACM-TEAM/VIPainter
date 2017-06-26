@@ -4,6 +4,8 @@
 #include "vshape.h"
 
 class VEllipse : public VShape{
+private:
+
 public:
     VEllipse();
     VEllipse(const VEllipse &shape);
