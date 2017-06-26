@@ -2,7 +2,6 @@
 #define VSHAPE_H
 
 #include <QList>
-#include <pair>
 #include "vpoint.h"
 
 class VShape{
