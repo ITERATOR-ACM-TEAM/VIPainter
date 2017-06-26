@@ -10,7 +10,6 @@ public:
     virtual QList<VPoint> toImage(int w,int h,int alpha)=0;
     VShape();
     VShape(const VShape &shape);
-    VShape(VShape &&shape);
     virtual ~VShape()=0;
 
 };
