@@ -1,19 +1,17 @@
 #ifndef VSHAPE_H
 #define VSHAPE_H
 
-#include <vector>
+#include <QList>
 #include <pair>
 #include "vpoint.h"
 
 class VShape{
 public:
-    virtual std::vector<VPoint> toImage(int w,int h,int alpha);
+    virtual QList<VPoint> toImage(int w,int h,int alpha)=0;
     VShape();
     VShape(const VShape &shape);
     VShape(VShape &&shape);
-    virtual ~VShape();
-    const VShape& operator=(const VShape &shape);
-    const VShape& operator=(VShape &&shape);
+    virtual ~VShape()=0;
 
 };
 
