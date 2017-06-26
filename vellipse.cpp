@@ -2,4 +2,10 @@
 
 VEllipse::VEllipse()
 {
+    //TODO:
+}
+
+VEllipse::~VEllipse()
+{
+    //TODO:
 }

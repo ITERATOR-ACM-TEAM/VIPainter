@@ -7,6 +7,7 @@ class VEllipse : public VShape{
 public:
     VEllipse();
     VEllipse(const VEllipse &shape);
+    ~VEllipse();
     const VEllipse& operator=(const VEllipse &shape);
 };
 

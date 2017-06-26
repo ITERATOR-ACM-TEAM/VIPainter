@@ -20,13 +20,17 @@ SOURCES += main.cpp\
     vpoint.cpp \
     vpolygon.cpp \
     vellipse.cpp \
-    vshape.cpp
+    vshape.cpp \
+    vcurve.cpp \
+    vgroupshape.cpp
 
 HEADERS  += mainwindow.h \
     vpoint.h \
     vpolygon.h \
     vshape.h \
-    vellipse.h
+    vellipse.h \
+    vcurve.h \
+    vgroupshape.h
 
 FORMS    += mainwindow.ui
 

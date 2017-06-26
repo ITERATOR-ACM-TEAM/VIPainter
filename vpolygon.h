@@ -3,10 +3,11 @@
 
 #include "vshape.h"
 #include "vpoint.h"
+#include <QPolygon>
 
 class VPolygon : public VShape{
 public:
-    QList<VPoint> toImage(int w,int h,double alpha)override;
+    QPolygon toQPolygon();
     VPolygon();
     VPolygon(const VPolygon &shape);
     ~VPolygon()override;
