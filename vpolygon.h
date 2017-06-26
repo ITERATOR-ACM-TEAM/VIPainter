@@ -5,7 +5,7 @@
 
 class VPolygon : public VShape{
 public:
-    std::vector<VPoint> toImage(int w,int h,int alpha);
+    QList<VPoint> toImage(int w,int h,int alpha);
     VPolygon();
     VPolygon(const VPolygon &shape);
     virtual ~VShape();

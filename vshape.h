@@ -11,7 +11,6 @@ public:
     VShape();
     VShape(const VShape &shape);
     virtual ~VShape()=0;
-
 };
 
 #endif //#ifndef VSHAPE_H
