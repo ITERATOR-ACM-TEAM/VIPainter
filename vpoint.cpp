@@ -1,4 +1,4 @@
-#include <vpoint.h>
+#include "vpoint.h"
 
 VPoint::VPoint():x(0), y(0){}
 
