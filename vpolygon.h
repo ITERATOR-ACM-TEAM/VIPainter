@@ -2,16 +2,15 @@
 #define VPOLYGON
 
 #include "vshape.h"
+#include "vpoint.h"
 
 class VPolygon : public VShape{
 public:
-    std::vector<VPoint> toImage(int w,int h,int alpha);
+    QList<VPoint> toImage(int w,int h,double alpha)override;
     VPolygon();
     VPolygon(const VPolygon &shape);
-    VPolygon(VPolygon &&shape);
-    virtual ~VShape();
+    ~VPolygon()override;
     const VPolygon& operator=(const VPolygon &shape);
-    const VPolygon& operator=(VPolygon &&shape);
 };
 
 #endif //#ifndef VPOLYGON
