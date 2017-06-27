@@ -61,14 +61,22 @@ void VGroupShape::rotate(const VPoint &center, double alpha)
 
 VPoint VGroupShape::size()
 {
+    double minX, minY;
     double maxX, maxY;
     for(auto & it : this->ShapeVector)
     {
         VPoint loc = it.first.size()+it.second;
         maxX = max(maxX, loc.x);
         maxY = max(maxY, loc.y);
+        minX = min(minX, loc.x);
+        minY = min(minY, loc.y);
     }
-    return VPoint(maxX, maxY);
+    for(auto & it : this->ShapeVector)
+    {
+        it.second.x -= minX;
+        it.second.y -= minY;
+    }
+    return VPoint(maxX-minX, maxY-minY);
 }
 
 void VGroupShape::resize(const VPoint &point)
