@@ -1,6 +1,7 @@
 #include "vgroupshape.h"
 #include <QPainter>
 #include <QPointF>
+#include <math.h>
 
 VGroupShape::VGroupShape()
 {
@@ -51,11 +52,19 @@ QVector<VShape *> VGroupShape::getShapeVector()
     return result;
 }
 
-void VGroupShape::rotate(const VPoint &center, double alpha)
+void VGroupShape::rotate(double alpha)
 {
+    VPoint center = this->size();
+    center.x /= 2;
+    center.y /= 2;
     for(auto & it : this->ShapeVector)
     {
-        it.first.rotate(center-it.second, alpha);
+        it.first.rotate(alpha);
+        VPoint tmpLoc = it.second - center;
+        double x = tmpLoc.x , y = tmpLoc.y;
+        tmpLoc.x = x * cos(alpha) - y * sin(alpha);
+        tmpLoc.y = x * sin(alpha) + y * cos(alpha);
+        it.second = tmpLoc + center;
     }
 }
 
