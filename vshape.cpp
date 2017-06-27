@@ -5,6 +5,7 @@
 #include "vcurveline.h"
 #include "vgroupshape.h"
 #include <vtype.h>
+#include <cmath>
 
 double VShape::PI=atan(1)*4.0;
 
@@ -23,7 +24,7 @@ VShape* VShape::fromJsonObject(const QJsonObject &jsonObject)
     if(type==VType::Ellipse)return VEllipse::fromJsonObject(jsonObject);
 //    else if(type==VType::Polyline)return VPolyline::fromJsonObject(jsonObject);
 //    else if(type==VType::Polygon)return VPolygon::fromJsonObject(jsonObject);
-//    else if(type==VType::GroupShape)return VGroupShape::fromJsonObject(jsonObject);
+    else if(type==VType::GroupShape)return VGroupShape::fromJsonObject(jsonObject);
     else return nullptr;
 }
 

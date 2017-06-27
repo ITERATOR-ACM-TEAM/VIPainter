@@ -4,6 +4,7 @@
 #include <math.h>
 #include <algorithm>
 #include "vtype.h"
+#include <QJsonArray>
 
 VGroupShape::VGroupShape()
 {
@@ -87,7 +88,7 @@ QImage VGroupShape::toImage()
 {
     VSize sz = this->getSize();
     int width = sz.y, height = sz.x;
-    QImage image(width, height, QImage::Format_ARGB32);
+    QImage image(width+1, height+1, QImage::Format_ARGB32);
     QPainter painter(&image);
     for(auto & it : this->ShapeVector)
     {
@@ -122,5 +123,25 @@ bool VGroupShape::contains(const VPoint &point)
 
 QJsonObject VGroupShape::toJsonObject()const
 {
+    QJsonObject jsonObject(VShape::toJsonObject());
+    jsonObject.insert("size",size.toJsonObject());
+    QJsonArray jsonArray;
+    for(auto &it: ShapeVector)
+    {
+        jsonArray.push_back(it->toJsonObject());
+    }
+    jsonObject.insert("ShapeVector", jsonArray);
+    return jsonObject;
+}
 
+VGroupShape* VGroupShape::fromJsonObject(const QJsonObject &jsonObject)
+{
+    VGroupShape *groupShape=new VGroupShape();
+    groupShape->size=VSize::fromJsonObject(jsonObject.value("size").toObject());
+    QJsonArray jsonArray = jsonObject.value("ShapeVector").toArray();
+    for(const auto &it: jsonArray)
+    {
+        groupShape->ShapeVector.push_back(VShape::fromJsonObject(it.toObject()));
+    }
+    return groupShape;
 }

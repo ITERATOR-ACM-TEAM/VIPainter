@@ -50,3 +50,9 @@ void MainWindow::on_BtRead_clicked()
     file.close();
     update();
 }
+
+void MainWindow::on_BtSave_clicked()
+{
+    QImage image=ellipse.toImage();
+    image.save("file.png");
+}

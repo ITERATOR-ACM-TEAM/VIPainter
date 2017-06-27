@@ -40,6 +40,19 @@
      <string>写入文件</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="BtSave">
+    <property name="geometry">
+     <rect>
+      <x>300</x>
+      <y>280</y>
+      <width>103</width>
+      <height>35</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>保存</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -47,7 +60,7 @@
      <x>0</x>
      <y>0</y>
      <width>881</width>
-     <height>26</height>
+     <height>29</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">
@@ -67,7 +80,7 @@
     <enum>TopToolBarArea</enum>
    </attribute>
    <attribute name="toolBarBreak">
-    <bool>true</bool>
+    <bool>false</bool>
    </attribute>
    <addaction name="actionPen"/>
    <addaction name="actionMove"/>

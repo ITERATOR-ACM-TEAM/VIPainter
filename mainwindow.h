@@ -24,6 +24,8 @@ private slots:
 
     void on_BtRead_clicked();
 
+    void on_BtSave_clicked();
+
 private:
     Ui::MainWindow *ui;
     VGroupShape canvas;
