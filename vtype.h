@@ -2,6 +2,7 @@
 #define VTYPE_H
 
 #include <QString>
+#include <QJsonValue>
 
 class VType
 {

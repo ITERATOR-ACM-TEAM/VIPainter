@@ -9,9 +9,10 @@ class VPolygon : public VPolyline{
 public:
     VPolygon();
     VPolygon(const VPolygon &shape);
+    VPolygon(const QJsonObject &jsonObject);
     ~VPolygon()override;
     const VPolygon& operator=(const VPolygon &shape);
-    static VPolygon* fromJsonObject(const QJsonObject &jsonObject);
+    const VPolygon& operator=(const QJsonObject &jsonObject);
     QImage toImage()override;
     QString type()const override;
 };

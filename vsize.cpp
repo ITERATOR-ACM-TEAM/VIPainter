@@ -10,6 +10,13 @@ const VSize& VSize::operator=(const VSize &size){
     return *this;
 }
 
+const VSize& VSize::operator=(const QJsonObject &jsonObject)
+{
+    this->x=jsonObject.value("x").toDouble();
+    this->y=jsonObject.value("y").toDouble();
+    return *this;
+}
+
 VSize VSize::operator +(const VSize & Right)
 {
     return VSize(x+Right.x, y+Right.y);
@@ -20,6 +27,14 @@ VSize VSize::operator -(const VSize & Right)
     return VSize(x-Right.x, y-Right.y);
 }
 
+VSize::operator QJsonValue()const
+{
+    QJsonObject jsonObject;
+    jsonObject.insert("x",x);
+    jsonObject.insert("y",y);
+    return jsonObject;
+}
+
 QJsonObject VSize::toJsonObject()const
 {
     QJsonObject jsonObject;
@@ -28,7 +43,7 @@ QJsonObject VSize::toJsonObject()const
     return jsonObject;
 }
 
-VSize VSize::fromJsonObject(const QJsonObject &jsonObject)
+VSize::VSize(const QJsonObject &jsonObject)
 {
-    return VSize(jsonObject.value("x").toDouble(),jsonObject.value("y").toDouble());
+    *this=jsonObject;
 }

@@ -15,7 +15,7 @@ protected:
 public:
     VPolyline();
     VPolyline(const VPolyline &polyline);
-    static VPolyline* fromJsonObject(const QJsonObject &jsonObject);
+    VPolyline(const QJsonObject &jsonObject);
     QJsonObject toJsonObject()const;
     virtual void movePoint(int i,const VPoint &point);//move the ith point to (x,y)
     virtual void erasePoint(int i);
@@ -23,6 +23,7 @@ public:
     virtual void addPoint(VPoint p);
     virtual QVector<VPoint> getPointList() const;
     const VPolyline& operator=(const VPolyline &polyline);
+    const VPolyline& operator=(const QJsonObject &jsonObject);
     virtual void getCircumscribedRectangle();//获得外接矩形的左上点、右下点
     bool contains(const VPoint &point) override;
     QString type()const;

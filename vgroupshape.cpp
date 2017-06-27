@@ -19,7 +19,7 @@ VGroupShape::~VGroupShape()
     }
 }
 
-VGroupShape::VGroupShape(const VGroupShape &shape)
+VGroupShape::VGroupShape(const VGroupShape &shape):VShape(shape)
 {
     for(auto & it : shape.ShapeVector)
     {
@@ -28,8 +28,10 @@ VGroupShape::VGroupShape(const VGroupShape &shape)
 
 }
 
+
 const VGroupShape & VGroupShape:: operator=(const VGroupShape &shape)
 {
+    VShape::operator =(shape);
     this->ShapeVector.clear();
     for(auto & it : shape.ShapeVector)
     {
@@ -47,6 +49,7 @@ bool VGroupShape::moveShape(int i, const VPoint & location)
 {
     if(i>=ShapeVector.size()) return false;
     this->ShapeVector[i]->setLocation(location);
+
     return true;
 }
 
@@ -57,8 +60,9 @@ QVector<VShape *> VGroupShape::getShapeVector()
 
 VSize VGroupShape::getSize()const
 {
-    double minX, minY;
-    double maxX, maxY;
+    VShape *shape=this->ShapeVector.first();
+    double minX=shape->getLocation().x, minY=shape->getLocation().y;
+    double maxX=minX+shape->getSize().x, maxY=0;
     for(auto & it : this->ShapeVector)
     {
         VPoint loc = it->getLocation();
@@ -124,24 +128,20 @@ bool VGroupShape::contains(const VPoint &point)
 QJsonObject VGroupShape::toJsonObject()const
 {
     QJsonObject jsonObject(VShape::toJsonObject());
-    jsonObject.insert("size",size.toJsonObject());
     QJsonArray jsonArray;
-    for(auto &it: ShapeVector)
+    for(const auto &it: ShapeVector)
     {
-        jsonArray.push_back(it->toJsonObject());
+        jsonArray.push_back(*it);
     }
     jsonObject.insert("ShapeVector", jsonArray);
     return jsonObject;
 }
 
-VGroupShape* VGroupShape::fromJsonObject(const QJsonObject &jsonObject)
+VGroupShape::VGroupShape(const QJsonObject &jsonObject):VShape(jsonObject)
 {
-    VGroupShape *groupShape=new VGroupShape();
-    groupShape->size=VSize::fromJsonObject(jsonObject.value("size").toObject());
     QJsonArray jsonArray = jsonObject.value("ShapeVector").toArray();
     for(const auto &it: jsonArray)
     {
-        groupShape->ShapeVector.push_back(VShape::fromJsonObject(it.toObject()));
+        ShapeVector.push_back(VShape::fromJsonObject(it.toObject()));
     }
-    return groupShape;
 }

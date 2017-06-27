@@ -44,7 +44,7 @@ void MainWindow::on_BtRead_clicked()
     QFile file("heiheihei.vp");
     file.open(QFile::ReadOnly|QFile::Text);
     QJsonDocument doc=QJsonDocument::fromJson(file.readAll());
-    VEllipse *ell=VEllipse::fromJsonObject(doc.object());
+    VEllipse *ell=new VEllipse(doc.object());
     ellipse=*ell;
     delete ell;
     file.close();

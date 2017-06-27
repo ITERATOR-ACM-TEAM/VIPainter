@@ -117,17 +117,17 @@ bool VPolyline::contains(const VPoint &point){
 }
 
 
-VPolyline* VPolyline::fromJsonObject(const QJsonObject &jsonObject)
-{
-    VPolyline *vPolyline=new VPolyline();
-    vPolyline->n = jsonObject.value("n").toInt();
-    vPloyline->vertex.clear();
-    QJsonArray jsonVertex = jsonObject.value("vertex").toArray();
-    for(auto &i : jsonVertex){
-        vPloyline->vertex.push_back(i.toObject());
-    }
-    return vPolyline;
-}
+//VPolyline* VPolyline::fromJsonObject(const QJsonObject &jsonObject)
+//{
+//    VPolyline *vPolyline=new VPolyline();
+//    vPolyline->n = jsonObject.value("n").toInt();
+//    vPolyline->vertex.clear();
+//    QJsonArray jsonVertex = jsonObject.value("vertex").toArray();
+//    for(const auto &i : jsonVertex){
+//        vPolyline->vertex.push_back(VPoint::fromJsonObject(i.toObject()));
+//    }
+//    return vPolyline;
+//}
 
 QJsonObject VPolyline::toJsonObject()const
 {

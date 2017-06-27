@@ -7,13 +7,12 @@
 class VEllipse : public VShape{
 public:
     VEllipse();
+    VEllipse(const QJsonObject &jsonObject);
     const VEllipse& operator=(const VEllipse &shape);
-    static VEllipse* fromJsonObject(const QJsonObject &jsonObject);
+    const VEllipse& operator=(const QJsonObject &jsonObject);
     QJsonObject toJsonObject()const override;
 
     QImage toImage()override;
-    VSize getSize()const override;
-    void setSize(const VSize &point)override;
     virtual bool contains(const VPoint &point)override;
     virtual QString type()const override;
     ~VEllipse()override;

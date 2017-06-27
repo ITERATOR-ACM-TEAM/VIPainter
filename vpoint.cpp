@@ -10,9 +10,29 @@ const VPoint& VPoint::operator=(const VPoint &point){
     return *this;
 }
 
+const VPoint& VPoint::operator=(const QJsonObject &jsonObject)
+{
+    this->x=jsonObject.value("x").toDouble();
+    this->y=jsonObject.value("y").toDouble();
+    return *this;
+}
+
+VPoint::VPoint(const QJsonObject &jsonObject)
+{
+    *this=jsonObject;
+}
+
 QPointF VPoint::toQPointF()
 {
     return QPointF(x,y);
+}
+
+VPoint::operator QJsonValue()const
+{
+    QJsonObject jsonObject;
+    jsonObject.insert("x",x);
+    jsonObject.insert("y",y);
+    return jsonObject;
 }
 
 QJsonObject VPoint::toJsonObject()const
@@ -21,9 +41,4 @@ QJsonObject VPoint::toJsonObject()const
     jsonObject.insert("x",x);
     jsonObject.insert("y",y);
     return jsonObject;
-}
-
-VPoint VPoint::fromJsonObject(const QJsonObject &jsonObject)
-{
-    return VPoint(jsonObject.value("x").toDouble(),jsonObject.value("y").toDouble());
 }

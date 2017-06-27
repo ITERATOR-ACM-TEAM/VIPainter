@@ -2,6 +2,7 @@
 #define VSIZE_H
 
 #include <QJsonObject>
+#include <QJsonValue>
 
 class VSize
 {
@@ -10,12 +11,14 @@ public:
     double x;
     double y;
     VSize(double x,double y);
+    VSize(const QJsonObject &jsonObject);
 
     const VSize& operator=(const VSize &size);
+    const VSize& operator=(const QJsonObject &jsonObject);
     VSize operator +(const VSize & Right);
     VSize operator -(const VSize & Right);
+    operator QJsonValue()const;
     QJsonObject toJsonObject()const;
-    static VSize fromJsonObject(const QJsonObject &jsonObject);
 };
 
 #endif // VSIZE_H

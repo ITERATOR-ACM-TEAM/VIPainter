@@ -12,10 +12,10 @@ class VGroupShape : public VShape
 private:
     QVector<VShape*> ShapeVector;
 public:
-    static VGroupShape* fromJsonObject(const QJsonObject &jsonObject);
 
     VGroupShape();
     VGroupShape(const VGroupShape &shape);
+    VGroupShape(const QJsonObject &jsonObject);
     ~VGroupShape()override;
     QJsonObject toJsonObject()const;
 
@@ -33,6 +33,7 @@ public:
     QString type()const override;
 
     const VGroupShape& operator=(const VGroupShape &shape);
+    const VGroupShape& operator=(const QJsonObject &jsonObject);
 };
 
 #endif // VGROUPSHAPE_H
