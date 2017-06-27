@@ -2,6 +2,7 @@
 #define VPOINT_H
 
 #include <QPointF>
+#include <QJsonObject>
 
 class VPoint{   
 public:
@@ -12,8 +13,8 @@ public:
     QPointF toQPointF();
 
     const VPoint& operator=(const VPoint &point);
-    VPoint operator +(const VPoint & Right);
-    VPoint operator -(const VPoint & Right);
+    QJsonObject toJsonObject();
+    static VPoint fromJsonObject(const QJsonObject &jsonObject);
 };
 
 #endif //#ifndef VPOINT_H

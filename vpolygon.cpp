@@ -1,6 +1,7 @@
 #include "vpolygon.h"
 #include "vpoint.h"
 #include "QDebug"
+#include <QPainter>
 
 VPolygon::VPolygon():VPolyline(){
 }
@@ -8,17 +9,11 @@ VPolygon::VPolygon():VPolyline(){
 VPolygon::~VPolygon(){
 }
 
-VPolygon::VPolygon(const VPolygon &shape):VPolyline(){
-    n = shape.getN();
-    vertex.clear();
-    for(auto &i : shape.vertex){
-        this->vertex.append(i);
-    }
-    this->getCircumscribedRectangle();
+VPolygon::VPolygon(const VPolygon &shape):VPolyline(shape){
 }
 
-QImage VShape::toImage(){
-    int width = VPolyline::cr2.y-VPolyline::cr1.y, height = VPolyline::cr2.x-VPolyline::cr1.x;
+QImage VPolygon::toImage(){
+    int width = cr2.y-cr1.y, height = cr2.x-cr1.x;
     QImage image(width, height, QImage::Format_ARGB32);
     QPainter painter(&image);
     QPolygonF qpf;

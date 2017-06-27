@@ -28,7 +28,7 @@ const VGroupShape & VGroupShape:: operator=(const VGroupShape &shape)
     {
         this->ShapeVector.push_back(it);
     }
-    return this;
+    return *this;
 }
 
 void VGroupShape::addShape(VShape * other, const VPoint & location)
@@ -59,7 +59,7 @@ void VGroupShape::rotate(const VPoint &center, double alpha)
     }
 }
 
-VPoint VGroupShape::size()
+VSize VGroupShape::size()
 {
     double minX, minY;
     double maxX, maxY;
@@ -79,7 +79,7 @@ VPoint VGroupShape::size()
     return VPoint(maxX-minX, maxY-minY);
 }
 
-void VGroupShape::resize(const VPoint &point)
+void VGroupShape::resize(const VSize &point)
 {
     VPoint siz = this->size();
     double fractionX = point.x/siz.x , factionY = point.y / siz.y;

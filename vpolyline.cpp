@@ -10,6 +10,7 @@ VPolyline::VPolyline(const VPolyline &polyline){
     for(auto &i: polyline.getPointList()){
         this->vertex.append(i);
     }
+    getCircumscribedRectangle();
 }
 
 int VPolyline::getN()const{
@@ -63,10 +64,10 @@ void VPolyline::getCircumscribedRectangle(){//获得外接矩形的左上点、�
     cr2.y -= y1;
 }
 
-VPoint size(){//返回外接矩形右下角的位置
+VSize VPolyline::getSize(){//返回外接矩形右下角的位置
     return cr2;
 }
-void resize(const VPoint &point){//把外接举行的右下角移动到point
+void VPolyline::setSize(const VSize &point){//把外接举行的右下角移动到point
     double nx = (point.x-cr1.x)/(cr2.x-cr1.x);
     double ny = (point.y-cr1.y)/(cr2.y-cr1.y);
     for(int i = 0; i < n; i++){
@@ -75,14 +76,8 @@ void resize(const VPoint &point){//把外接举行的右下角移动到point
     }
     cr2 = point;
 }
-void rotate(const VPoint &center,double alpha){
-    for(int i = 0; i < n; i++){
-        vertex[i].x=(vertex[i].x- center.x)*cos(alpha) - (vertex[i].y- center.y)*sin(alpha) + center.x ;
-        vertex[i].y=(vertex[i].x- center.x)*sin(alpha) + (vertex[i].y- center.y)*cos(alpha) + center.y ;
-    }
-}
 
-QImage toImage(){
+QImage VPolyline::toImage(){
     int width = cr2.y-cr1.y, height = cr2.x-cr1.x;
     QImage image(width, height, QImage::Format_ARGB32);
     QPainter painter(&image);
