@@ -7,12 +7,13 @@
 
 class VPolyline:public VShape
 {
-private:
+protected:
     int n;//折线端点数目
     QVector<VPoint> vertex;//折线的各个端点
 public:
     VPolyline();
     VPolyline(const VPolyline &polyline);
+    static VPolyline* fromJsonObject(const QJsonObject &jsonObject);
     virtual void movePoint(int i,const VPoint &point);//move the ith point to (x,y)
     int getN() const;
     virtual void addPoint(VPoint p);
