@@ -13,7 +13,7 @@ VGroupShape::~VGroupShape()
 {
     for(auto &it : this->ShapeVector)
     {
-        if(it != nullptr) delete it;
+        delete it;
     }
 }
 
@@ -90,7 +90,19 @@ QImage VGroupShape::toImage()
     QPainter painter(&image);
     for(auto & it : this->ShapeVector)
     {
-        painter.drawImage(QPointF(it->getLocation().x - this->location.x, it->getLocation().y - this->location.y), it->toImage());
+        QImage subImage = it->toImage();
+        QPainter subPainter(&subImage);
+        subPainter.rotate(it->getAngle());
+        painter.drawImage(QPointF(it->getLocation().x - this->location.x, it->getLocation().y - this->location.y), subImage);
     }
     return image;
+}
+
+bool VGroupShape::eraseShape(int i)
+{
+    if(i>=ShapeVector.size()) return false;
+    auto it = ShapeVector.begin();
+    while(i--)it++;
+    ShapeVector.erase(it);
+    return true;
 }
