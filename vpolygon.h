@@ -12,6 +12,7 @@ public:
     VPolygon(const VPolygon &shape);
     ~VPolygon()override;
     const VPolygon& operator=(const VPolygon &shape);
+    static VPolygon* fromJsonObject(const QJsonObject &jsonObject);
 };
 
 #endif //#ifndef VPOLYGON

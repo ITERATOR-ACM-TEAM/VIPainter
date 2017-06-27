@@ -12,12 +12,11 @@ private:
 public:
     VEllipse();
     VEllipse(const VEllipse &shape);
-    ~VEllipse();
     const VEllipse& operator=(const VEllipse &shape);
+    static VEllipse* fromJsonObject(const QJsonObject &jsonObject);
 
     QImage toImage()override;
     void resize(int weight,int height)override;
-    void rotate(const VPoint &center,double alpha)override;
     ~VEllipse()override;
 };
 

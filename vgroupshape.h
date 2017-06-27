@@ -14,6 +14,7 @@ private:
 public:
     VGroupShape();
     VGroupShape(const VGroupShape &shape);
+    static VPolyline* fromJsonObject(const QJsonObject &jsonObject);
     ~VGroupShape()override;
     const VGroupShape& operator=(const VGroupShape &shape);
     void addShape(VShape * other, const VPoint & location);

@@ -10,6 +10,7 @@ public:
     VCurve(const VCurve &shape);
     ~VCurve()override;
     const VCurve& operator=(const VCurve &shape);
+    static VPolyline* fromJsonObject(const QJsonObject &jsonObject);
 };
 
 #endif // VCURVE_H
