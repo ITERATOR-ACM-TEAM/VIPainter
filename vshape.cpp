@@ -20,7 +20,7 @@ void VShape::setLocation(const VPoint &location)
     this->location=location;
 }
 
-VSize VShape::getLocation()
+VPoint VShape::getLocation()
 {
     return location;
 }
@@ -30,7 +30,7 @@ void VShape::setAngle(double angle)
     this->angle=angle;
 }
 
-VSize VShape::getAngle()
+double VShape::getAngle()
 {
     return angle;
 }

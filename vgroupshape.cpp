@@ -28,7 +28,7 @@ const VGroupShape & VGroupShape:: operator=(const VGroupShape &shape)
     {
         this->ShapeVector.push_back(it);
     }
-    return this;
+    return *this;
 }
 
 void VGroupShape::addShape(VShape * other, const VPoint & location)

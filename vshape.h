@@ -23,10 +23,10 @@ public:
     virtual void setSize(const VSize &size)=0;
 
     void setLocation(const VPoint &location);
-    VSize getLocation();
+    VPoint getLocation();
 
     void setAngle(double angle);
-    VSize getAngle();
+    double getAngle();
 
     virtual bool contains(const VPoint &point)=0;
     virtual QString type()=0;
