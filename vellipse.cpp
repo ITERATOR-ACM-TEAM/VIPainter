@@ -11,9 +11,15 @@ VEllipse::~VEllipse()
 {
 }
 
+const VEllipse& VEllipse::operator=(const VEllipse &shape)
+{
+    this->size=shape.size;
+    return *this;
+}
+
 QImage VEllipse::toImage()
 {
-    QImage image(size.x,size.y,QImage::Format_ARGB32);
+    QImage image(size.x+1,size.y+1,QImage::Format_ARGB32);
     QPainter painter(&image);
     painter.drawEllipse(0,0,size.x,size.y);
     return image;
