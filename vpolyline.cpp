@@ -1,4 +1,5 @@
 #include "vpolyline.h"
+#include "vtype.h"
 #include <QPainter>
 
 VPolyline::VPolyline():n(0)
@@ -103,7 +104,7 @@ QImage VPolyline::toImage(){
 }
 
 QString VPolyline::type() const{
-    return "VPolyline";
+    return VType::Polyline;
 }
 
 bool VPolyline::contains(const VPoint &point){
