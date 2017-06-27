@@ -101,8 +101,6 @@ QImage VGroupShape::toImage()
 bool VGroupShape::eraseShape(int i)
 {
     if(i>=ShapeVector.size()) return false;
-    auto it = ShapeVector.begin();
-    while(i--)it++;
-    ShapeVector.erase(it);
+    ShapeVector.erase(ShapeVector.begin()+i);
     return true;
 }
