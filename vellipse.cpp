@@ -11,23 +11,16 @@ VEllipse::~VEllipse()
 {
 }
 
-QImage toImage()
+QImage VEllipse::toImage()
 {
 }
 
-void resize(const VPoint &point)
+void VEllipse::setSize(const VSize &size)
 {
-    VPoint old=size();
-    size=size/
+    this->size=size;
 }
 
-void rotate(double angle)
+VSize VEllipse::getSize()
 {
-    this->angle+=angle;
-    if(this->angle>PI)this->angle-=PI;
-    this->angle-=floor(this->angle/PI)*PI;
-}
-
-~VEllipse()
-{
+    return size;
 }

@@ -6,7 +6,6 @@
 
 class VEllipse : public VShape{
 private:
-    VPoint center;
     double angle;
 
 public:
@@ -16,8 +15,8 @@ public:
     static VEllipse* fromJsonObject(const QJsonObject &jsonObject);
 
     QImage toImage()override;
-    virtual VPoint size()override;
-    void resize(const VPoint &point)override;
+    VSize getSize()override;
+    void setSize(const VSize &point)override;
     ~VEllipse()override;
 };
 
