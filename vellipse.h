@@ -7,7 +7,7 @@
 class VEllipse : public VShape{
 private:
     VPoint center;
-    double alpha;
+    double angle;
 
 public:
     VEllipse();
@@ -16,8 +16,9 @@ public:
     const VEllipse& operator=(const VEllipse &shape);
 
     QImage toImage()override;
-    void resize(int weight,int height)override;
-    void rotate(const VPoint &center,double alpha)override;
+    virtual VPoint size()override;
+    void resize(const VPoint &point)override;
+    void rotate(double angle)override;
     ~VEllipse()override;
 };
 
