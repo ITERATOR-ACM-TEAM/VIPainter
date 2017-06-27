@@ -10,14 +10,17 @@ VGroupShape::VGroupShape()
 
 VGroupShape::~VGroupShape()
 {
-    //TODO:
+    for(auto &it : shape.ShapeVector)
+    {
+        if(it != nullptr) delete it;
+    }
 }
 
 VGroupShape::VGroupShape(const VGroupShape &shape)
 {
     for(auto & it : shape.ShapeVector)
     {
-        this->ShapeVector.push_back(it);
+        this->ShapeVector.push_back(it->clone());
     }
 
 }
@@ -27,54 +30,33 @@ const VGroupShape & VGroupShape:: operator=(const VGroupShape &shape)
     this->ShapeVector.clear();
     for(auto & it : shape.ShapeVector)
     {
-        this->ShapeVector.push_back(it);
+        this->ShapeVector.push_back(it->clone());
     }
     return this;
 }
 
-void VGroupShape::addShape(VShape * other, const VPoint & location)
+void VGroupShape::addShape(VShape * other)
 {
-    this->ShapeVector.push_back(make_pair(other, location));
+    this->ShapeVector.push_back(other);
 }
 
 void VGroupShape::moveShape(int i, const VPoint & location)
 {
-    this->ShapeVector[i].second = location;
+    this->ShapeVector[i]->setLocation(location);
 }
 
 QVector<VShape *> VGroupShape::getShapeVector()
 {
-    QVector<VShape *> result;
-    for(auto & it : this->ShapeVector)
-    {
-        result.push_back(it.first);
-    }
-    return result;
+    return ShapeVector;
 }
 
-void VGroupShape::rotate(double alpha)
-{
-    VPoint center = this->size();
-    center.x /= 2;
-    center.y /= 2;
-    for(auto & it : this->ShapeVector)
-    {
-        it.first.rotate(alpha);
-        VPoint tmpLoc = it.second - center;
-        double x = tmpLoc.x , y = tmpLoc.y;
-        tmpLoc.x = x * cos(alpha) - y * sin(alpha);
-        tmpLoc.y = x * sin(alpha) + y * cos(alpha);
-        it.second = tmpLoc + center;
-    }
-}
-
-VSize VGroupShape::size()
+VSize VGroupShape::getSize()
 {
     double minX, minY;
     double maxX, maxY;
     for(auto & it : this->ShapeVector)
     {
-        VPoint loc = it.first.size()+it.second;
+        VPoint loc = it->first.size()+it->second;
         maxX = max(maxX, loc.x);
         maxY = max(maxY, loc.y);
         minX = min(minX, loc.x);
@@ -82,24 +64,24 @@ VSize VGroupShape::size()
     }
     for(auto & it : this->ShapeVector)
     {
-        it.second.x -= minX;
-        it.second.y -= minY;
+        it->location.x -= minX;
+        it->location.y -= minY;
     }
-    return VPoint(maxX-minX, maxY-minY);
+    return VSize(maxX-minX, maxY-minY);
 }
 
-void VGroupShape::resize(const VSize &point)
+void VGroupShape::setSize(const VSize &size)
 {
-    VPoint siz = this->size();
-    double fractionX = point.x/siz.x , factionY = point.y / siz.y;
+    VSize siz = this->getSize();
+    double fractionX = size.x/siz.x , factionY = size.y / siz.y;
     for(auto & it : this->ShapeVector)
     {
-        it.second.x *= fractionX;
-        it.second.y *= fractionY;
-        VPoint subSiz = it.first.size();
+        it->location.x *= fractionX;
+        it->location.y *= fractionY;
+        VSize subSiz = it->getSize();
         subSiz.x *= fractionX;
         subSiz.y *= fractionY;
-        it.first.resize(subSiz);
+        it->setSize(subSiz);
     }
 }
 
@@ -111,7 +93,7 @@ QImage VGroupShape::toImage()
     QPainter painter(&image);
     for(auto & it : this->ShapeVector)
     {
-        painter.drawImage(QPointF(it.second.x, it.second.y), it.first.toImage());
+        painter.drawImage(QPointF(it->location.x - this->location.x, QPointF(it->location.y - this->location.y), it->toImage());
     }
     return image;
 }
