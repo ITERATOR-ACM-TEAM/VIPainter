@@ -14,3 +14,16 @@ QPointF VPoint::toQPointF()
 {
     return QPointF(x,y);
 }
+
+QJsonObject VPoint::toJsonObject()const
+{
+    QJsonObject jsonObject;
+    jsonObject.insert("x",x);
+    jsonObject.insert("y",y);
+    return jsonObject;
+}
+
+VPoint VPoint::fromJsonObject(const QJsonObject &jsonObject)
+{
+    return VPoint(jsonObject.value("x").toDouble(),jsonObject.value("y").toDouble());
+}

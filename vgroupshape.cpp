@@ -108,7 +108,7 @@ bool VGroupShape::eraseShape(int i)
 
 QString VGroupShape::type()const
 {
-    return VType::GroupShap;
+    return VType::GroupShape;
 }
 
 bool VGroupShape::contains(const VPoint &point)

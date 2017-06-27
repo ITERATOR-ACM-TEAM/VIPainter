@@ -13,7 +13,7 @@ public:
     QPointF toQPointF();
 
     const VPoint& operator=(const VPoint &point);
-    QJsonObject toJsonObject();
+    QJsonObject toJsonObject()const;
     static VPoint fromJsonObject(const QJsonObject &jsonObject);
 };
 

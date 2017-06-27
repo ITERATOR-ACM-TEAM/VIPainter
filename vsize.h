@@ -14,7 +14,7 @@ public:
     const VSize& operator=(const VSize &size);
     VSize operator +(const VSize & Right);
     VSize operator -(const VSize & Right);
-    QJsonObject toJsonObject();
+    QJsonObject toJsonObject()const;
     static VSize fromJsonObject(const QJsonObject &jsonObject);
 };
 
