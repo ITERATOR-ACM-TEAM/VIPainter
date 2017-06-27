@@ -10,8 +10,17 @@ const VPoint& VPoint::operator=(const VPoint &point){
     return *this;
 }
 
-
 QPointF VPoint::toQPointF()
 {
     return QPointF(x,y);
+}
+
+VPoint  VPoint::operator +(const VPoint & Right)
+{
+    return VPoint(x+Right.x, y+Right.y);
+}
+
+VPoint VPoint::operator -(const VPoint & Right)
+{
+    return VPoint(x-Right.x, y-Right.y);
 }

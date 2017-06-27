@@ -12,6 +12,8 @@ public:
     QPointF toQPointF();
 
     const VPoint& operator=(const VPoint &point);
+    VPoint operator +(const VPoint & Right);
+    VPoint operator -(const VPoint & Right);
 };
 
 #endif //#ifndef VPOINT_H
