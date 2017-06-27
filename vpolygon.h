@@ -13,6 +13,7 @@ public:
     const VPolygon& operator=(const VPolygon &shape);
     static VPolygon* fromJsonObject(const QJsonObject &jsonObject);
     QImage toImage()override;
+    QString type()const override;
 };
 
 #endif //#ifndef VPOLYGON
