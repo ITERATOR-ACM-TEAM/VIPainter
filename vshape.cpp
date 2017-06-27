@@ -5,6 +5,7 @@
 #include "vcurveline.h"
 #include "vgroupshape.h"
 #include <vtype.h>
+#include <cmath>
 
 double VShape::PI=atan(1)*4.0;
 
