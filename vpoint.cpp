@@ -9,3 +9,14 @@ const VPoint& VPoint::operator=(const VPoint &point){
     this->y = point.y;
     return *this;
 }
+
+
+VPoint  VPoint::operator +(const VPoint & Right)
+{
+    return VPoint(x+Right.x, y+Right.y);
+}
+
+VPoint VPoint::operator -(const VPoint & Right)
+{
+    return VPoint(x-Right.x, y-Right.y);
+}

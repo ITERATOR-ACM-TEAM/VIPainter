@@ -1,4 +1,6 @@
 #include "vgroupshape.h"
+#include <QPainter>
+#include <QPointF>
 
 VGroupShape::VGroupShape()
 {
@@ -53,7 +55,46 @@ void VGroupShape::rotate(const VPoint &center, double alpha)
 {
     for(auto & it : this->ShapeVector)
     {
-        it.first.rotate(center, alpha);
+        it.first.rotate(center-it.second, alpha);
     }
 }
 
+VPoint VGroupShape::size()
+{
+    double maxX, maxY;
+    for(auto & it : this->ShapeVector)
+    {
+        VPoint loc = it.first.size()+it.second;
+        maxX = max(maxX, loc.x);
+        maxY = max(maxY, loc.y);
+    }
+    return VPoint(maxX, maxY);
+}
+
+void VGroupShape::resize(const VPoint &point)
+{
+    VPoint siz = this->size();
+    double fractionX = point.x/siz.x , factionY = point.y / siz.y;
+    for(auto & it : this->ShapeVector)
+    {
+        it.second.x *= fractionX;
+        it.second.y *= fractionY;
+        VPoint subSiz = it.first.size();
+        subSiz.x *= fractionX;
+        subSiz.y *= fractionY;
+        it.first.resize(subSiz);
+    }
+}
+
+QImage VGroupShape::toImage()
+{
+    VPoint sz = this->size();
+    int width = sz.y, height = sz.x;
+    QImage image(width, height, QImage::Format_ARGB32);
+    QPainter painter(&image);
+    for(auto & it : this->ShapeVector)
+    {
+        painter.drawImage(QPointF(it.second.x, it.second.y), it.first.toImage());
+    }
+    return image;
+}

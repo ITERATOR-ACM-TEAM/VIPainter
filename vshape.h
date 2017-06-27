@@ -8,7 +8,7 @@ class VShape{
 public:
     virtual QImage toImage()=0;
     virtual VPoint size()=0;
-    virtual void resize(int weight,int height)=0;
+    virtual void resize(const VPoint &point)=0;
     virtual void rotate(const VPoint &center,double alpha)=0;
     virtual ~VShape();
 };
