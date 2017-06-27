@@ -25,7 +25,7 @@ public:
     QVector<VShape *> getShapeVector();
 
     void setSize(const VSize & size)override;
-    VSize getSize()override;
+    VSize getSize()const override;
 
     QImage toImage()override;
 

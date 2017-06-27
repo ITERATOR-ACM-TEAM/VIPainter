@@ -53,7 +53,7 @@ QVector<VShape *> VGroupShape::getShapeVector()
     return ShapeVector;
 }
 
-VSize VGroupShape::getSize()
+VSize VGroupShape::getSize()const
 {
     double minX, minY;
     double maxX, maxY;

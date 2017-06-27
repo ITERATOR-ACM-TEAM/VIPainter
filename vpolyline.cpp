@@ -41,7 +41,7 @@ void VPolyline::addPoint(VPoint p){
     this->vertex.push_back(p);
 }
 
-const VPolyline& VPolyline::operator=(const VPolyline &polyline){
+VPolyline VPolyline::operator=(const VPolyline &polyline){
     QVector<VPoint> vec = polyline.getPointList();
     for(int i = 0; i < n; i++){
         this->vertex[i] = vec[i];
@@ -73,7 +73,7 @@ void VPolyline::getCircumscribedRectangle(){//获得外接矩形的左上点、�
     cr2.y -= y1;
 }
 
-VSize VPolyline::getSize(){//返回外接矩形右下角的位置
+VSize VPolyline::getSize()const{//返回外接矩形右下角的位置
     VSize vs(cr2.x, cr2.y);
     return vs;
 }
