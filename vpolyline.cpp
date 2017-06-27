@@ -41,7 +41,7 @@ void VPolyline::addPoint(VPoint p){
     this->vertex.push_back(p);
 }
 
-VPolyline VPolyline::operator=(const VPolyline &polyline){
+const VPolyline& VPolyline::operator=(const VPolyline &polyline){
     QVector<VPoint> vec = polyline.getPointList();
     for(int i = 0; i < n; i++){
         this->vertex[i] = vec[i];
