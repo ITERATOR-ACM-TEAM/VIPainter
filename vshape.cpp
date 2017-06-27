@@ -1,4 +1,9 @@
 #include "vshape.h"
+#include "vpolygon.h"
+#include "vpolyline.h"
+#include "vellipse.h"
+#include "vcurveline.h"
+#include "vgroupshape.h"
 #include <vtype.h>
 
 double VShape::PI=atan(1)*4.0;
@@ -15,10 +20,10 @@ VShape* VShape::clone()
 VShape* VShape::fromJsonObject(const QJsonObject &jsonObject)
 {
     QString type=jsonObject.value("type").toString();
-    if(type==VType::Polygon)return VPolygon::fromJsonObject(jsonObject);
-    else if(type==VType::Polyline)return VPolyline::fromJsonObject(jsonObject);
-    else if(type==VType::Ellipse)return VEllipse::fromJsonObject(jsonObject);
-    else if(type==VType::GroupShap)return VGroupShap::fromJsonObject(jsonObject);
+    if(type==VType::Ellipse)return VEllipse::fromJsonObject(jsonObject);
+//    else if(type==VType::Polyline)return VPolyline::fromJsonObject(jsonObject);
+//    else if(type==VType::Polygon)return VPolygon::fromJsonObject(jsonObject);
+//    else if(type==VType::GroupShape)return VGroupShape::fromJsonObject(jsonObject);
     else return nullptr;
 }
 
@@ -35,6 +40,14 @@ VPoint VShape::getLocation()const
 void VShape::setAngle(double angle)
 {
     this->angle=angle;
+}
+
+
+QJsonObject VShape::toJsonObject()const
+{
+    QJsonObject jsonObject;
+    jsonObject.insert("angle",this->angle);
+    return jsonObject;
 }
 
 double VShape::getAngle()const
