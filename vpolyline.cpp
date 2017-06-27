@@ -1,6 +1,7 @@
 #include "vpolyline.h"
 #include "vtype.h"
 #include <QPainter>
+#include <QJsonArray>
 
 VPolyline::VPolyline():n(0)
 {
@@ -113,4 +114,29 @@ bool VPolyline::contains(const VPoint &point){
     if(x >= cr1.x && x <= cr2.x && y >= cr1.y && y <= cr2.y)
         return true;
     else return false;
+}
+
+
+VPolyline* VPolyline::fromJsonObject(const QJsonObject &jsonObject)
+{
+    VPolyline *vPolyline=new VPolyline();
+    vPolyline->n = jsonObject.value("n").toInt();
+    vPloyline->vertex.clear();
+    QJsonArray jsonVertex = jsonObject.value("vertex").toArray();
+    for(auto &i : jsonVertex){
+        vPloyline->vertex.push_back(i.toObject());
+    }
+    return vPolyline;
+}
+
+QJsonObject VPolyline::toJsonObject()const
+{
+    QJsonObject jsonObject(VShape::toJsonObject());
+    jsonObject.insert("n", n);
+    QJsonArray qja;
+    for(auto & i : vertex){
+        qja.push_back(i.toJsonObject());
+    }
+    jsonObject.insert("vertex",qja);
+    return jsonObject;
 }
