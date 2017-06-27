@@ -15,7 +15,7 @@ public:
     static VEllipse* fromJsonObject(const QJsonObject &jsonObject);
 
     QImage toImage()override;
-    VSize getSize()override;
+    VSize getSize()const override;
     void setSize(const VSize &point)override;
     ~VEllipse()override;
 };

@@ -21,20 +21,22 @@ SOURCES += main.cpp\
     vpolygon.cpp \
     vellipse.cpp \
     vshape.cpp \
-    vcurve.cpp \
     vgroupshape.cpp \
     vpolyline.cpp \
-    vsize.cpp
+    vsize.cpp \
+    vtype.cpp \
+    vcurveline.cpp
 
 HEADERS  += mainwindow.h \
     vpoint.h \
     vpolygon.h \
     vshape.h \
     vellipse.h \
-    vcurve.h \
     vgroupshape.h \
     vpolyline.h \
-    vsize.h
+    vsize.h \
+    vtype.h \
+    vcurveline.h
 
 FORMS    += mainwindow.ui
 
