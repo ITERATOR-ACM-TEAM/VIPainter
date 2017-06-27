@@ -51,12 +51,16 @@ void VPolyline::getCircumscribedRectangle(){//获得外接矩形的左上点、�
     cr1.y = y1;
     cr2.x = x2;
     cr2.y = y2;
-    /*
+
     for(int i = 0; i < n; i++){//标准化，使外接矩形的左上点移到坐标原点
         vertex[i].x -= x1;
         vertex[i].y -= y1;
     }
-    */
+
+    cr1.x = 0;
+    cr1.y = 0;
+    cr2.x -= x1;
+    cr2.y -= y1;
 }
 
 VPoint size(){//返回外接矩形右下角的位置
@@ -79,5 +83,10 @@ void rotate(const VPoint &center,double alpha){
 }
 
 QImage toImage(){
+    int width = cr2.y-cr1.y, height = cr2.x-cr1.x;
+    QImage image(width, height, QImage::Format_ARGB32);
+    QPainter painter(&image);
+    painter.drawLines(vertex);
 
+    return image;
 }
