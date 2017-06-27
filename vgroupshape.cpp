@@ -3,6 +3,7 @@
 #include <QPointF>
 #include <math.h>
 #include <algorithm>
+#include "vtype.h"
 
 VGroupShape::VGroupShape()
 {
@@ -103,4 +104,23 @@ bool VGroupShape::eraseShape(int i)
     if(i>=ShapeVector.size()) return false;
     ShapeVector.erase(ShapeVector.begin()+i);
     return true;
+}
+
+QString VGroupShape::type()const
+{
+    return VType::GroupShap;
+}
+
+bool VGroupShape::contains(const VPoint &point)
+{
+    for(auto & it: ShapeVector)
+    {
+        if(it->contains(point)) return false;
+    }
+    return true;
+}
+
+QJsonObject VGroupShape::toJsonObject()const
+{
+
 }
