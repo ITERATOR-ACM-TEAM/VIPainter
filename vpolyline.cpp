@@ -46,6 +46,7 @@ const VPolyline& VPolyline::operator=(const VPolyline &polyline){
     for(int i = 0; i < n; i++){
         this->vertex[i] = vec[i];
     }
+    return *this;
 }
 
 void VPolyline::getCircumscribedRectangle(){//获得外接矩形的左上点、右下点
@@ -107,4 +108,8 @@ QString VPolyline::type() const{
 
 bool VPolyline::contains(const VPoint &point){
     double x = point.x-location.x;
+    double y = point.y-location.y;
+    if(x >= cr1.x && x <= cr2.x && y >= cr1.y && y <= cr2.y)
+        return true;
+    else return false;
 }
