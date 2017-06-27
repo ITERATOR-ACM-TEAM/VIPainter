@@ -5,12 +5,8 @@
 #include "vpoint.h"
 
 class VEllipse : public VShape{
-private:
-    double angle;
-
 public:
     VEllipse();
-    VEllipse(const VEllipse &shape);
     const VEllipse& operator=(const VEllipse &shape);
     static VEllipse* fromJsonObject(const QJsonObject &jsonObject);
     QJsonObject toJsonObject()const override;

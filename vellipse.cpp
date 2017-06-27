@@ -11,11 +11,23 @@ VEllipse::~VEllipse()
 {
 }
 
+const VEllipse& VEllipse::operator=(const VEllipse &shape)
+{
+    this->size=shape.size;
+    return *this;
+}
+
 QImage VEllipse::toImage()
 {
     QImage image(size.x,size.y,QImage::Format_ARGB32);
+    image.fill(0);
     QPainter painter(&image);
+    painter.setPen(QPen(Qt::red,2));
+    painter.setRenderHint(QPainter::Antialiasing);
     painter.drawEllipse(0,0,size.x,size.y);
+    //painter.setRenderHint(QPainter::Antialiasing, false);
+    painter.setPen(QPen(Qt::yellow,2,Qt::SolidLine,Qt::FlatCap,Qt::MiterJoin));
+    painter.drawRect(0,0,size.x,size.y);
     return image;
 }
 

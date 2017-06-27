@@ -12,12 +12,12 @@ class VGroupShape : public VShape
 private:
     QVector<VShape*> ShapeVector;
 public:
+    static VGroupShape* fromJsonObject(const QJsonObject &jsonObject);
+
     VGroupShape();
     VGroupShape(const VGroupShape &shape);
     ~VGroupShape()override;
     QJsonObject toJsonObject()const;
-
-    static VGroupShape* fromJsonObject(const QJsonObject &jsonObject);
 
     void addShape(VShape * other);
     bool eraseShape(int i);
