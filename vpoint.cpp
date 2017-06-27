@@ -9,3 +9,9 @@ const VPoint& VPoint::operator=(const VPoint &point){
     this->y = point.y;
     return *this;
 }
+
+
+QPointF VPoint::toQPointF()
+{
+    return QPointF(x,y);
+}
