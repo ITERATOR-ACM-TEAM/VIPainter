@@ -2,13 +2,14 @@
 #include "vpoint.h"
 #include "QDebug"
 
-VPolygon::VPolygon():n(0){
+VPolygon::VPolygon(){
 }
 
 VPolygon::~VPolygon(){
 }
 
-VPolygon::VPolygon(const VPolygon &shape):n(shape.n){
+VPolygon::VPolygon(const VPolygon &shape){
+
     for(auto &i : shape.vertex){
         this->vertex.append(i);
     }

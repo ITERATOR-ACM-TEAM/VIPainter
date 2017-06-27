@@ -7,9 +7,11 @@
 
 class VPolyline:public VShape
 {
-private:
+protected:
     int n;//折线端点数目
+    double alpha;
     QVector<VPoint> vertex;//折线的各个端点
+    VPoint cr1, cr2;//CircumscribedRectangle,外接矩形的左上点、右下点
 public:
     VPolyline();
     VPolyline(const VPolyline &polyline);
@@ -18,6 +20,7 @@ public:
     virtual void addPoint(VPoint p);
     virtual QVector<VPoint> getPointList() const;
     const VPolyline& operator=(const VPolyline &polyline);
+    virtual void getCircumscribedRectangle();//获得外接矩形的左上点、右下点
 };
 
 #endif // VPOLYLINE_H
