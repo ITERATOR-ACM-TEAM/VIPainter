@@ -13,6 +13,7 @@ protected:
     VSize size;
     double angle;
 public:
+    static double PI;
     static VShape* fromJsonObject(const QJsonObject &jsonObject);
     virtual QJsonObject toJsonObject()=0;
     VShape* clone();

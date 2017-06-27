@@ -1,8 +1,6 @@
 #include "vellipse.h"
 #include "cmath"
 
-static double PI=atan(1)*4.0;
-
 VEllipse::VEllipse()
 {
 }
