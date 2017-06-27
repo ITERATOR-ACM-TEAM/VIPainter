@@ -23,6 +23,11 @@ public:
     virtual QVector<VPoint> getPointList() const;
     const VPolyline& operator=(const VPolyline &polyline);
     virtual void getCircumscribedRectangle();//获得外接矩形的左上点、右下点
+    bool contains(const VPoint &point) override;
+    QString type()const;
+    QImage toImage() override;
+    VSize getSize() override;
+    void setSize(const VSize &size) override;
 };
 
 #endif // VPOLYLINE_H

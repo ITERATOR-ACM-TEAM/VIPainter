@@ -1,6 +1,6 @@
 #ifndef VGROUPSHAPE_H
 #define VGROUPSHAPE_H
-
+/*
 #include "vshape.h"
 #include "vpoint.h"
 #include <QList>
@@ -22,5 +22,5 @@ public:
     bool moveShape(int i, const VPoint & location);
     QVector<VShape *> getShapeVector();
 };
-
+*/
 #endif // VGROUPSHAPE_H

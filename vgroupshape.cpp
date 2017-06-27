@@ -1,3 +1,4 @@
+/*
 #include "vgroupshape.h"
 #include <QPainter>
 #include <QPointF>
@@ -97,3 +98,4 @@ QImage VGroupShape::toImage()
     }
     return image;
 }
+*/

@@ -1,6 +1,6 @@
 #include "vshape.h"
 
-static double VShape::PI=atan(1)*4.0;
+double VShape::PI=atan(1)*4.0;
 
 VShape::~VShape()
 {
