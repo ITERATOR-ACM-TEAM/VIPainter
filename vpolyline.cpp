@@ -1,4 +1,5 @@
 #include "vpolyline.h"
+#include <QPainter>
 
 VPolyline::VPolyline():n(0)
 {
@@ -17,14 +18,22 @@ int VPolyline::getN()const{
     return n;
 }
 
-void VPolyline::movePoint(int i,VPoint p){//move the ith point to position p(x,y)
+void VPolyline::movePoint(int i,const VPoint &point){//move the ith point to position p(x,y)
     if(i >= n-1)i = n-1;
     if(i < 0)i = 0;
-    this->vertex[i].x = p.x;
-    this->vertex[i].y = p.y;
+    this->vertex[i].x = point.x;
+    this->vertex[i].y = point.y;
 }
 
-QList<VPoint> VPolyline::getPointList()const{
+void VPolyline::erasePoint(int i){
+    if(i >=0 && i < n){
+        auto it = vertex.begin();
+        it += i;
+        this->vertex.erase(it);
+    }
+}
+
+QVector<VPoint> VPolyline::getPointList()const{
     return this->vertex;
 }
 
@@ -65,7 +74,8 @@ void VPolyline::getCircumscribedRectangle(){//获得外接矩形的左上点、�
 }
 
 VSize VPolyline::getSize(){//返回外接矩形右下角的位置
-    return cr2;
+    VSize vs(cr2.x, cr2.y);
+    return vs;
 }
 void VPolyline::setSize(const VSize &point){//把外接举行的右下角移动到point
     double nx = (point.x-cr1.x)/(cr2.x-cr1.x);
@@ -74,14 +84,27 @@ void VPolyline::setSize(const VSize &point){//把外接举行的右下角移动�
         vertex[i].x *= nx;
         vertex[i].y *= ny;
     }
-    cr2 = point;
+    cr2.x = point.x;
+    cr2.y = point.y;
 }
 
 QImage VPolyline::toImage(){
     int width = cr2.y-cr1.y, height = cr2.x-cr1.x;
     QImage image(width, height, QImage::Format_ARGB32);
     QPainter painter(&image);
-    painter.drawLines(vertex);
+    QPolygonF qpf;
+    for(auto &i : vertex){
+        qpf << i.toQPointF();
+    }
+    painter.drawPolyline(qpf);
 
     return image;
+}
+
+QString VPolyline::type() const{
+    return "VPolyline";
+}
+
+bool VPolyline::contains(const VPoint &point){
+    double x = point.x-location.x;
 }
