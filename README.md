@@ -1,3 +1,4 @@
-# VPainter
+# VIPainter
 
-a vector painter
+Vectorgraph & Image Painter
+
