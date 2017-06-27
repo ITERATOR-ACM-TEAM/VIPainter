@@ -3,9 +3,9 @@
 
 #include "vshape.h"
 #include "vpoint.h"
-#include <QPolygon>
+#include "vpolyline.h"
 
-class VPolygon : public VShape{
+class VPolygon : public VPolyline{
 private:
     int n;//顶点个数，即为n边形
     QList<VPoint> vertex;//n边形的各个顶点，按顺时针顺序存储
