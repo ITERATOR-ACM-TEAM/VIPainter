@@ -12,3 +12,23 @@ VShape* VShape::clone()
 VShape* VShape::fromJsonObject(const QJsonObject &jsonObject)
 {
 }
+
+void VShape::setLocation(const VPoint &location)
+{
+    this->location=location;
+}
+
+VSize VShape::getLocation()
+{
+    return location;
+}
+
+void VShape::setAngle(double angle)
+{
+    this->angle=angle;
+}
+
+VSize VShape::getAngle()
+{
+    return angle;
+}

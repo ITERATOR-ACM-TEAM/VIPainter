@@ -18,6 +18,7 @@ public:
     ~VGroupShape()override;
     const VGroupShape& operator=(const VGroupShape &shape);
     void addShape(VShape * other, const VPoint & location);
+    void eraseShape(int i, const VPoint & location);
     void moveShape(int i, const VPoint & location);
     QVector<VShape *> getShapeVector();
 };

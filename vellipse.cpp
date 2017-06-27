@@ -1,11 +1,26 @@
 #include "vellipse.h"
+#include "cmath"
+
+static double PI=atan(1)*4.0;
 
 VEllipse::VEllipse()
 {
-    //TODO:
 }
 
 VEllipse::~VEllipse()
 {
-    //TODO:
+}
+
+QImage VEllipse::toImage()
+{
+}
+
+void VEllipse::setSize(const VSize &size)
+{
+    this->size=size;
+}
+
+VSize VEllipse::getSize()
+{
+    return size;
 }

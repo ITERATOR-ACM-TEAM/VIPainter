@@ -68,7 +68,7 @@ void VGroupShape::rotate(double alpha)
     }
 }
 
-VPoint VGroupShape::size()
+VSize VGroupShape::size()
 {
     double minX, minY;
     double maxX, maxY;
@@ -88,7 +88,7 @@ VPoint VGroupShape::size()
     return VPoint(maxX-minX, maxY-minY);
 }
 
-void VGroupShape::resize(const VPoint &point)
+void VGroupShape::resize(const VSize &point)
 {
     VPoint siz = this->size();
     double fractionX = point.x/siz.x , factionY = point.y / siz.y;
