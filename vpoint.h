@@ -9,6 +9,7 @@ public:
     double y;
     VPoint();
     VPoint(double x,double y);
+    QPointF toQPointF();
 
     const VPoint& operator=(const VPoint &point);
 };
