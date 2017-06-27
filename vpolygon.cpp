@@ -2,6 +2,7 @@
 #include "vpoint.h"
 #include "QDebug"
 #include <QPainter>
+#include "vtype.h"
 
 VPolygon::VPolygon():VPolyline(){
 }
@@ -23,4 +24,8 @@ QImage VPolygon::toImage(){
     painter.drawPolygon(qpf);
 
     return image;
+}
+
+QString VPolygon::type() const{
+    return VType::Polygon;
 }

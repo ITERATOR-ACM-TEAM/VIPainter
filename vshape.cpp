@@ -15,11 +15,11 @@ VShape* VShape::clone()
 VShape* VShape::fromJsonObject(const QJsonObject &jsonObject)
 {
     QString type=jsonObject.value("type").toString();
-    if(type==VType::Polygon)return VPolygon::fromJsonObject(jsonObject);
-    else if(type==VType::Polyline)return VPolyline::fromJsonObject(jsonObject);
-    else if(type==VType::Ellipse)return VEllipse::fromJsonObject(jsonObject);
-    else if(type==VType::GroupShap)return VGroupShap::fromJsonObject(jsonObject);
-    else return nullptr;
+    //if(type==VType::Polygon)return VPolygon::fromJsonObject(jsonObject);
+    //else if(type==VType::Polyline)return VPolyline::fromJsonObject(jsonObject);
+    //else if(type==VType::Ellipse)return VEllipse::fromJsonObject(jsonObject);
+    //else if(type==VType::GroupShap)return VGroupShap::fromJsonObject(jsonObject);
+    //else return nullptr;
 }
 
 void VShape::setLocation(const VPoint &location)
