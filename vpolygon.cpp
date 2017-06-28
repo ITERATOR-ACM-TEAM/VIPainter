@@ -28,7 +28,8 @@ const VPolygon& VPolygon::operator=(const QJsonObject &jsonObject){
 }
 
 void VPolygon::draw(QPainter *painter){
-    //TODO:
+    painter->setPen(QPen(QBrush(Qt::black),1,Qt::SolidLine,Qt::SquareCap,Qt::MiterJoin));
+    painter->setBrush(defaultBrush);
     QPolygonF qpf;
     for(auto &i : vertex){
         qpf << i.toQPointF();

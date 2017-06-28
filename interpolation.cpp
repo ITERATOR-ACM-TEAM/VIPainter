@@ -42,8 +42,8 @@ void Newton::addPoint(double X, double Y)
 double Newton::calNewDiffer(double X)
 {
     double ans = f[0][0];
-    double h = 10/n;
-    double t = (X+5)/h;
+    double h = (R-L)/n;
+    double t = (X+(R-L)/2)/h;
     double N = 1;
     double tmp = t;
     for(int i = 1; i <= n; i++)

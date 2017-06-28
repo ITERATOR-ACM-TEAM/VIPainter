@@ -31,6 +31,8 @@ const VEllipse& VEllipse::operator=(const VEllipse &shape)
 
 void VEllipse::draw(QPainter *painter)
 {
+    painter->setPen(defaultPen);
+    painter->setBrush(defaultBrush);
     painter->drawEllipse(-size.x/2.0,-size.y/2.0,size.x,size.y);
 }
 

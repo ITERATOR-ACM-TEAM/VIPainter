@@ -4,6 +4,7 @@
 #include <QDebug>
 #include "vtype.h"
 #include <QDebug>
+#include <QPainterPath>
 
 VCurveline::VCurveline():n(0){
 }
@@ -17,13 +18,13 @@ VCurveline::VCurveline(const VCurveline &vcurveline):VShape(vcurveline){
 }
 
 VCurveline::VCurveline(const QJsonObject &jsonObject):VShape(jsonObject){
-    this->n = jsonObject.value("n").toInt();
     QJsonArray jsonArray = jsonObject.value("vertex").toArray();
     for(const auto &it: jsonArray)
     {
         VPoint p(it.toObject());
         this->vertex.push_back(p);
     }
+    n=jsonArray.size();
 }
 
 
@@ -51,13 +52,13 @@ const VCurveline& VCurveline::operator=(const VCurveline &vcurveline){
 
 const VCurveline& VCurveline::operator=(const QJsonObject &jsonObject){
     VShape::operator=(jsonObject);
-    this->n = jsonObject.value("n").toInt();
     QJsonArray jsonArray = jsonObject.value("vertex").toArray();
     for(const auto &it: jsonArray)
     {
         VPoint p(it.toObject());
         this->vertex.push_back(p);
     }
+    n=jsonArray.size();
     return *this;
 }
 
@@ -77,7 +78,6 @@ QString VCurveline::type() const{
 QJsonObject VCurveline::toJsonObject()const
 {
     QJsonObject jsonObject(VShape::toJsonObject());
-    jsonObject.insert("n", n);
     QJsonArray qja;
     for(auto & i : vertex){
         qja.push_back(i.toJsonObject());
@@ -88,11 +88,13 @@ QJsonObject VCurveline::toJsonObject()const
 
 void VCurveline::draw(QPainter *painter)
 {
+    painter->setPen(QPen(QBrush(Qt::black),1,Qt::SolidLine,Qt::RoundCap,Qt::RoundJoin));
+    painter->setBrush(defaultBrush);
     double x[20], y[20];
     for(int i = 0; i < n; i++){
         x[i] = this->vertex[i].x;
         y[i] = this->vertex[i].y;
-        qDebug()<<">>> "<<x[i]<<" "<<y[i]<<endl;
+        //qDebug()<<">>> "<<x[i]<<" "<<y[i]<<endl;
     }
     n = vertex.size();
     Newton newton(n-1, x, y);
@@ -102,8 +104,14 @@ void VCurveline::draw(QPainter *painter)
         qpf << i.toQPointF();
         qDebug()<<i.x<<" "<<i.y<<endl;
     }
-//    QPen pen;
-//    pen.setWidth(1);
-//    painter->setPen(pen);
     painter->drawPolyline(qpf);
+//    QPainterPath path;
+//    auto nextit=vec.begin();
+//    auto nowit=nextit++;
+//    while(nextit!=vec.end())
+//    {
+//        path.quadTo((nextit->x+nowit->x)/2,(nextit->y+nowit->x)/2,nextit->x,nextit->y);
+//        nowit=nextit++;
+//    }
+//    painter->drawPath(path);
 }

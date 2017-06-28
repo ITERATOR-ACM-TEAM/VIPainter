@@ -40,9 +40,7 @@ TestWidget::TestWidget(QMainWindow *parent) :
     polygroup->moveShape(1,VPoint(-100,-100));
 
     VCurveline *vcurve = new VCurveline;
-    vcurve->addPoint(VPoint(-50,0.04));
-    vcurve->addPoint(VPoint(0,20));
-    vcurve->addPoint(VPoint(50,0.04));
+    for(int i=0;i<5;i++)vcurve->addPoint(VPoint(i*7,7*sin(i/3.0*VShape::PI)));
 
     groupShape.insertShape(ellipse);
     groupShape.insertShape(polygroup);
@@ -79,6 +77,7 @@ void TestWidget::mousePressEvent(QMouseEvent *event)
 
 void TestWidget::mouseReleaseEvent(QMouseEvent *event)
 {
+    Q_UNUSED(event);
 }
 
 void TestWidget::mouseMoveEvent(QMouseEvent *event)

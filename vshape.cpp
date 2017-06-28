@@ -8,6 +8,8 @@
 #include <cmath>
 
 const double VShape::PI=atan(1)*4.0;
+const QPen VShape::defaultPen(QBrush(Qt::black),1);
+const QBrush VShape::defaultBrush(Qt::transparent);
 
 VShape::~VShape()
 {
@@ -67,19 +69,19 @@ VShape::operator QJsonValue()const
 
 VShape::VShape(const QJsonObject jsonObject)
 {
-    name=jsonObject.value("name").toString();
-    size=jsonObject.value("size").toObject();
-    angle=jsonObject.value("angle").toDouble();
-    location=jsonObject.value("location").toObject();
+    setName(jsonObject.value("name").toString());
+    setSize(jsonObject.value("size").toObject());
+    setAngle(jsonObject.value("angle").toDouble());
+    setLocation(jsonObject.value("location").toObject());
 }
 
 
 const VShape& VShape::operator=(const QJsonObject &jsonObject)
 {
-    name=jsonObject.value("name").toString();
-    size=jsonObject.value("size").toObject();
-    angle=jsonObject.value("angle").toDouble();
-    location=jsonObject.value("location").toObject();
+    setName(jsonObject.value("name").toString());
+    setSize(jsonObject.value("size").toObject());
+    setAngle(jsonObject.value("angle").toDouble());
+    setLocation(jsonObject.value("location").toObject());
     return *this;
 }
 

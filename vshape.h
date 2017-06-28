@@ -6,6 +6,8 @@
 #include <QJsonValue>
 #include <QString>
 #include <QPainter>
+#include <QPen>
+#include <QBrush>
 #include "vpoint.h"
 #include "vsize.h"
 
@@ -15,6 +17,8 @@ protected:
     VPoint location;
     VSize size;
     double angle;
+    static const QPen defaultPen;
+    static const QBrush defaultBrush;
 public:
     static const double PI;
     static VShape* fromJsonObject(const QJsonObject &jsonObject);

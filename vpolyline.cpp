@@ -10,9 +10,9 @@ VPolyline::VPolyline():n(0)
 
 VPolyline::VPolyline(const VPolyline &polyline):VShape(polyline){
     this->n = polyline.getN();
-    this->vertex.clear();
+    this->points.clear();
     for(auto &i: polyline.getPointList()){
-        this->vertex.append(i);
+        this->points.append(i);
     }
     getCircumscribedRectangle();
 }
@@ -22,7 +22,7 @@ VPolyline::VPolyline(const QJsonObject &jsonObject):VShape(jsonObject){
     for(const auto &it: jsonArray)
     {
         VPoint p(it.toObject());
-        this->vertex.push_back(p);
+        this->points.push_back(p);
     }
     n=jsonArray.size();
     getCircumscribedRectangle();
@@ -31,7 +31,7 @@ VPolyline::VPolyline(const QJsonObject &jsonObject):VShape(jsonObject){
 VPolyline::VPolyline(int n, QVector<VPoint> vec){
     this->n = n;
     for(auto &i : vec){
-        this->vertex.push_back(i);
+        this->points.push_back(i);
     }
 }
 
@@ -43,24 +43,24 @@ int VPolyline::getN()const{
 void VPolyline::movePoint(int i,const VPoint &point){//move the ith point to position p(x,y)
     if(i >= n-1)i = n-1;
     if(i < 0)i = 0;
-    this->vertex[i].x = point.x;
-    this->vertex[i].y = point.y;
+    this->points[i].x = point.x;
+    this->points[i].y = point.y;
 }
 
 void VPolyline::erasePoint(int i){
     if(i >=0 && i < n){
-        auto it = this->vertex.begin();
+        auto it = this->points.begin();
         it += i;
-        this->vertex.erase(it);
+        this->points.erase(it);
     }
 }
 
 QVector<VPoint> VPolyline::getPointList()const{
-    return this->vertex;
+    return this->points;
 }
 
 void VPolyline::addPoint(VPoint p){
-    this->vertex.push_back(p);
+    this->points.push_back(p);
     n++;
 }
 
@@ -68,7 +68,7 @@ const VPolyline& VPolyline::operator=(const VPolyline &polyline){
     VShape::operator=(polyline);
     QVector<VPoint> vec = polyline.getPointList();
     for(int i = 0; i < n; i++){
-        this->vertex[i] = vec[i];
+        this->points[i] = vec[i];
     }
     return *this;
 }
@@ -79,7 +79,7 @@ const VPolyline& VPolyline::operator=(const QJsonObject &jsonObject){
     for(const auto &it: jsonArray)
     {
         VPoint p(it.toObject());
-        this->vertex.push_back(p);
+        this->points.push_back(p);
     }
     n=jsonArray.size();
     getCircumscribedRectangle();
@@ -88,13 +88,13 @@ const VPolyline& VPolyline::operator=(const QJsonObject &jsonObject){
 
 //获得外接矩形的左上点、右下点
 void VPolyline::getCircumscribedRectangle(){
-    double x1 = vertex[0].x, y1 = vertex[0].y;
+    double x1 = points[0].x, y1 = points[0].y;
     double x2 = x1, y2 = y1;
     for(int i = 1; i < n; i++){
-        x1 = x1 < vertex[i].x ? x1 : vertex[i].x;
-        y1 = y1 < vertex[i].y ? y1 : vertex[i].y;
-        x2 = x2 > vertex[i].x ? x2 : vertex[i].x;
-        y2 = y2 > vertex[i].y ? y2 : vertex[i].y;
+        x1 = x1 < points[i].x ? x1 : points[i].x;
+        y1 = y1 < points[i].y ? y1 : points[i].y;
+        x2 = x2 > points[i].x ? x2 : points[i].x;
+        y2 = y2 > points[i].y ? y2 : points[i].y;
     }
     cr1.x = x1;
     cr1.y = y1;
@@ -103,8 +103,8 @@ void VPolyline::getCircumscribedRectangle(){
 
     //标准化，使外接矩形的左上点移到坐标原点
     for(int i = 0; i < n; i++){
-        vertex[i].x -= x1;
-        vertex[i].y -= y1;
+        points[i].x -= x1;
+        points[i].y -= y1;
     }
 
     cr1.x = 0;
@@ -124,8 +124,8 @@ void VPolyline::setSize(const VSize &point){
     double nx = (point.x-cr1.x)/(cr2.x-cr1.x);
     double ny = (point.y-cr1.y)/(cr2.y-cr1.y);
     for(int i = 0; i < n; i++){
-        vertex[i].x *= nx;
-        vertex[i].y *= ny;
+        points[i].x *= nx;
+        points[i].y *= ny;
     }
     cr2.x = point.x;
     cr2.y = point.y;
@@ -133,10 +133,10 @@ void VPolyline::setSize(const VSize &point){
 
 void VPolyline::draw(QPainter *painter)
 {
-    //Q_UNUSED(painter);
-    //TODO: delete Q_UNUSED(painter); and this line
+    painter->setPen(QPen(QBrush(Qt::black),1,Qt::SolidLine,Qt::SquareCap,Qt::MiterJoin));
+    painter->setBrush(defaultBrush);
     QPolygonF qpf;
-    for(auto &i : this->vertex){
+    for(auto &i : this->points){
         qpf << i.toQPointF();
     }
     painter->drawPolyline(qpf);
@@ -163,9 +163,9 @@ bool VPolyline::contains(const VPoint &point){
     double x = point.x-location.x;
     double y = point.y-location.y;
     for(int i = 1; i < n; i++){
-        double A = vertex[i].y-vertex[i-1].y;
-        double B = vertex[i].x-vertex[i-1].x;
-        double C = vertex[i-1].x*(vertex[i].y-vertex[i-1].y)+vertex[i-1].y*(vertex[i].x-vertex[i-1].x);
+        double A = points[i].y-points[i-1].y;
+        double B = points[i].x-points[i-1].x;
+        double C = points[i-1].x*(points[i].y-points[i-1].y)+points[i-1].y*(points[i].x-points[i-1].x);
         if(std::abs(A*x+B*y+C)/(A*A+B*B) <= width*width)
             return true;
     }
@@ -192,9 +192,9 @@ QJsonObject VPolyline::toJsonObject()const
 {
     QJsonObject jsonObject(VShape::toJsonObject());
     QJsonArray qja;
-    for(auto & i : vertex){
+    for(auto & i : points){
         qja.push_back(i.toJsonObject());
     }
-    jsonObject.insert("vertex",qja);
+    jsonObject.insert("points",qja);
     return jsonObject;
 }
