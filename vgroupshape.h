@@ -10,7 +10,7 @@
 class VGroupShape : public VShape
 {
 private:
-    QVector<VShape*> ShapeVector;
+    QVector<VShape*> shapes;
     bool isRoot;
 
 public:
@@ -37,8 +37,8 @@ public:
 
     QVector<VShape *> getShapeVector();
 
-    void setSize(const VSize & size)override;
-    VSize getSize()const override;
+//    void setSize(const VSize & size)override;
+//    VSize getSize()const override;
 
     int getVectorSize()const;
 

@@ -4,26 +4,33 @@
 #include <QPainter>
 #include "vtype.h"
 
-VPolygon::VPolygon():VPolyline(){
+VPolygon::VPolygon():VPointGroupShape(){
 }
 
 VPolygon::~VPolygon(){
 }
 
-VPolygon::VPolygon(const VPolygon &shape):VPolyline(shape){
+VPolygon::VPolygon(const VPolygon &shape):VPointGroupShape(shape){
 }
 
-VPolygon::VPolygon(const QJsonObject &jsonObject):VPolyline(jsonObject){
+VPolygon::VPolygon(const QJsonObject &jsonObject):VPointGroupShape(jsonObject){
+}
 
+bool VPolygon::contains(const VPoint &point)
+{
+    Q_UNUSED(point);
+    return false;
+    //TODO:
 }
 
 const VPolygon& VPolygon::operator=(const VPolygon &vpolygon){
-    VPolyline::operator=(vpolygon);
+    if(this==&vpolygon)return *this;
+    VPointGroupShape::operator=(vpolygon);
     return *this;
 }
 
 const VPolygon& VPolygon::operator=(const QJsonObject &jsonObject){
-    VPolyline::operator=(jsonObject);
+    VPointGroupShape::operator=(jsonObject);
     return *this;
 }
 
@@ -31,7 +38,7 @@ void VPolygon::draw(QPainter *painter){
     painter->setPen(QPen(QBrush(Qt::black),1,Qt::SolidLine,Qt::SquareCap,Qt::MiterJoin));
     painter->setBrush(defaultBrush);
     QPolygonF qpf;
-    for(auto &i : vertex){
+    for(auto &i : points){
         qpf << i.toQPointF();
     }
     painter->drawPolygon(qpf);

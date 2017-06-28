@@ -35,14 +35,14 @@ public:
     virtual ~VShape();
 
 /*****************setter and getter*********************/
-    virtual VSize getSize()const;
-    virtual void setSize(const VSize &size);
+    VSize getSize()const;
+    void setSize(const VSize &size);
 
-    virtual void setLocation(const VPoint &location);
-    virtual VPoint getLocation()const;
+    void setLocation(const VPoint &location);
+    VPoint getLocation()const;
 
-    virtual void setAngle(double angle);
-    virtual double getAngle()const;
+    void setAngle(double angle);
+    double getAngle()const;
 
     void setName(QString name);
     QString getName()const;

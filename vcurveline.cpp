@@ -6,65 +6,32 @@
 #include <QDebug>
 #include <QPainterPath>
 
-VCurveline::VCurveline():n(0){
+VCurveline::VCurveline(){
 }
 
-VCurveline::VCurveline(const VCurveline &vcurveline):VShape(vcurveline){
-    this->n = vcurveline.getN();
-    QVector<VPoint> vec = vcurveline.getVertex();
-    for(auto &i : vec){
-        this->vertex.push_back(i);
-    }
+VCurveline::VCurveline(const VCurveline &vcurveline):VPointGroupShape(vcurveline){
 }
 
-VCurveline::VCurveline(const QJsonObject &jsonObject):VShape(jsonObject){
-    QJsonArray jsonArray = jsonObject.value("vertex").toArray();
-    for(const auto &it: jsonArray)
-    {
-        VPoint p(it.toObject());
-        this->vertex.push_back(p);
-    }
-    n=jsonArray.size();
+VCurveline::VCurveline(const QJsonObject &jsonObject):VPointGroupShape(jsonObject){
 }
 
 
 bool VCurveline::contains(const VPoint &point)
 {
+    Q_UNUSED(point);
     return false;
-}
-
-int VCurveline::getN()const{
-    return this->n;
-}
-
-QVector<VPoint> VCurveline::getVertex()const{
-    return this->vertex;
+    //TODO:
 }
 
 const VCurveline& VCurveline::operator=(const VCurveline &vcurveline){
-    VShape::operator=(vcurveline);
-    QVector<VPoint> vec = vcurveline.getVertex();
-    for(int i = 0; i < n; i++){
-        this->vertex[i] = vec[i];
-    }
+    if(this==&vcurveline)return *this;
+    VPointGroupShape::operator=(vcurveline);
     return *this;
 }
 
 const VCurveline& VCurveline::operator=(const QJsonObject &jsonObject){
-    VShape::operator=(jsonObject);
-    QJsonArray jsonArray = jsonObject.value("vertex").toArray();
-    for(const auto &it: jsonArray)
-    {
-        VPoint p(it.toObject());
-        this->vertex.push_back(p);
-    }
-    n=jsonArray.size();
+    VPointGroupShape::operator=(jsonObject);
     return *this;
-}
-
-void VCurveline::addPoint(VPoint p){
-    this->vertex.push_back(p);
-    n++;
 }
 
 VCurveline::~VCurveline()
@@ -77,12 +44,7 @@ QString VCurveline::type() const{
 
 QJsonObject VCurveline::toJsonObject()const
 {
-    QJsonObject jsonObject(VShape::toJsonObject());
-    QJsonArray qja;
-    for(auto & i : vertex){
-        qja.push_back(i.toJsonObject());
-    }
-    jsonObject.insert("vertex",qja);
+    QJsonObject jsonObject(VPointGroupShape::toJsonObject());
     return jsonObject;
 }
 
@@ -91,13 +53,12 @@ void VCurveline::draw(QPainter *painter)
     painter->setPen(QPen(QBrush(Qt::black),1,Qt::SolidLine,Qt::RoundCap,Qt::RoundJoin));
     painter->setBrush(defaultBrush);
     double x[20], y[20];
-    for(int i = 0; i < n; i++){
-        x[i] = this->vertex[i].x;
-        y[i] = this->vertex[i].y;
+    for(int i = 0; i < points.size(); i++){
+        x[i] = this->points[i].x;
+        y[i] = this->points[i].y;
         //qDebug()<<">>> "<<x[i]<<" "<<y[i]<<endl;
     }
-    n = vertex.size();
-    Newton newton(n-1, x, y);
+    Newton newton(points.size()-1, x, y);
     QVector<VPoint> vec = newton.getFunc();
     QPolygonF qpf;
     for(auto &i : vec){

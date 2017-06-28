@@ -89,10 +89,10 @@ QJsonObject VShape::toJsonObject()const
 {
     QJsonObject jsonObject;
     jsonObject.insert("type",this->type());
-    jsonObject.insert("name",this->name);
-    jsonObject.insert("size",this->size);
-    jsonObject.insert("angle",this->angle);
-    jsonObject.insert("location",this->location);
+    jsonObject.insert("name",this->getName());
+    jsonObject.insert("size",this->getSize());
+    jsonObject.insert("angle",this->getAngle());
+    jsonObject.insert("location",this->getLocation());
     return jsonObject;
 }
 
