@@ -7,9 +7,8 @@
 #include <QJsonArray>
 #include <QDebug>
 
-VGroupShape::VGroupShape()
+VGroupShape::VGroupShape(bool isRoot):isRoot(isRoot)
 {
-    //TODO:
 }
 
 VGroupShape::~VGroupShape()
@@ -22,6 +21,7 @@ VGroupShape::~VGroupShape()
 
 VGroupShape::VGroupShape(const VGroupShape &shape):VShape(shape)
 {
+    this->clear();
     for(auto & it : shape.ShapeVector)
     {
         this->ShapeVector.push_back(it->clone());
@@ -32,7 +32,7 @@ VGroupShape::VGroupShape(const VGroupShape &shape):VShape(shape)
 const VGroupShape & VGroupShape:: operator=(const VGroupShape &shape)
 {
     VShape::operator =(shape);
-    this->ShapeVector.clear();
+    this->clear();
     for(auto & it : shape.ShapeVector)
     {
         this->ShapeVector.push_back(it->clone());
@@ -43,7 +43,7 @@ const VGroupShape & VGroupShape:: operator=(const VGroupShape &shape)
 const VGroupShape & VGroupShape:: operator=(const QJsonObject &jsonObject)
 {
     VShape::operator =(jsonObject);
-    this->ShapeVector.clear();
+    this->clear();
     QJsonArray jsonArray = jsonObject.value("ShapeVector").toArray();
     VShape * tmp ;
     for(const auto &it: jsonArray)
@@ -55,17 +55,52 @@ const VGroupShape & VGroupShape:: operator=(const QJsonObject &jsonObject)
     return *this;
 }
 
-void VGroupShape::addShape(VShape * other)
+int VGroupShape::insertShape(VShape * other)
 {
-    if(other == nullptr) return;
+    if(other == nullptr) return -1;
     this->ShapeVector.push_back(other);
     VPoint orign = other->getLocation();
     other->setLocation(VPoint(orign.x-location.x, orign.y-location.y));
+    return this->getVectorSize()-1;
+}
+
+int VGroupShape::insertShape(VShape * other, int pos)
+{
+    if(pos<0 || pos>=this->ShapeVector.size() || other == nullptr) return -1;
+    this->ShapeVector.insert(this->ShapeVector.begin()+pos, other);
+    VPoint orign = other->getLocation();
+    other->setLocation(VPoint(orign.x-location.x, orign.y-location.y));
+    return pos;
+}
+
+int VGroupShape::insertShape(const QVector<VShape *> & other)
+{
+    VPoint  orign;
+    for(auto &it:other)
+    {
+        this->ShapeVector.push_back(it);
+        orign = it->getLocation();
+        it->setLocation(VPoint(orign.x-location.x, orign.y-location.y));
+    }
+    return this->getVectorSize()-1;
+}
+
+int VGroupShape::insertShape(const QVector<VShape *> & other, int pos)
+{
+    if(pos<0 || pos>=this->ShapeVector.size()) return -1;
+    VPoint orign;
+    for(auto &it:other)
+    {
+        this->ShapeVector.insert(this->ShapeVector.begin()+(pos++), it);
+        orign = it->getLocation();
+        it->setLocation(VPoint(orign.x-location.x, orign.y-location.y));
+    }
+    return pos-1;
 }
 
 bool VGroupShape::moveShape(int i, const VPoint & location)
 {
-    if(i>=ShapeVector.size()) return false;
+    if(i<0 || i>=ShapeVector.size()) return false;
 
     this->ShapeVector[i]->setLocation(location);
 
@@ -156,8 +191,10 @@ void VGroupShape::draw(QPainter *painter)
 
 bool VGroupShape::eraseShape(int i)
 {
-    if(i>=ShapeVector.size()) return false;
+    if(i<0 || i>=ShapeVector.size()) return false;
+    VShape * tmp = ShapeVector[i];
     ShapeVector.erase(ShapeVector.begin()+i);
+    delete tmp;
     return true;
 }
 
@@ -182,6 +219,8 @@ bool VGroupShape::contains(const VPoint &point)
 QJsonObject VGroupShape::toJsonObject()const
 {
     QJsonObject jsonObject(VShape::toJsonObject());
+    if(isRoot)
+        jsonObject.erase(jsonObject.find("location"));
     QJsonArray jsonArray;
     for(const auto &it: ShapeVector)
     {
@@ -209,4 +248,28 @@ void VGroupShape::rotate(VPoint & point, const VPoint & center, double a)
     double x = point.x - center.x, y = point.y - center.y;
     point.x = x*cos(a)-y*sin(a) + center.x;
     point.y = x*sin(a)+y*cos(a) + center.y;
+}
+
+QVector<VShape *> VGroupShape::breakUp (VGroupShape * group)
+{
+    QVector<VShape *> tmp;
+    if(group == nullptr) return tmp;
+    tmp = group->getShapeVector();
+    group->ShapeVector.clear();
+    delete group;
+    return tmp;
+}
+
+int VGroupShape::getVectorSize()const
+{
+    return this->ShapeVector.size();
+}
+
+void VGroupShape::clear()
+{
+    for(auto &it : this->ShapeVector)
+    {
+        delete it;
+    }
+    this->ShapeVector.clear();
 }

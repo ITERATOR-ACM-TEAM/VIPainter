@@ -11,25 +11,36 @@ class VGroupShape : public VShape
 {
 private:
     QVector<VShape*> ShapeVector;
+    bool isRoot;
 
 public:
     static void rotate(VPoint & point, const VPoint & center, double a);
+    static QVector<VShape *> breakUp (VGroupShape * group);
 
-    VGroupShape();
+    VGroupShape(bool isRoot=false);
     VGroupShape(const VGroupShape &shape);
     VGroupShape(const QJsonObject &jsonObject);
     ~VGroupShape()override;
     QJsonObject toJsonObject()const;
 
-    void addShape(VShape * other);
+    // insert shape into group,  return its index
+    int insertShape(VShape * other);
+    int insertShape(VShape * other, int pos);
+    // insert shapeVector into group,  return the last shape's index
+    int insertShape(const QVector<VShape *> & other);
+    int insertShape(const QVector<VShape *> & other, int pos);
+
     bool eraseShape(int i);
     bool moveShape(int i, const VPoint & location);
     bool contains(const VPoint &point);
+    void clear();
 
     QVector<VShape *> getShapeVector();
 
     void setSize(const VSize & size)override;
     VSize getSize()const override;
+
+    int getVectorSize()const;
 
     void draw(QPainter *painter)override;
     QString type()const override;
