@@ -3,7 +3,7 @@
 
 Newton::Newton():n(0)
 {
-    memset(f, -1, sizeof(f));   //均差形式
+    memset(f, 0, sizeof(f));   //均差形式
 }
 
 Newton::Newton(int n, double *x, double *y)//差分形式
@@ -79,6 +79,7 @@ void Newton::print_f()
 
 QVector<VPoint> Newton::getFunc(){
     QVector<VPoint> vec;
+    this->h = 1;
     int len = (int)((R-L)/h);
     for(int i = 0; i <= len; i++){
         VPoint point(L+i*h, this->calNewDiffer(L+i*h));
