@@ -19,6 +19,7 @@ public:
     const VCurveline& operator=(const QJsonObject &jsonObject);
     int getN() const;
     QVector<VPoint> getVertex() const;
+    void addPoint(VPoint p);
 
     QJsonObject toJsonObject()const override;
     void draw(QPainter *painter)override;

@@ -18,13 +18,13 @@ VPolyline::VPolyline(const VPolyline &polyline):VShape(polyline){
 }
 
 VPolyline::VPolyline(const QJsonObject &jsonObject):VShape(jsonObject){
-    this->n = jsonObject.value("n").toInt();
     QJsonArray jsonArray = jsonObject.value("vertex").toArray();
     for(const auto &it: jsonArray)
     {
         VPoint p(it.toObject());
         this->vertex.push_back(p);
     }
+    n=jsonArray.size();
     getCircumscribedRectangle();
 }
 
@@ -75,6 +75,14 @@ const VPolyline& VPolyline::operator=(const VPolyline &polyline){
 
 const VPolyline& VPolyline::operator=(const QJsonObject &jsonObject){
     VShape::operator=(jsonObject);
+    QJsonArray jsonArray = jsonObject.value("vertex").toArray();
+    for(const auto &it: jsonArray)
+    {
+        VPoint p(it.toObject());
+        this->vertex.push_back(p);
+    }
+    n=jsonArray.size();
+    getCircumscribedRectangle();
     return *this;
 }
 
@@ -183,7 +191,6 @@ bool VPolyline::contains(const VPoint &point){
 QJsonObject VPolyline::toJsonObject()const
 {
     QJsonObject jsonObject(VShape::toJsonObject());
-    jsonObject.insert("n", n);
     QJsonArray qja;
     for(auto & i : vertex){
         qja.push_back(i.toJsonObject());
