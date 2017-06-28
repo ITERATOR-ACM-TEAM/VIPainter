@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QPaintEvent>
+#include "testwidget.h"
 
 namespace Ui {
 class MainWindow;
@@ -18,6 +19,8 @@ public:
 
 private:
     Ui::MainWindow *ui;
+    TestWidget *testWidget;
+    void newDock();
 };
 
 #endif // MAINWINDOW_H
