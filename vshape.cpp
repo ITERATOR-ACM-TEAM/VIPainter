@@ -47,6 +47,17 @@ void VShape::setAngle(double angle)
     this->angle=angle;
 }
 
+
+void VShape::setName(QString name)
+{
+    this->name=name;
+}
+
+QString VShape::getName()const
+{
+    return name;
+}
+
 VShape::operator QJsonValue()const
 {
     return toJsonObject();
@@ -54,6 +65,7 @@ VShape::operator QJsonValue()const
 
 VShape::VShape(const QJsonObject jsonObject)
 {
+    name=jsonObject.value("name").toString();
     size=jsonObject.value("size").toObject();
     angle=jsonObject.value("angle").toDouble();
     location=jsonObject.value("location").toObject();
@@ -62,6 +74,7 @@ VShape::VShape(const QJsonObject jsonObject)
 
 const VShape& VShape::operator=(const QJsonObject &jsonObject)
 {
+    name=jsonObject.value("name").toString();
     size=jsonObject.value("size").toObject();
     angle=jsonObject.value("angle").toDouble();
     location=jsonObject.value("location").toObject();
@@ -70,6 +83,7 @@ const VShape& VShape::operator=(const QJsonObject &jsonObject)
 QJsonObject VShape::toJsonObject()const
 {
     QJsonObject jsonObject;
+    jsonObject.insert("name",this->name);
     jsonObject.insert("size",this->size);
     jsonObject.insert("angle",this->angle);
     jsonObject.insert("location",this->location);

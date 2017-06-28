@@ -5,6 +5,7 @@
 #include <algorithm>
 #include "vtype.h"
 #include <QJsonArray>
+#include <QDebug>
 
 VGroupShape::VGroupShape()
 {
@@ -133,20 +134,21 @@ void VGroupShape::setSize(const VSize &size)
     }
 }
 
-QImage VGroupShape::toImage()
+void VGroupShape::draw(QPainter *painter)
 {
-    VSize sz = this->getSize();
-    int width = sz.y, height = sz.x;
-    QImage image(width+1, height+1, QImage::Format_ARGB32);
-    QPainter painter(&image);
-    for(auto & it : this->ShapeVector)
+    double angle;
+    VPoint loc;
+    for(auto &it: ShapeVector)
     {
-        QImage subImage = it->toImage();
-        QPainter subPainter(&subImage);
-        subPainter.rotate(it->getAngle()*16);
-        painter.drawImage(QPointF(it->getLocation().x - this->location.x, it->getLocation().y - this->location.y), subImage);
+        angle = it->getAngle();
+
+        loc = it->getLocation();
+        painter->translate(loc.x, loc.y);
+        painter->rotate(angle);
+        it->draw(painter);
+        painter->rotate(-angle);
+        painter->translate(-loc.x, -loc.y);
     }
-    return image;
 }
 
 bool VGroupShape::eraseShape(int i)

@@ -31,7 +31,7 @@ public:
     void setSize(const VSize & size)override;
     VSize getSize()const override;
 
-    QImage toImage()override;
+    void draw(QPainter *painter)override;
     QString type()const override;
 
     const VGroupShape& operator=(const VGroupShape &shape);

@@ -26,7 +26,9 @@ MainWindow::~MainWindow()
 void MainWindow::paintEvent(QPaintEvent*)
 {
     QPainter painter(this);
-    painter.drawImage(100,100,ellipse.toImage());
+    painter.setRenderHint(QPainter::Antialiasing,true);
+    painter.translate(100,200);
+    ellipse.draw(&painter);
 }
 
 void MainWindow::on_BtWrite_clicked()
@@ -53,6 +55,11 @@ void MainWindow::on_BtRead_clicked()
 
 void MainWindow::on_BtSave_clicked()
 {
-    QImage image=ellipse.toImage();
+    QImage image(ellipse.getSize().x+4,ellipse.getSize().y+4,QImage::Format_ARGB32);
+    image.fill(0);
+    QPainter painter(&image);
+    painter.setRenderHint(QPainter::Antialiasing,true);
+    painter.translate(2+ellipse.getSize().x/2,2+ellipse.getSize().y/2);
+    ellipse.draw(&painter);
     image.save("file.png");
 }

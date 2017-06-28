@@ -7,7 +7,7 @@ VPolyline::VPolyline():n(0)
 {
 }
 
-VPolyline::VPolyline(const VPolyline &polyline){
+VPolyline::VPolyline(const VPolyline &polyline):VShape(polyline){
     this->n = polyline.getN();
     vertex.clear();
     for(auto &i: polyline.getPointList()){
@@ -91,18 +91,23 @@ void VPolyline::setSize(const VSize &point){//把外接举行的右下角移动�
     cr2.y = point.y;
 }
 
-QImage VPolyline::toImage(){
-    int width = cr2.y-cr1.y, height = cr2.x-cr1.x;
-    QImage image(width, height, QImage::Format_ARGB32);
-    QPainter painter(&image);
-    QPolygonF qpf;
-    for(auto &i : vertex){
-        qpf << i.toQPointF();
-    }
-    painter.drawPolyline(qpf);
-
-    return image;
+void VPolyline::draw(QPainter *painter)
+{
+    Q_UNUSED(painter);
+    //TODO: delete Q_UNUSED(painter); and this line
 }
+//QImage VPolyline::toImage(){
+//    int width = cr2.y-cr1.y, height = cr2.x-cr1.x;
+//    QImage image(width, height, QImage::Format_ARGB32);
+//    QPainter painter(&image);
+//    QPolygonF qpf;
+//    for(auto &i : vertex){
+//        qpf << i.toQPointF();
+//    }
+//    painter.drawPolyline(qpf);
+
+//    return image;
+//}
 
 QString VPolyline::type() const{
     return VType::Polyline;
