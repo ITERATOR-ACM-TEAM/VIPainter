@@ -12,7 +12,7 @@ public:
     const VEllipse& operator=(const QJsonObject &jsonObject);
     QJsonObject toJsonObject()const override;
 
-    QImage toImage()override;
+    void draw(QPainter *painter)override;
     virtual bool contains(const VPoint &point)override;
     virtual QString type()const override;
     ~VEllipse()override;

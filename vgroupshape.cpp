@@ -88,21 +88,25 @@ void VGroupShape::setSize(const VSize &size)
     }
 }
 
-QImage VGroupShape::toImage()
+void VGroupShape::draw(QPainter *painter)
 {
-    VSize sz = this->getSize();
-    int width = sz.y, height = sz.x;
-    QImage image(width+1, height+1, QImage::Format_ARGB32);
-    QPainter painter(&image);
-    for(auto & it : this->ShapeVector)
-    {
-        QImage subImage = it->toImage();
-        QPainter subPainter(&subImage);
-        subPainter.rotate(it->getAngle());
-        painter.drawImage(QPointF(it->getLocation().x - this->location.x, it->getLocation().y - this->location.y), subImage);
-    }
-    return image;
+    //TODO:
 }
+//QImage :toImage()
+//{
+//    VSize sz = this->getSize();
+//    int width = sz.y, height = sz.x;
+//    QImage image(width+1, height+1, QImage::Format_ARGB32);
+//    QPainter painter(&image);
+//    for(auto & it : this->ShapeVector)
+//    {
+//        QImage subImage = it->toImage();
+//        QPainter subPainter(&subImage);
+//        subPainter.rotate(it->getAngle());
+//        painter.drawImage(QPointF(it->getLocation().x - this->location.x, it->getLocation().y - this->location.y), subImage);
+//    }
+//    return image;
+//}
 
 bool VGroupShape::eraseShape(int i)
 {
