@@ -16,7 +16,10 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-
+    void paintEvent(QPaintEvent*);
+    void on_BtWrite_clicked();
+    void on_BtRead_clicked();
+    void on_BtSave_clicked();
 private:
     Ui::MainWindow *ui;
     TestWidget *testWidget;

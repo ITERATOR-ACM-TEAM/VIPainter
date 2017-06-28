@@ -25,7 +25,6 @@ public:
     const VShape& operator=(const QJsonObject &jsonObject);
     virtual VShape* clone();
 
-    //virtual QImage toImage()=0;
     virtual void draw(QPainter *painter)=0;
     virtual bool contains(const VPoint &point)=0;
     virtual QString type()const=0;

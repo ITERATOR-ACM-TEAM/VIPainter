@@ -9,9 +9,27 @@ VPolyline::VPolyline():n(0)
 
 VPolyline::VPolyline(const VPolyline &polyline):VShape(polyline){
     this->n = polyline.getN();
-    vertex.clear();
+    this->vertex.clear();
     for(auto &i: polyline.getPointList()){
         this->vertex.append(i);
+    }
+    getCircumscribedRectangle();
+}
+
+VPolyline::VPolyline(int n, QVector<VPoint> vec){
+    this->n = n;
+    for(auto &i : vec){
+        this->vertex.push_back(i);
+    }
+}
+
+VPolyline::VPolyline(const QJsonObject &jsonObject):VShape(jsonObject){
+    this->n = jsonObject.value("n").toInt();
+    QJsonArray jsonArray = jsonObject.value("vertex").toArray();
+    for(const auto &it: jsonArray)
+    {
+        VPoint p(it.toObject());
+        this->vertex.push_back(p);
     }
     getCircumscribedRectangle();
 }
@@ -29,7 +47,7 @@ void VPolyline::movePoint(int i,const VPoint &point){//move the ith point to pos
 
 void VPolyline::erasePoint(int i){
     if(i >=0 && i < n){
-        auto it = vertex.begin();
+        auto it = this->vertex.begin();
         it += i;
         this->vertex.erase(it);
     }
@@ -44,6 +62,7 @@ void VPolyline::addPoint(VPoint p){
 }
 
 const VPolyline& VPolyline::operator=(const VPolyline &polyline){
+    VShape::operator=(polyline);
     QVector<VPoint> vec = polyline.getPointList();
     for(int i = 0; i < n; i++){
         this->vertex[i] = vec[i];
@@ -51,7 +70,13 @@ const VPolyline& VPolyline::operator=(const VPolyline &polyline){
     return *this;
 }
 
-void VPolyline::getCircumscribedRectangle(){//获得外接矩形的左上点、右下点
+const VPolyline& VPolyline::operator=(const QJsonObject &jsonObject){
+    VShape::operator=(jsonObject);
+    return *this;
+}
+
+//获得外接矩形的左上点、右下点
+void VPolyline::getCircumscribedRectangle(){
     double x1 = vertex[0].x, y1 = vertex[0].y;
     double x2 = x1, y2 = y1;
     for(int i = 1; i < n; i++){
@@ -65,7 +90,8 @@ void VPolyline::getCircumscribedRectangle(){//获得外接矩形的左上点、�
     cr2.x = x2;
     cr2.y = y2;
 
-    for(int i = 0; i < n; i++){//标准化，使外接矩形的左上点移到坐标原点
+    //标准化，使外接矩形的左上点移到坐标原点
+    for(int i = 0; i < n; i++){
         vertex[i].x -= x1;
         vertex[i].y -= y1;
     }
@@ -76,11 +102,14 @@ void VPolyline::getCircumscribedRectangle(){//获得外接矩形的左上点、�
     cr2.y -= y1;
 }
 
-VSize VPolyline::getSize()const{//返回外接矩形右下角的位置
+//返回外接矩形右下角的位置
+VSize VPolyline::getSize()const{
     VSize vs(cr2.x, cr2.y);
     return vs;
 }
-void VPolyline::setSize(const VSize &point){//把外接举行的右下角移动到point
+
+//把外接举行的右下角移动到point
+void VPolyline::setSize(const VSize &point){
     double nx = (point.x-cr1.x)/(cr2.x-cr1.x);
     double ny = (point.y-cr1.y)/(cr2.y-cr1.y);
     for(int i = 0; i < n; i++){
@@ -91,10 +120,19 @@ void VPolyline::setSize(const VSize &point){//把外接举行的右下角移动�
     cr2.y = point.y;
 }
 
+<<<<<<< HEAD
 void VPolyline::draw(QPainter *painter)
 {
     Q_UNUSED(painter);
     //TODO: delete Q_UNUSED(painter); and this line
+=======
+void VPolyline::draw(QPainter *painter){
+    QPolygonF qpf;
+    for(auto &i : this->vertex){
+        qpf << i.toQPointF();
+    }
+    painter->drawPolyline(qpf);
+>>>>>>> 7a15fdb7ecf78bc54e4892b5ad525ffc1545194f
 }
 //QImage VPolyline::toImage(){
 //    int width = cr2.y-cr1.y, height = cr2.x-cr1.x;
@@ -114,11 +152,26 @@ QString VPolyline::type() const{
 }
 
 bool VPolyline::contains(const VPoint &point){
+    double width = 5.0;
     double x = point.x-location.x;
     double y = point.y-location.y;
+<<<<<<< HEAD
     if(x >= cr1.x && x <= cr2.x && y >= cr1.y && y <= cr2.y)
         return true;
     else return false;
+=======
+    for(int i = 1; i < n; i++){
+        double A = vertex[i].y-vertex[i-1].y;
+        double B = vertex[i].x-vertex[i-1].x;
+        double C = vertex[i-1].x*(vertex[i].y-vertex[i-1].y)+vertex[i-1].y*(vertex[i].x-vertex[i-1].x);
+        if(abs(A*x+B*y+C)/(A*A+B*B) <= width*width)
+            return true;
+    }
+    return false;
+//    if(x >= cr1.x && x <= cr2.x && y >= cr1.y && y <= cr2.y)
+//        return true;
+//    else return false;
+>>>>>>> 7a15fdb7ecf78bc54e4892b5ad525ffc1545194f
 }
 
 
