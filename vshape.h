@@ -14,11 +14,11 @@ protected:
     QString name;
     VPoint location;
     VSize size;
-    double angle=0;
+    double angle;
 public:
     static const double PI;
     static VShape* fromJsonObject(const QJsonObject &jsonObject);
-    VShape();
+    VShape(const QString &name="",const VPoint &location=VPoint(0,0),const VSize &size=VSize(0,0),double angle=0);
     VShape(const QJsonObject jsonObject);
     virtual QJsonObject toJsonObject()const;
     operator QJsonValue()const;

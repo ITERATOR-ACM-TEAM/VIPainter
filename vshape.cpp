@@ -13,7 +13,8 @@ VShape::~VShape()
 {
 }
 
-VShape::VShape()
+VShape::VShape(const QString &name, const VPoint &location, const VSize &size, double angle):
+    name(name),location(location),size(size),angle(angle)
 {
 }
 
@@ -78,6 +79,7 @@ const VShape& VShape::operator=(const QJsonObject &jsonObject)
     size=jsonObject.value("size").toObject();
     angle=jsonObject.value("angle").toDouble();
     location=jsonObject.value("location").toObject();
+    return *this;
 }
 
 QJsonObject VShape::toJsonObject()const

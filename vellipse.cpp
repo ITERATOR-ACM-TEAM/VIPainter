@@ -3,7 +3,7 @@
 #include <QPainter>
 #include <vtype.h>
 
-VEllipse::VEllipse()
+VEllipse::VEllipse(const QString &name, const VPoint &location, const VSize &size, double angle):VShape(name,location,size,angle)
 {
 }
 

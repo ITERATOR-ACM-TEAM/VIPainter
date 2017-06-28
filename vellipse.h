@@ -6,7 +6,7 @@
 
 class VEllipse : public VShape{
 public:
-    VEllipse();
+    VEllipse(const QString &name="", const VPoint &location=VPoint(0,0), const VSize &size=VSize(0,0), double angle=0);
     VEllipse(const QJsonObject &jsonObject);
     const VEllipse& operator=(const VEllipse &shape);
     const VEllipse& operator=(const QJsonObject &jsonObject);
