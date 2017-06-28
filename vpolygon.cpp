@@ -13,9 +13,27 @@ VPolygon::~VPolygon(){
 VPolygon::VPolygon(const VPolygon &shape):VPolyline(shape){
 }
 
-void VPolygon::draw(QPainter *painter)
-{
+VPolygon::VPolygon(const QJsonObject &jsonObject):VPolyline(jsonObject){
+
+}
+
+const VPolygon& VPolygon::operator=(const VPolygon &vpolygon){
+    VPolyline::operator=(vpolygon);
+    return *this;
+}
+
+const VPolygon& VPolygon::operator=(const QJsonObject &jsonObject){
+    VPolyline::operator=(jsonObject);
+    return *this;
+}
+
+void VPolygon::draw(QPainter *painter){
     //TODO:
+    QPolygonF qpf;
+    for(auto &i : vertex){
+        qpf << i.toQPointF();
+    }
+    painter->drawPolygon(qpf);
 }
 //QImage VPolygon::toImage(){
 //    int width = cr2.y-cr1.y, height = cr2.x-cr1.x;

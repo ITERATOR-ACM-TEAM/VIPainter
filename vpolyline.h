@@ -5,7 +5,8 @@
 #include "QVector"
 #include "vpoint.h"
 
-class VPolyline:public VShape{
+class VPolyline:public VShape
+{
 protected:
     int n;//折线端点数目
     QVector<VPoint> vertex;//折线的各个端点
@@ -14,7 +15,6 @@ public:
     VPolyline();
     VPolyline(const VPolyline &polyline);
     VPolyline(const QJsonObject &jsonObject);
-    VPolyline(int n, QVector<VPoint> vec);
     QJsonObject toJsonObject()const;
     virtual void movePoint(int i,const VPoint &point);//move the ith point to (x,y)
     virtual void erasePoint(int i);
