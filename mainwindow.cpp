@@ -15,9 +15,6 @@ MainWindow::MainWindow(QWidget *parent) :
     setDockNestingEnabled(true);
 
     newDock();
-    newDock();
-    newDock();
-    newDock();
     update();
 }
 
@@ -25,9 +22,7 @@ void MainWindow::newDock()
 {
     testWidget=new TestWidget;
     QDockWidget *dockWidget=new QDockWidget;
-    QScrollArea *scrollArea=new QScrollArea;
-    dockWidget->setWidget(scrollArea);
-    scrollArea->setWidget(testWidget);
+    dockWidget->setWidget(testWidget);
     this->addDockWidget(Qt::TopDockWidgetArea,dockWidget);
     dockWidget->show();
 }

@@ -15,6 +15,7 @@ public:
     VPolyline();
     VPolyline(const VPolyline &polyline);
     VPolyline(const QJsonObject &jsonObject);
+    VPolyline(int n, QVector<VPoint> vec);
     QJsonObject toJsonObject()const;
     virtual void movePoint(int i,const VPoint &point);//move the ith point to (x,y)
     virtual void erasePoint(int i);

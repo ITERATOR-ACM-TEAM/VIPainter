@@ -2,6 +2,7 @@
 #include "vtype.h"
 #include <QPainter>
 #include <QJsonArray>
+#include <cmath>
 
 VPolyline::VPolyline():n(0)
 {
@@ -26,6 +27,14 @@ VPolyline::VPolyline(const QJsonObject &jsonObject):VShape(jsonObject){
     }
     getCircumscribedRectangle();
 }
+
+VPolyline::VPolyline(int n, QVector<VPoint> vec){
+    this->n = n;
+    for(auto &i : vec){
+        this->vertex.push_back(i);
+    }
+}
+
 
 int VPolyline::getN()const{
     return n;
@@ -148,7 +157,7 @@ bool VPolyline::contains(const VPoint &point){
         double A = vertex[i].y-vertex[i-1].y;
         double B = vertex[i].x-vertex[i-1].x;
         double C = vertex[i-1].x*(vertex[i].y-vertex[i-1].y)+vertex[i-1].y*(vertex[i].x-vertex[i-1].x);
-        if(abs(A*x+B*y+C)/(A*A+B*B) <= width*width)
+        if(std::abs(A*x+B*y+C)/(A*A+B*B) <= width*width)
             return true;
     }
     return false;
