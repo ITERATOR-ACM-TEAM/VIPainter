@@ -13,7 +13,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    ellipse.setSize(VSize(40.0,50.0));
     update();
 }
 
@@ -23,7 +22,7 @@ MainWindow::~MainWindow()
 }
 
 
-void MainWindow::paintEvent(QPaintEvent*)
+/*void MainWindow::paintEvent(QPaintEvent*)
 {
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing,true);
@@ -63,3 +62,4 @@ void MainWindow::on_BtSave_clicked()
     ellipse.draw(&painter);
     image.save("file.png");
 }
+*/

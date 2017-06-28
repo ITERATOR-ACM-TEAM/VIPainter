@@ -13,54 +13,14 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
-  <widget class="QWidget" name="centralWidget">
-   <widget class="QPushButton" name="BtRead">
-    <property name="geometry">
-     <rect>
-      <x>170</x>
-      <y>200</y>
-      <width>93</width>
-      <height>28</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>读取文件</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="BtWrite">
-    <property name="geometry">
-     <rect>
-      <x>350</x>
-      <y>200</y>
-      <width>93</width>
-      <height>28</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>写入文件</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="BtSave">
-    <property name="geometry">
-     <rect>
-      <x>300</x>
-      <y>280</y>
-      <width>103</width>
-      <height>35</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>保存</string>
-    </property>
-   </widget>
-  </widget>
+  <widget class="QWidget" name="centralWidget"/>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
      <width>881</width>
-     <height>29</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">

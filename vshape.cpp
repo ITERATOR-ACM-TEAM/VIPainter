@@ -83,6 +83,7 @@ const VShape& VShape::operator=(const QJsonObject &jsonObject)
 QJsonObject VShape::toJsonObject()const
 {
     QJsonObject jsonObject;
+    jsonObject.insert("type",this->type());
     jsonObject.insert("name",this->name);
     jsonObject.insert("size",this->size);
     jsonObject.insert("angle",this->angle);
