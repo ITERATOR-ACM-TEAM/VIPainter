@@ -61,6 +61,11 @@ const VCurveline& VCurveline::operator=(const QJsonObject &jsonObject){
     return *this;
 }
 
+void VCurveline::addPoint(VPoint p){
+    this->vertex.push_back(p);
+    n++;
+}
+
 VCurveline::~VCurveline()
 {
 }
@@ -87,7 +92,9 @@ void VCurveline::draw(QPainter *painter)
     for(int i = 0; i < n; i++){
         x[i] = this->vertex[i].x;
         y[i] = this->vertex[i].y;
+        qDebug()<<">>> "<<x[i]<<" "<<y[i]<<endl;
     }
+    n = vertex.size();
     Newton newton(n-1, x, y);
     QVector<VPoint> vec = newton.getFunc();
     QPolygonF qpf;

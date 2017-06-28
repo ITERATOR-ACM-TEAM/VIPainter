@@ -10,6 +10,7 @@ Newton::Newton(int n, double *x, double *y)//差分形式
 {
     this->n = n;
     L = R = x[0];
+    memset(f, 0, sizeof(f));
     for(int i = 0; i <= n; i++)
     {
         this->x[i] = x[i];
@@ -82,7 +83,7 @@ QVector<VPoint> Newton::getFunc(){
     this->h = 1;
     int len = (int)((R-L)/h);
     for(int i = 0; i <= len; i++){
-        VPoint point(L+i*h, this->calNew(L+i*h));
+        VPoint point(L+i*h, this->calNewDiffer(L+i*h));
         vec.push_back(point);
     }
     return vec;
