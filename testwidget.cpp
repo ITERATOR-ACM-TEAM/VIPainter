@@ -18,7 +18,7 @@ TestWidget::TestWidget(QWidget *parent) :
     groupShape.setSize(VSize(10,10));
 
     VEllipse *ellipse=new VEllipse("test shape",VPoint(0,0),VSize(40,50));
-    groupShape.addShape(ellipse);
+    groupShape.insertShape(ellipse);
     update();
 }
 
