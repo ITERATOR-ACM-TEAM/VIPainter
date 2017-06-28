@@ -11,7 +11,9 @@ class VGroupShape : public VShape
 {
 private:
     QVector<VShape*> ShapeVector;
+
 public:
+    static void rotate(VPoint & point, const VPoint & center, double a);
 
     VGroupShape();
     VGroupShape(const VGroupShape &shape);
