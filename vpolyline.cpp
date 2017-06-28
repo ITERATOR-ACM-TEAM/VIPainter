@@ -61,6 +61,7 @@ QVector<VPoint> VPolyline::getPointList()const{
 
 void VPolyline::addPoint(VPoint p){
     this->vertex.push_back(p);
+    n++;
 }
 
 const VPolyline& VPolyline::operator=(const VPolyline &polyline){

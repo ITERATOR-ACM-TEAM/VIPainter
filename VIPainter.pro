@@ -26,7 +26,8 @@ SOURCES += main.cpp\
     vsize.cpp \
     vtype.cpp \
     vcurveline.cpp \
-    testwidget.cpp
+    testwidget.cpp \
+    interpolation.cpp
 
 HEADERS  += mainwindow.h \
     vpoint.h \
@@ -38,7 +39,8 @@ HEADERS  += mainwindow.h \
     vsize.h \
     vtype.h \
     vcurveline.h \
-    testwidget.h
+    testwidget.h \
+    interpolation.h
 
 FORMS    += mainwindow.ui
 
