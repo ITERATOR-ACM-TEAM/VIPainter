@@ -33,6 +33,7 @@ public:
     bool eraseShape(int i);
     bool moveShape(int i, const VPoint & location);
     bool contains(const VPoint &point);
+    void clear();
 
     QVector<VShape *> getShapeVector();
 

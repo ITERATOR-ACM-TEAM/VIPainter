@@ -21,6 +21,7 @@ VGroupShape::~VGroupShape()
 
 VGroupShape::VGroupShape(const VGroupShape &shape):VShape(shape)
 {
+    this->clear();
     for(auto & it : shape.ShapeVector)
     {
         this->ShapeVector.push_back(it->clone());
@@ -31,7 +32,7 @@ VGroupShape::VGroupShape(const VGroupShape &shape):VShape(shape)
 const VGroupShape & VGroupShape:: operator=(const VGroupShape &shape)
 {
     VShape::operator =(shape);
-    this->ShapeVector.clear();
+    this->clear();
     for(auto & it : shape.ShapeVector)
     {
         this->ShapeVector.push_back(it->clone());
@@ -42,7 +43,7 @@ const VGroupShape & VGroupShape:: operator=(const VGroupShape &shape)
 const VGroupShape & VGroupShape:: operator=(const QJsonObject &jsonObject)
 {
     VShape::operator =(jsonObject);
-    this->ShapeVector.clear();
+    this->clear();
     QJsonArray jsonArray = jsonObject.value("ShapeVector").toArray();
     VShape * tmp ;
     for(const auto &it: jsonArray)
@@ -264,4 +265,11 @@ int VGroupShape::getVectorSize()const
     return this->ShapeVector.size();
 }
 
-
+void VGroupShape::clear()
+{
+    for(auto &it : this->ShapeVector)
+    {
+        delete it;
+    }
+    this->ShapeVector.clear();
+}
