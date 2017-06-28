@@ -3,6 +3,7 @@
 #include <QJsonArray>
 #include <QDebug>
 #include "vtype.h"
+#include <QDebug>
 
 VCurveline::VCurveline():n(0){
 }
@@ -82,10 +83,12 @@ QJsonObject VCurveline::toJsonObject()const
 
 void VCurveline::draw(QPainter *painter)
 {
-    Newton newton;
-    for(auto &i : this->vertex){
-        newton.addPoint(i.x, i.y);
+    double x[20], y[20];
+    for(int i = 0; i < n; i++){
+        x[i] = this->vertex[i].x;
+        y[i] = this->vertex[i].y;
     }
+    Newton newton(n-1, x, y);
     QVector<VPoint> vec = newton.getFunc();
     QPolygonF qpf;
     for(auto &i : vec){

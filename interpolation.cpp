@@ -82,7 +82,7 @@ QVector<VPoint> Newton::getFunc(){
     this->h = 1;
     int len = (int)((R-L)/h);
     for(int i = 0; i <= len; i++){
-        VPoint point(L+i*h, this->calNewDiffer(L+i*h));
+        VPoint point(L+i*h, this->calNew(L+i*h));
         vec.push_back(point);
     }
     return vec;
