@@ -2,6 +2,7 @@
 #include "interpolation.h"
 #include <QJsonArray>
 #include "vtype.h"
+#include <QDebug>
 
 VCurveline::VCurveline():n(0){
 }
@@ -14,7 +15,7 @@ VCurveline::VCurveline(const VCurveline &vcurveline):VShape(vcurveline){
     }
 }
 
-VCurveline::VCurveline(const QJsonObject &jsonObject):VShape(vcurveline){
+VCurveline::VCurveline(const QJsonObject &jsonObject):VShape(jsonObject){
     this->n = jsonObject.value("n").toInt();
     QJsonArray jsonArray = jsonObject.value("vertex").toArray();
     for(const auto &it: jsonArray)
@@ -68,17 +69,20 @@ QJsonObject VCurveline::toJsonObject()const
 
 void VCurveline::draw(QPainter *painter)
 {
-    Newton newton;
-    for(auto &i : this->vertex){
-        newton.addPoint(i.x, i.y);
+    double x[20], y[20];
+    for(int i = 0; i < n; i++){
+        x[i] = this->vertex[i].x;
+        y[i] = this->vertex[i].y;
     }
+    Newton newton(n-1, x, y);
     QVector<VPoint> vec = newton.getFunc();
     QPolygonF qpf;
     for(auto &i : vec){
         qpf << i.toQPointF();
+        qDebug()<<i.x<<" "<<i.y<<endl;
     }
 //    QPen pen;
 //    pen.setWidth(1);
 //    painter->setPen(pen);
-    painter->drawPoints(qpf, qpf.count());
+    painter->drawPoints(qpf);
 }
