@@ -16,6 +16,13 @@ VPolyline::VPolyline(const VPolyline &polyline):VShape(polyline){
     getCircumscribedRectangle();
 }
 
+VPolyline::VPolyline(int n, QVector<VPoint> vec){
+    this->n = n;
+    for(auto &i : vec){
+        this->vertex.push_back(i);
+    }
+}
+
 VPolyline::VPolyline(const QJsonObject &jsonObject):VShape(jsonObject){
     this->n = jsonObject.value("n").toInt();
     QJsonArray jsonArray = jsonObject.value("vertex").toArray();
@@ -113,8 +120,7 @@ void VPolyline::setSize(const VSize &point){
     cr2.y = point.y;
 }
 
-void VPolyline::draw(QPainter *painter)
-{
+void VPolyline::draw(QPainter *painter){
     QPolygonF qpf;
     for(auto &i : this->vertex){
         qpf << i.toQPointF();
