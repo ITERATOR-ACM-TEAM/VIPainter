@@ -60,8 +60,8 @@ void TestWidget::wheelEvent(QWheelEvent * event)
         scale/=1.1;
     }
     VPoint newp(point.x/scale,point.y/scale);
-    canvasLocation.x+=newp.x-oldp.x;
-    canvasLocation.y+=newp.y-oldp.y;
+    canvasLocation.x+=(newp.x-oldp.x)*scale;
+    canvasLocation.y+=(newp.y-oldp.y)*scale;
     update();
 }
 

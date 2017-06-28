@@ -98,5 +98,5 @@ void VCurveline::draw(QPainter *painter)
 //    QPen pen;
 //    pen.setWidth(1);
 //    painter->setPen(pen);
-    painter->drawPoints(qpf);
+    painter->drawPolyline(qpf);
 }
