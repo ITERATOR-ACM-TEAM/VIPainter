@@ -25,6 +25,7 @@ const VEllipse& VEllipse::operator=(const QJsonObject &jsonObject)
 
 const VEllipse& VEllipse::operator=(const VEllipse &shape)
 {
+    if(this==&shape)return *this;
     VShape::operator=(shape);
     return *this;
 }
