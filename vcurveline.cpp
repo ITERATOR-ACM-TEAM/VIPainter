@@ -1,6 +1,7 @@
 #include "vcurveline.h"
 #include "interpolation.h"
 #include <QJsonArray>
+#include <QDebug>
 #include "vtype.h"
 
 VCurveline::VCurveline():n(0){
@@ -22,6 +23,12 @@ VCurveline::VCurveline(const QJsonObject &jsonObject){
         VPoint p(it.toObject());
         this->vertex.push_back(p);
     }
+}
+
+
+bool VCurveline::contains(const VPoint &point)
+{
+    return false;
 }
 
 int VCurveline::getN()const{
@@ -51,7 +58,7 @@ VCurveline::~VCurveline()
 }
 
 QString VCurveline::type() const{
-    return VType::CurveLine;
+    return VType::Curveline;
 }
 
 QJsonObject VCurveline::toJsonObject()const
@@ -76,6 +83,7 @@ void VCurveline::draw(QPainter *painter)
     QPolygonF qpf;
     for(auto &i : vec){
         qpf << i.toQPointF();
+        qDebug()<<i.x<<" "<<i.y<<endl;
     }
     QPen pen;
     pen.setWidth(6);

@@ -10,7 +10,7 @@ public:
     static QString Polygon;
     static QString Polyline;
     static QString Ellipse;
-    static QString CurveLine;
+    static QString Curveline;
     static QString GroupShape;
     VType()=delete;
 };

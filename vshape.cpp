@@ -30,6 +30,7 @@ VShape* VShape::fromJsonObject(const QJsonObject &jsonObject)
     else if(type==VType::Polyline)return new VPolyline(jsonObject);
     else if(type==VType::Polygon)return new VPolygon(jsonObject);
     else if(type==VType::GroupShape)return new VGroupShape(jsonObject);
+    else if(type==VType::Curveline)return new VCurveline(jsonObject);
     else return nullptr;
 }
 

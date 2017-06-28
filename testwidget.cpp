@@ -16,30 +16,30 @@ TestWidget::TestWidget(QMainWindow *parent) :
 {
     mainwindow=parent;
     setMouseTracking(true);
-    groupShape.setName("main shape");
-    groupShape.setLocation(VPoint(0,0));
-    groupShape.setSize(VSize(10,10));
+//    groupShape.setName("main shape");
+//    groupShape.setLocation(VPoint(0,0));
+//    groupShape.setSize(VSize(10,10));
 
-    VEllipse *ellipse=new VEllipse("test shape",VPoint(0,0),VSize(40,50));
+//    VEllipse *ellipse=new VEllipse("test shape",VPoint(0,0),VSize(40,50));
 
-    VGroupShape *polygroup=new VGroupShape;
-    VPolyline *polyline=new VPolyline;
-    polyline->addPoint(VPoint(0,0));
-    polyline->addPoint(VPoint(50,0));
-    polyline->addPoint(VPoint(0,50));
-    polyline->addPoint(VPoint(50,50));
-    polygroup->addShape(polyline);
+//    VGroupShape *polygroup=new VGroupShape;
+//    VPolyline *polyline=new VPolyline;
+//    polyline->addPoint(VPoint(0,0));
+//    polyline->addPoint(VPoint(50,0));
+//    polyline->addPoint(VPoint(0,50));
+//    polyline->addPoint(VPoint(50,50));
+//    polygroup->addShape(polyline);
 
-    VPolygon *polygon=new VPolygon;
-    polygon->addPoint(VPoint(0,0));
-    polygon->addPoint(VPoint(50,0));
-    polygon->addPoint(VPoint(50,50));
-    polygon->addPoint(VPoint(0,50));
-    polygroup->addShape(polygon);
-    polygroup->moveShape(1,VPoint(-100,-100));
+//    VPolygon *polygon=new VPolygon;
+//    polygon->addPoint(VPoint(0,0));
+//    polygon->addPoint(VPoint(50,0));
+//    polygon->addPoint(VPoint(50,50));
+//    polygon->addPoint(VPoint(0,50));
+//    polygroup->addShape(polygon);
+//    polygroup->moveShape(1,VPoint(-100,-100));
 
-    groupShape.addShape(ellipse);
-    groupShape.addShape(polygroup);
+//    groupShape.addShape(ellipse);
+//    groupShape.addShape(polygroup);
 
     update();
 }
