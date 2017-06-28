@@ -2,9 +2,14 @@
 #define VCURVELINE_H
 
 #include "vshape.h"
+#include "vpoint.h"
+#include <QVector>
 
 class VCurveline : public VShape
 {
+private:
+    int n;
+    QVector<VPoint> vertex;
 public:
     VCurveline();
     VCurveline(const VCurveline &shape);
@@ -12,6 +17,12 @@ public:
     ~VCurveline()override;
     const VCurveline& operator=(const VCurveline &shape);
     const VCurveline& operator=(const QJsonObject &jsonObject);
+    int getN() const;
+    QVector<VPoint> getVertex() const;
+
+    QJsonObject toJsonObject()const override;
+    void draw(QPainter *painter)override;
+    QString type()const override;
 };
 
 #endif // VCURVELINE_H
