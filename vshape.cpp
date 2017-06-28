@@ -27,8 +27,8 @@ VShape* VShape::fromJsonObject(const QJsonObject &jsonObject)
 {
     QString type=jsonObject.value("type").toString();
     if(type==VType::Ellipse)return new VEllipse(jsonObject);
-//    else if(type==VType::Polyline)return new VPolyline(jsonObject);
-//    else if(type==VType::Polygon)return new VPolygon(jsonObject);
+    else if(type==VType::Polyline)return new VPolyline(jsonObject);
+    else if(type==VType::Polygon)return new VPolygon(jsonObject);
     else if(type==VType::GroupShape)return new VGroupShape(jsonObject);
     else return nullptr;
 }

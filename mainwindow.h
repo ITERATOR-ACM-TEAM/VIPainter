@@ -23,10 +23,17 @@ private slots:
 
     void on_actionResume_triggered();
 
+    void on_actionSave_triggered();
+
+    void on_actionSaveAs_triggered();
+
+    void on_actionOpen_triggered();
+
 private:
     Ui::MainWindow *ui;
     TestWidget *testWidget;
     void newDock();
+    void saveFile(QString filename);
 };
 
 #endif // MAINWINDOW_H

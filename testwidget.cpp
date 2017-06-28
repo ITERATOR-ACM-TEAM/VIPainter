@@ -8,17 +8,39 @@
 #include <QPen>
 #include <QBrush>
 #include <QtMath>
+#include <QStatusBar>
+#include <QDebug>
 
-TestWidget::TestWidget(QWidget *parent) :
-    QWidget(parent),canvasSize(400,300)
+TestWidget::TestWidget(QMainWindow *parent) :
+    QWidget(parent),canvasLocation(0,0),canvasSize(400,300)
 {
+    mainwindow=parent;
     setMouseTracking(true);
     groupShape.setName("main shape");
     groupShape.setLocation(VPoint(0,0));
     groupShape.setSize(VSize(10,10));
 
     VEllipse *ellipse=new VEllipse("test shape",VPoint(0,0),VSize(40,50));
+
+    VGroupShape *polygroup=new VGroupShape;
+    VPolyline *polyline=new VPolyline;
+    polyline->addPoint(VPoint(0,0));
+    polyline->addPoint(VPoint(50,0));
+    polyline->addPoint(VPoint(0,50));
+    polyline->addPoint(VPoint(50,50));
+    polygroup->addShape(polyline);
+
+    VPolygon *polygon=new VPolygon;
+    polygon->addPoint(VPoint(0,0));
+    polygon->addPoint(VPoint(50,0));
+    polygon->addPoint(VPoint(50,50));
+    polygon->addPoint(VPoint(0,50));
+    polygroup->addShape(polygon);
+    polygroup->moveShape(1,VPoint(-100,-100));
+
     groupShape.addShape(ellipse);
+    groupShape.addShape(polygroup);
+
     update();
 }
 
@@ -26,17 +48,44 @@ TestWidget::~TestWidget()
 {
 }
 
+void TestWidget::mousePressEvent(QMouseEvent *event)
+{
+    if(event->button()==Qt::LeftButton)
+    {
+        pressing=true;
+        pressPoint=event->pos();
+    }
+}
+
+void TestWidget::mouseReleaseEvent(QMouseEvent *event)
+{
+    if(event->button()==Qt::LeftButton)
+    {
+        pressing=false;
+        pressPoint=event->pos();
+    }
+}
 
 void TestWidget::mouseMoveEvent(QMouseEvent *event)
 {
-    event->pos();
+    QPoint qpoint=event->pos();
+    if(pressing)
+    {
+        canvasLocation.x+=qpoint.x()-pressPoint.x();
+        canvasLocation.y+=qpoint.y()-pressPoint.y();
+        pressPoint=qpoint;
+        qDebug()<<"canvasLocation: ("<<canvasLocation.x<<","<<canvasLocation.y<<")"<<endl;
+    }
+    VPoint point(qpoint.x()-(this->width()/2+canvasLocation.x),qpoint.y()-(this->height()/2+canvasLocation.y));
+    mainwindow->statusBar()->showMessage(QString("%1,%2").arg(floor(point.x/scale)).arg(floor(point.y/scale)));
+    update();
 }
 
 void TestWidget::paintEvent(QPaintEvent *)
 {
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
-    painter.translate(this->width()/2,this->height()/2);
+    painter.translate(this->width()/2+canvasLocation.x,this->height()/2+canvasLocation.y);
     painter.scale(scale,scale);
 
     QPen oldPen=painter.pen();

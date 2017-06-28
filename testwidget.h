@@ -3,28 +3,36 @@
 
 #include <QPaintEvent>
 #include <QMouseEvent>
+#include <QResizeEvent>
 #include <QWidget>
 #include <QMainWindow>
 #include <QRect>
 #include "vgroupshape.h"
 #include "vsize.h"
+#include "vpoint.h"
 
 class TestWidget : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit TestWidget(QWidget *parent = 0);
+    explicit TestWidget(QMainWindow *mainwindow);
     double scale=1;
+    QMainWindow *mainwindow;
+    VGroupShape groupShape;
+    VPoint canvasLocation;
+    VSize canvasSize;
+    QPoint pressPoint;
+    bool pressing=false;
     ~TestWidget();
 
 protected:
     void paintEvent(QPaintEvent *)override;
     void mouseMoveEvent(QMouseEvent *event)override;
+    void mousePressEvent(QMouseEvent *event)override;
+    void mouseReleaseEvent(QMouseEvent *event)override;
 
 private:
-    VGroupShape groupShape;
-    VSize canvasSize;
 };
 
 #endif // TESTWIDGET_H
