@@ -67,35 +67,29 @@ void TestWidget::wheelEvent(QWheelEvent * event)
 
 void TestWidget::mousePressEvent(QMouseEvent *event)
 {
-    if(event->button()==Qt::LeftButton)
-    {
-        pressing=true;
-        pressPoint=event->pos();
-    }
+    pressPoint=event->pos();
 }
 
 void TestWidget::mouseReleaseEvent(QMouseEvent *event)
 {
-    if(event->button()==Qt::LeftButton)
-    {
-        pressing=false;
-        pressPoint=event->pos();
-    }
 }
 
 void TestWidget::mouseMoveEvent(QMouseEvent *event)
 {
     QPoint qpoint=event->pos();
-    if(pressing)
+    if(event->buttons()&Qt::LeftButton)
     {
         canvasLocation.x+=qpoint.x()-pressPoint.x();
         canvasLocation.y+=qpoint.y()-pressPoint.y();
         pressPoint=qpoint;
-        qDebug()<<"canvasLocation: ("<<canvasLocation.x<<","<<canvasLocation.y<<")"<<endl;
+        //qDebug()<<"canvasLocation: ("<<canvasLocation.x<<","<<canvasLocation.y<<")"<<endl;
+        update();
     }
-    VPoint point(qpoint.x()-(this->width()/2+canvasLocation.x),qpoint.y()-(this->height()/2+canvasLocation.y));
-    mainwindow->statusBar()->showMessage(QString("%1,%2").arg(floor(point.x/scale)).arg(floor(point.y/scale)));
-    update();
+    else
+    {
+        VPoint point(qpoint.x()-(this->width()/2+canvasLocation.x),qpoint.y()-(this->height()/2+canvasLocation.y));
+        mainwindow->statusBar()->showMessage(QString("%1,%2").arg(floor(point.x/scale)).arg(floor(point.y/scale)));
+    }
 }
 
 void TestWidget::paintEvent(QPaintEvent *)
