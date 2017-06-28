@@ -57,7 +57,10 @@ const VGroupShape & VGroupShape:: operator=(const QJsonObject &jsonObject)
 
 void VGroupShape::addShape(VShape * other)
 {
+    if(other == nullptr) return;
     this->ShapeVector.push_back(other);
+    VPoint orign = other->getLocation();
+    other->setLocation(VPoint(orign.x-location.x, orign.y-location.y));
 }
 
 bool VGroupShape::moveShape(int i, const VPoint & location)
