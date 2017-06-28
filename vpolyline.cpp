@@ -120,19 +120,12 @@ void VPolyline::setSize(const VSize &point){
     cr2.y = point.y;
 }
 
-<<<<<<< HEAD
-void VPolyline::draw(QPainter *painter)
-{
-    Q_UNUSED(painter);
-    //TODO: delete Q_UNUSED(painter); and this line
-=======
 void VPolyline::draw(QPainter *painter){
     QPolygonF qpf;
     for(auto &i : this->vertex){
         qpf << i.toQPointF();
     }
     painter->drawPolyline(qpf);
->>>>>>> 7a15fdb7ecf78bc54e4892b5ad525ffc1545194f
 }
 //QImage VPolyline::toImage(){
 //    int width = cr2.y-cr1.y, height = cr2.x-cr1.x;
@@ -155,11 +148,6 @@ bool VPolyline::contains(const VPoint &point){
     double width = 5.0;
     double x = point.x-location.x;
     double y = point.y-location.y;
-<<<<<<< HEAD
-    if(x >= cr1.x && x <= cr2.x && y >= cr1.y && y <= cr2.y)
-        return true;
-    else return false;
-=======
     for(int i = 1; i < n; i++){
         double A = vertex[i].y-vertex[i-1].y;
         double B = vertex[i].x-vertex[i-1].x;
@@ -171,7 +159,6 @@ bool VPolyline::contains(const VPoint &point){
 //    if(x >= cr1.x && x <= cr2.x && y >= cr1.y && y <= cr2.y)
 //        return true;
 //    else return false;
->>>>>>> 7a15fdb7ecf78bc54e4892b5ad525ffc1545194f
 }
 
 
