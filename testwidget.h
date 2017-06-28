@@ -7,6 +7,7 @@
 #include <QWidget>
 #include <QMainWindow>
 #include <QRect>
+#include <QWheelEvent>
 #include "vgroupshape.h"
 #include "vsize.h"
 #include "vpoint.h"
@@ -31,6 +32,7 @@ protected:
     void mouseMoveEvent(QMouseEvent *event)override;
     void mousePressEvent(QMouseEvent *event)override;
     void mouseReleaseEvent(QMouseEvent *event)override;
+    void wheelEvent(QWheelEvent * event)override;
 
 private:
 };

@@ -48,6 +48,23 @@ TestWidget::~TestWidget()
 {
 }
 
+void TestWidget::wheelEvent(QWheelEvent * event)
+{
+    QPoint qpoint=event->pos();
+    VPoint point(qpoint.x()-(this->width()/2+canvasLocation.x),qpoint.y()-(this->height()/2+canvasLocation.y));
+    VPoint oldp(point.x/scale,point.y/scale);
+    update();
+    if(event->delta() > 0){
+        scale*=1.1;
+    }else{
+        scale/=1.1;
+    }
+    VPoint newp(point.x/scale,point.y/scale);
+    canvasLocation.x+=newp.x-oldp.x;
+    canvasLocation.y+=newp.y-oldp.y;
+    update();
+}
+
 void TestWidget::mousePressEvent(QMouseEvent *event)
 {
     if(event->button()==Qt::LeftButton)

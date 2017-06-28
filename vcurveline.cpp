@@ -15,7 +15,7 @@ VCurveline::VCurveline(const VCurveline &vcurveline):VShape(vcurveline){
     }
 }
 
-VCurveline::VCurveline(const QJsonObject &jsonObject):VShape(vcurveline){
+VCurveline::VCurveline(const QJsonObject &jsonObject):VShape(jsonObject){
     this->n = jsonObject.value("n").toInt();
     QJsonArray jsonArray = jsonObject.value("vertex").toArray();
     for(const auto &it: jsonArray)
@@ -50,6 +50,13 @@ const VCurveline& VCurveline::operator=(const VCurveline &vcurveline){
 
 const VCurveline& VCurveline::operator=(const QJsonObject &jsonObject){
     VShape::operator=(jsonObject);
+    this->n = jsonObject.value("n").toInt();
+    QJsonArray jsonArray = jsonObject.value("vertex").toArray();
+    for(const auto &it: jsonArray)
+    {
+        VPoint p(it.toObject());
+        this->vertex.push_back(p);
+    }
     return *this;
 }
 
@@ -88,5 +95,5 @@ void VCurveline::draw(QPainter *painter)
 //    QPen pen;
 //    pen.setWidth(1);
 //    painter->setPen(pen);
-    painter->drawPoints(qpf, qpf.count());
+    painter->drawPoints(qpf);
 }
