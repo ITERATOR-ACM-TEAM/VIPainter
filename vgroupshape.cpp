@@ -5,6 +5,7 @@
 #include <algorithm>
 #include "vtype.h"
 #include <QJsonArray>
+#include <QDebug>
 
 VGroupShape::VGroupShape()
 {
@@ -28,7 +29,6 @@ VGroupShape::VGroupShape(const VGroupShape &shape):VShape(shape)
 
 }
 
-
 const VGroupShape & VGroupShape:: operator=(const VGroupShape &shape)
 {
     VShape::operator =(shape);
@@ -36,6 +36,21 @@ const VGroupShape & VGroupShape:: operator=(const VGroupShape &shape)
     for(auto & it : shape.ShapeVector)
     {
         this->ShapeVector.push_back(it->clone());
+    }
+    return *this;
+}
+
+const VGroupShape & VGroupShape:: operator=(const QJsonObject &jsonObject)
+{
+    VShape::operator =(jsonObject);
+    this->ShapeVector.clear();
+    QJsonArray jsonArray = jsonObject.value("ShapeVector").toArray();
+    VShape * tmp ;
+    for(const auto &it: jsonArray)
+    {
+        tmp = VShape::fromJsonObject(it.toObject());
+        if(tmp != nullptr)
+            ShapeVector.push_back(tmp);
     }
     return *this;
 }
@@ -48,6 +63,7 @@ void VGroupShape::addShape(VShape * other)
 bool VGroupShape::moveShape(int i, const VPoint & location)
 {
     if(i>=ShapeVector.size()) return false;
+
     this->ShapeVector[i]->setLocation(location);
 
     return true;
@@ -60,16 +76,45 @@ QVector<VShape *> VGroupShape::getShapeVector()
 
 VSize VGroupShape::getSize()const
 {
-    VShape *shape=this->ShapeVector.first();
-    double minX=shape->getLocation().x, minY=shape->getLocation().y;
-    double maxX=minX+shape->getSize().x, maxY=0;
+    double minX, minY;
+    double maxX, maxY;
+    int der[4][2] = {1,1,-1,1,-1,-1,1,-1};
+
+    // if no subShape, return (0,0)
+    if(ShapeVector.empty()) return VSize(0, 0);
+
+    //init max&min
+    VPoint point;
+    VShape * first = ShapeVector[0];
+    VPoint loc = first->getLocation();
+    VSize siz = first->getSize();
+    double a = first->getAngle();
+
+    for(int i=0; i<4; i++)\
+    {
+        point = VPoint(loc.x + der[i][0]*siz.x, loc.y + der[i][1]*siz.y);
+        rotate(point, loc, a);
+        maxX = point.x;
+        maxY = point.y;
+        minX = point.x;
+        minY = point.y;
+    }
+
+    // loop
     for(auto & it : this->ShapeVector)
     {
-        VPoint loc = it->getLocation();
-        maxX = std::max(maxX, loc.x);
-        maxY = std::max(maxY, loc.y);
-        minX = std::min(minX, loc.x);
-        minY = std::min(minY, loc.y);
+        loc = it->getLocation();
+        siz = it->getSize();
+        a = it->getAngle();
+        for(int i=0; i<4; i++)\
+        {
+            point = VPoint(loc.x + der[i][0]*siz.x, loc.y + der[i][1]*siz.y);
+            rotate(point, loc, a);
+            maxX = std::max(maxX, point.x);
+            maxY = std::max(maxY, point.y);
+            minX = std::min(minX, point.x);
+            minY = std::min(minY, point.y);
+        }
     }
     return VSize(maxX-minX, maxY-minY);
 }
@@ -77,11 +122,12 @@ VSize VGroupShape::getSize()const
 void VGroupShape::setSize(const VSize &size)
 {
     VSize siz = this->getSize();
+    VSize subSiz;
     double fractionX = size.x/siz.x , fractionY = size.y / siz.y;
     for(auto & it : this->ShapeVector)
     {
         it->setLocation(VPoint(it->getLocation().x * fractionX, it->getLocation().y * fractionY));
-        VSize subSiz = it->getSize();
+        subSiz = it->getSize();
         subSiz.x *= fractionX;
         subSiz.y *= fractionY;
         it->setSize(subSiz);
@@ -90,23 +136,20 @@ void VGroupShape::setSize(const VSize &size)
 
 void VGroupShape::draw(QPainter *painter)
 {
-    //TODO:
+    double angle;
+    VPoint loc;
+    for(auto &it: ShapeVector)
+    {
+        angle = it->getAngle();
+
+        loc = it->getLocation();
+        painter->translate(loc.x, loc.y);
+        painter->rotate(angle);
+        it->draw(painter);
+        painter->rotate(-angle);
+        painter->translate(-loc.x, -loc.y);
+    }
 }
-//QImage :toImage()
-//{
-//    VSize sz = this->getSize();
-//    int width = sz.y, height = sz.x;
-//    QImage image(width+1, height+1, QImage::Format_ARGB32);
-//    QPainter painter(&image);
-//    for(auto & it : this->ShapeVector)
-//    {
-//        QImage subImage = it->toImage();
-//        QPainter subPainter(&subImage);
-//        subPainter.rotate(it->getAngle());
-//        painter.drawImage(QPointF(it->getLocation().x - this->location.x, it->getLocation().y - this->location.y), subImage);
-//    }
-//    return image;
-//}
 
 bool VGroupShape::eraseShape(int i)
 {
@@ -122,9 +165,13 @@ QString VGroupShape::type()const
 
 bool VGroupShape::contains(const VPoint &point)
 {
+    VPoint subPoint, subLocation;
     for(auto & it: ShapeVector)
     {
-        if(it->contains(point)) return false;
+        subLocation = it->getLocation();
+        subPoint = VPoint(point.x - subLocation.x, point.y - subLocation.y);
+        rotate(subPoint, VPoint(0,0), it->getAngle());
+        if(it->contains(subPoint)) return false;
     }
     return true;
 }
@@ -144,8 +191,19 @@ QJsonObject VGroupShape::toJsonObject()const
 VGroupShape::VGroupShape(const QJsonObject &jsonObject):VShape(jsonObject)
 {
     QJsonArray jsonArray = jsonObject.value("ShapeVector").toArray();
+    VShape * tmp ;
     for(const auto &it: jsonArray)
     {
-        ShapeVector.push_back(VShape::fromJsonObject(it.toObject()));
+        tmp = VShape::fromJsonObject(it.toObject());
+        if(tmp != nullptr)
+            ShapeVector.push_back(tmp);
     }
+}
+
+void VGroupShape::rotate(VPoint & point, const VPoint & center, double a)
+{
+    a = (360 - a) / 180 * VShape::PI;
+    double x = point.x - center.x, y = point.y - center.y;
+    point.x = x*cos(a)-y*sin(a) + center.x;
+    point.y = x*sin(a)+y*cos(a) + center.y;
 }
