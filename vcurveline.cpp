@@ -77,5 +77,8 @@ void VCurveline::draw(QPainter *painter)
     for(auto &i : vec){
         qpf << i.toQPointF();
     }
+    QPen pen;
+    pen.setWidth(6);
+    painter->setPen(pen);
     painter->drawPoints(qpf);
 }
