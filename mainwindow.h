@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QPaintEvent>
+#include <QActionGroup>
 #include "testwidget.h"
 
 class TestWidget;
@@ -16,7 +17,11 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
+    static const int STATE_MOVE;
+    static const int STATE_CHOOSE;
+
     explicit MainWindow(QWidget *parent = 0);
+    int getCursonState();
     ~MainWindow();
 private slots:
     void on_actionZoomIn_triggered();
@@ -33,12 +38,14 @@ private slots:
 
     void on_actionTestShape1_triggered();
 
-private:
-    static const int STATE_MOVE;
-    static const int STATE_CHOOSE;
+    void on_actionMove_triggered();
 
+    void on_actionChoose_triggered();
+
+private:
     Ui::MainWindow *ui;
     TestWidget *testWidget;
+    QActionGroup  *group;
     int cursorState;
     void newDock();
     void saveFile(QString filename);

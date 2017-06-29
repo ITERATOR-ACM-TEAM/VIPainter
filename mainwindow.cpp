@@ -22,6 +22,9 @@ MainWindow::MainWindow(QWidget *parent) :
     delete takeCentralWidget();
     setDockNestingEnabled(true);
     setWindowTitle("VIPainter");
+    group = new QActionGroup(this);
+    group->addAction(ui->actionChoose);
+    group->addAction(ui->actionMove);
 
     newDock();
     update();
@@ -129,3 +132,31 @@ void MainWindow::on_actionTestShape1_triggered()
     testWidget->update();
 }
 
+int MainWindow::getCursonState()
+{
+    if(ui->actionChoose->isChecked())
+    {
+        return STATE_CHOOSE;
+    }else if(ui->actionMove->isChecked())
+    {
+        return STATE_MOVE;
+    }
+    return -1;
+}
+
+
+void MainWindow::on_actionMove_triggered()
+{
+    if(ui->actionMove->isChecked())
+        testWidget->setCursor(QCursor(QPixmap("://icon/mover.png").scaled(5,5),-1,-1));
+    else
+        testWidget->setCursor(Qt::ArrowCursor);
+}
+
+void MainWindow::on_actionChoose_triggered()
+{
+    if(ui->actionChoose->isChecked())
+        testWidget->setCursor(QCursor(QPixmap("://icon/cursor.png"),0,0));
+    else
+        testWidget->setCursor(Qt::ArrowCursor);
+}

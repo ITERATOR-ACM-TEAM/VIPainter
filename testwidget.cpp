@@ -61,11 +61,14 @@ void TestWidget::mouseMoveEvent(QMouseEvent *event)
     QPoint qpoint=event->pos();
     if(event->buttons()&Qt::LeftButton)
     {
-        if(this->mainwindow)
-        canvasLocation.x+=qpoint.x()-pressPoint.x();
-        canvasLocation.y+=qpoint.y()-pressPoint.y();
-        pressPoint=qpoint;
-        //qDebug()<<"canvasLocation: ("<<canvasLocation.x<<","<<canvasLocation.y<<")"<<endl;
+        if(this->mainwindow->getCursonState() == MainWindow::STATE_MOVE)
+        {
+            canvasLocation.x+=qpoint.x()-pressPoint.x();
+            canvasLocation.y+=qpoint.y()-pressPoint.y();
+            pressPoint=qpoint;
+            //qDebug()<<"canvasLocation: ("<<canvasLocation.x<<","<<canvasLocation.y<<")"<<endl;
+        }
+
         update();
     }
     else
