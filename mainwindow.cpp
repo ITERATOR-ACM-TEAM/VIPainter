@@ -122,7 +122,7 @@ void MainWindow::on_actionOpen_triggered()
 
 void MainWindow::on_actionTestShape1_triggered()
 {
-    QString filename = "F:\\OOC\\VIPainter\\plugin\\testShape1.vp";
+    QString filename = "C:/Users/cie/Desktop/build-VIPainter-Desktop_Qt_5_2_0_MinGW_32bit-Debug/image.vp";
     QFile file(filename);
     file.open(QFile::ReadOnly|QFile::Text);
     VGroupShape * gs= new VGroupShape(QJsonDocument::fromJson(file.readAll()).object());

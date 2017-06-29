@@ -36,7 +36,8 @@ const VGroupShape & VGroupShape:: operator=(const VGroupShape &shape)
     if(this==&shape)return *this;
     VShape::operator =(shape);
     this->clear();
-    cr=VSize(0,0);
+    VShape::setSize(VSize(1,1));
+    cr=VSize(1,1);
     for(auto & it : shape.shapes)
     {
         this->shapes.push_back(it->clone());
@@ -51,7 +52,8 @@ const VGroupShape & VGroupShape:: operator=(const QJsonObject &jsonObject)
 {
     VShape::operator =(jsonObject);
     this->clear();
-    cr=VSize(0,0);
+    VShape::setSize(VSize(1,1));
+    cr=VSize(1,1);
     QJsonArray jsonArray = jsonObject.value("shapes").toArray();
     VShape * tmp ;
     for(const auto &it: jsonArray)
@@ -135,6 +137,9 @@ QVector<VShape *> VGroupShape::getShapeVector()
 void VGroupShape::draw(QPainter *painter)
 {
     VSize trans=getTranslate();
+    qDebug()<<"size"<<getSize();
+    qDebug()<<"logic"<<getLogicalSize();
+    qDebug()<<"trans"<<trans;
     double angle;
     VPoint loc;
 
@@ -200,7 +205,7 @@ void VGroupShape::getCircumscribedRectangle(){
 
     for(int i=0; i<4; i++)
     {
-        point = VPoint(loc.x + der[i][0]*siz.x, loc.y + der[i][1]*siz.y);
+        point = VPoint(loc.x + der[i][0]*siz.x/2, loc.y + der[i][1]*siz.y/2);
         point=point.rotate(loc, a);
         maxX = point.x;
         maxY = point.y;
@@ -216,14 +221,16 @@ void VGroupShape::getCircumscribedRectangle(){
         a = it->getAngle();
         for(int i=0; i<4; i++)
         {
-            point = VPoint(loc.x + der[i][0]*siz.x, loc.y + der[i][1]*siz.y);
+            point = VPoint(loc.x + der[i][0]*siz.x/2, loc.y + der[i][1]*siz.y/2);
             point=point.rotate( loc, a);
+//            qDebug()<<"point "<<point;
             maxX = std::max(maxX, point.x);
             maxY = std::max(maxY, point.y);
             minX = std::min(minX, point.x);
             minY = std::min(minY, point.y);
         }
     }
+//    qDebug()<<maxX<<minX<<maxY<<minY;
 //    VPoint mid((minX+maxX)/2,(minY+maxY)/2);
 //    for(const auto&i:shapes)
 //    {
@@ -237,10 +244,12 @@ void VGroupShape::getCircumscribedRectangle(){
     for(int i = 0; i < shapes.size(); i++){
         shapes[i]->setLocation(VPoint(shapes[i]->getLocation().x-midx,shapes[i]->getLocation().y-midy));
     }
-    qDebug()<<midx<<""<<midy<<endl;
 
-    VShape::setSize(VSize(getSize().x*maxX/olds.x,getSize().y*maxY/olds.y));
-    cr=VSize(maxX,maxY);
+    cr=VSize(maxX-minX,maxY-minY);
+    qDebug()<<"~~~~~size "<<getSize();
+    VShape::setSize(VSize(getSize().x*cr.x/olds.x,getSize().y*cr.y/olds.y));
+    qDebug()<<"~~~~~size "<<getSize();
+    qDebug()<<"cr"<<cr<<endl;
 }
 
 bool VGroupShape::eraseShape(int i)
@@ -287,7 +296,7 @@ QJsonObject VGroupShape::toJsonObject()const
 
 VGroupShape::VGroupShape(const QJsonObject &jsonObject):VShape(jsonObject)
 {
-    cr=VSize(0,0);
+    cr=VSize(1,1);
     QJsonArray jsonArray = jsonObject.value("shapes").toArray();
     VShape * tmp ;
     for(const auto &it: jsonArray)
