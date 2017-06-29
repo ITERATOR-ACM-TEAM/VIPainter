@@ -48,11 +48,15 @@ QJsonObject VCurveline::toJsonObject()const
     return jsonObject;
 }
 
-void VCurveline::draw(QPainter *painter)
+VShape* VCurveline::clone()
+{
+    return new VCurveline(*this);
+}
+
+void VCurveline::draw(QPainter *painter,const VMagnification &magnification)
 {
     painter->setPen(QPen(QBrush(Qt::black),1,Qt::SolidLine,Qt::RoundCap,Qt::RoundJoin));
     painter->setBrush(defaultBrush);
-    VSize trans(getTranslate());
 
     double x[20], y[20];
     for(int i = 0; i < points.size(); i++){
@@ -62,15 +66,17 @@ void VCurveline::draw(QPainter *painter)
     }
     //int seg = (points.size()-1)/2;
     //for(int sg = 0; sg < seg; sg++){
+    double sx=painter->worldTransform().m11();
         Newton newton(points.size()-1, x, y);
         QPolygonF qpf;
-        double h = 1*(newton.R-newton.L)/getSize().x;
-        int len = (int)(getSize().x);
+        double tmp=magnification.horizontal*sx;
+        double h = 1.0/tmp;
+        int len = (int)((newton.R-newton.L)*tmp);
         for(int i = 0; i <= len; i++){
             VPoint point(newton.L+i*h, newton.calNewDiffer(newton.L+i*h));
-            qpf << point.translate(trans).toQPointF();
+            qpf << (point*magnification).toQPointF();
         }
-        qpf << points.back().translate(trans).toQPointF();
+        qpf << (points.back()*magnification).toQPointF();
         painter->drawPolyline(qpf);
     //}
 //    QPainterPath path;

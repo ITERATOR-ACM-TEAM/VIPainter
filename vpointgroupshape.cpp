@@ -4,30 +4,26 @@
 #include <QJsonArray>
 #include <cmath>
 
-VPointGroupShape::VPointGroupShape():cr2(1,1)
+VPointGroupShape::VPointGroupShape():cr2(0,0)
 {
 }
 
-VPointGroupShape::VPointGroupShape(const VPointGroupShape &shape):VShape(shape),cr2(1,1){
+VPointGroupShape::VPointGroupShape(const VPointGroupShape &shape):VShape(shape),cr2(0,0){
     points=shape.getPointList();
-    VSize size=getSize();
     getCircumscribedRectangle();
-    VShape::setSize(size);
 }
 
-VPointGroupShape::VPointGroupShape(const QJsonObject &jsonObject):VShape(jsonObject),cr2(1,1){
+VPointGroupShape::VPointGroupShape(const QJsonObject &jsonObject):VShape(jsonObject),cr2(0,0){
     QJsonArray jsonArray = jsonObject.value("points").toArray();
     for(const auto &it: jsonArray)
     {
         VPoint p(it.toObject());
         this->points.push_back(p);
     }
-    VSize size=getSize();
     getCircumscribedRectangle();
-    VShape::setSize(size);
 }
 
-VPointGroupShape::VPointGroupShape(QVector<VPoint> vec):cr2(1,1){
+VPointGroupShape::VPointGroupShape(QVector<VPoint> vec):cr2(0,0){
     for(auto &i : vec){
         this->points.push_back(i);
     }
@@ -35,12 +31,7 @@ VPointGroupShape::VPointGroupShape(QVector<VPoint> vec):cr2(1,1){
 }
 
 
-int VPointGroupShape::getN()const{
-    return points.size();
-}
-
 void VPointGroupShape::movePoint(int i,VPoint point){//move the ith point to position p(x,y)
-    point=point.retranslate(getTranslate());
     if(i >= points.size()-1)i = points.size()-1;
     if(i < 0)i = 0;
     this->points[i].x = point.x;
@@ -61,8 +52,7 @@ QVector<VPoint> VPointGroupShape::getPointList()const{
     return this->points;
 }
 
-void VPointGroupShape::addPoint(VPoint p){
-    p=p.retranslate(getTranslate());
+void VPointGroupShape::addPoint(const VPoint &p){
     this->points.push_back(p);
     getCircumscribedRectangle();
 }
@@ -79,15 +69,13 @@ const VPointGroupShape& VPointGroupShape::operator=(const VPointGroupShape &shap
 const VPointGroupShape& VPointGroupShape::operator=(const QJsonObject &jsonObject){
     VShape::operator=(jsonObject);
     QJsonArray jsonArray = jsonObject.value("points").toArray();
-    points.clear();cr2=VPoint(0,0);
+    points.clear();
     for(const auto &it: jsonArray)
     {
         VPoint p(it.toObject());
         this->points.push_back(p);
     }
-    VSize size=getSize();
     getCircumscribedRectangle();
-    VShape::setSize(size);
     return *this;
 }
 
@@ -96,18 +84,9 @@ void VPointGroupShape::getCircumscribedRectangle(){
 
     if(points.empty())
     {
-        cr2.x=cr2.y=1;
-        setSize(VSize(1,1));
+        cr2.x=cr2.y=0;
         return;
     }
-    if(points.size()==1)
-    {
-        cr2.x=cr2.y=1;
-        setSize(VSize(1,1));
-        points[0].x=points[0].y=0;
-        return;
-    }
-    VSize olds=getLogicalSize();
 
     double x1 = points[0].x, y1 = points[0].y;
     double x2 = x1, y2 = y1;
@@ -134,11 +113,9 @@ void VPointGroupShape::getCircumscribedRectangle(){
     cr1.y = 0;
     cr2.x -= x1;
     cr2.y -= y1;
-
-    VShape::setSize(VSize(getSize().x*cr2.x/olds.x,getSize().y*cr2.y/olds.y));
 }
 
-VSize VPointGroupShape::getLogicalSize()
+VSize VPointGroupShape::getSize()
 {
 //    if(abs(cr2.x)<=0.0000001)setSize(VSize(0,getSize().y));
 //    if(abs(cr2.y)<=0.0000001)setSize(VSize(getSize().x,0));

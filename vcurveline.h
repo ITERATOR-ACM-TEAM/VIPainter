@@ -16,9 +16,10 @@ public:
     const VCurveline& operator=(const QJsonObject &jsonObject);
 
     QJsonObject toJsonObject()const override;
-    void draw(QPainter *painter)override;
+    void draw(QPainter *painter,const VMagnification &magnification)override;
     QString type()const override;
     bool contains(VPoint point)override;
+    VShape* clone()override;
 };
 
 #endif // VCURVELINE_H

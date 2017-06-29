@@ -85,12 +85,12 @@ void MainWindow::saveFile(QString filename)
     }
     else
     {
-        QImage image(testWidget->canvasSize.x,testWidget->canvasSize.y,QImage::Format_ARGB32);
+        QImage image(testWidget->canvasSize.width,testWidget->canvasSize.height,QImage::Format_ARGB32);
         image.fill(0x00ffffff);
         QPainter painter(&image);
         painter.setRenderHint(QPainter::Antialiasing);
-        painter.translate(testWidget->canvasSize.x/2,testWidget->canvasSize.y/2);
-        testWidget->groupShape.draw(&painter);
+        painter.translate(testWidget->canvasSize.width/2,testWidget->canvasSize.height/2);
+        testWidget->groupShape.draw(&painter,VMagnification(1,1));
         image.save(filename);
     }
 }

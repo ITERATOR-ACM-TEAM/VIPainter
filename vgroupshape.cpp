@@ -8,7 +8,7 @@
 #include "vtype.h"
 
 
-VGroupShape::VGroupShape(bool isRoot):isRoot(isRoot),cr(1,1)
+VGroupShape::VGroupShape(bool isRoot):isRoot(isRoot),cr(0,0)
 {
 }
 
@@ -20,15 +20,13 @@ VGroupShape::~VGroupShape()
     }
 }
 
-VGroupShape::VGroupShape(const VGroupShape &shape):VShape(shape),cr(1,1)
+VGroupShape::VGroupShape(const VGroupShape &shape):VShape(shape),cr(0,0)
 {
     for(auto & it : shape.shapes)
     {
         this->shapes.push_back(it->clone());
     }
-    VSize size=getSize();
     getCircumscribedRectangle();
-    VShape::setSize(size);
 }
 
 const VGroupShape & VGroupShape:: operator=(const VGroupShape &shape)
@@ -36,15 +34,11 @@ const VGroupShape & VGroupShape:: operator=(const VGroupShape &shape)
     if(this==&shape)return *this;
     VShape::operator =(shape);
     this->clear();
-    VShape::setSize(VSize(1,1));
-    cr=VSize(1,1);
     for(auto & it : shape.shapes)
     {
         this->shapes.push_back(it->clone());
     }
-    VSize size=getSize();
     getCircumscribedRectangle();
-    VShape::setSize(size);
     return *this;
 }
 
@@ -52,8 +46,6 @@ const VGroupShape & VGroupShape:: operator=(const QJsonObject &jsonObject)
 {
     VShape::operator =(jsonObject);
     this->clear();
-    VShape::setSize(VSize(1,1));
-    cr=VSize(1,1);
     QJsonArray jsonArray = jsonObject.value("shapes").toArray();
     VShape * tmp ;
     for(const auto &it: jsonArray)
@@ -62,9 +54,7 @@ const VGroupShape & VGroupShape:: operator=(const QJsonObject &jsonObject)
         if(tmp != nullptr)
             shapes.push_back(tmp);
     }
-    VSize size=getSize();
     getCircumscribedRectangle();
-    VShape::setSize(size);
     return *this;
 }
 
@@ -75,26 +65,22 @@ int VGroupShape::insertShape(VShape * other)
 
 int VGroupShape::insertShape(VShape * other, int pos)
 {
-    VSize trans=getTranslate();
     if(pos<0 || pos>this->shapes.size() || other == nullptr) return -1;
     this->shapes.insert(this->shapes.begin()+pos, other);
     VPoint orign = other->getLocation();
-    other->setLocation(VPoint(orign.x-getLocation().x, orign.y-getLocation().y).translate(trans));
-
-
+    other->setLocation(VPoint(orign.x-getLocation().x, orign.y-getLocation().y));
     getCircumscribedRectangle();
     return pos;
 }
 
 int VGroupShape::insertShape(const QVector<VShape *> & other)
 {
-    VSize trans=getTranslate();
     VPoint  orign;
     for(auto &it:other)
     {
         this->shapes.push_back(it);
         orign = it->getLocation();
-        it->setLocation(VPoint(orign.x-getLocation().x, orign.y-getLocation().y).translate(trans));
+        it->setLocation(VPoint(orign.x-getLocation().x, orign.y-getLocation().y));
     }
 
     getCircumscribedRectangle();
@@ -103,14 +89,13 @@ int VGroupShape::insertShape(const QVector<VShape *> & other)
 
 int VGroupShape::insertShape(const QVector<VShape *> & other, int pos)
 {
-    VSize trans=getTranslate();
     if(pos<0 || pos>=this->shapes.size()) return -1;
     VPoint orign;
     for(auto &it:other)
     {
         this->shapes.insert(this->shapes.begin()+(pos++), it);
         orign = it->getLocation();
-        it->setLocation(VPoint(orign.x-getLocation().x, orign.y-getLocation().y).translate(trans));
+        it->setLocation(VPoint(orign.x-getLocation().x, orign.y-getLocation().y));
     }
 
     getCircumscribedRectangle();
@@ -119,7 +104,6 @@ int VGroupShape::insertShape(const QVector<VShape *> & other, int pos)
 
 bool VGroupShape::moveShape(int i,  VPoint  location)
 {
-    location=location.retranslate(getTranslate());
     if(i<0 || i>=shapes.size()) return false;
 
     this->shapes[i]->setLocation(location);
@@ -134,26 +118,30 @@ QVector<VShape *> VGroupShape::getShapeVector()
     return shapes;
 }
 
-void VGroupShape::draw(QPainter *painter)
+VShape* VGroupShape::clone()
 {
-    VSize trans=getTranslate();
-    qDebug()<<"size"<<getSize();
-    qDebug()<<"logic"<<getLogicalSize();
-    qDebug()<<"trans"<<trans;
+    return new VGroupShape(*this);
+}
+
+
+void VGroupShape::draw(QPainter *painter,const VMagnification &magnification)
+{
+//    qDebug()<<"size"<<getSize();
+//    qDebug()<<"logic"<<getSize();
+//    qDebug()<<"trans"<<trans;
     double angle;
     VPoint loc;
 
     for(auto &it: shapes)
     {
+        painter->save();
         angle = it->getAngle();
-
-        loc = it->getLocation().translate(trans);
-        painter->translate(loc.x, loc.y);
+        loc = it->getLocation();
+        painter->translate(loc.x*magnification.horizontal, loc.y*magnification.vertical);
         painter->rotate(angle);
-        it->draw(painter);
-        qDebug() << it->type() << " Loc" << it->getLocation() << " Siz" << it->getSize();
-        painter->rotate(-angle);
-        painter->translate(-loc.x, -loc.y);
+        it->draw(painter,magnification*(it->getMagnification()));
+        //qDebug() << *it;
+        painter->restore();
     }
 
     //painter->drawRect(0,0,1,1);
@@ -161,21 +149,11 @@ void VGroupShape::draw(QPainter *painter)
 //获得外接矩形的左上点、右下点
 void VGroupShape::getCircumscribedRectangle(){
 
-    VSize cr1,cr2;
     if(shapes.empty())
     {
-        cr.x=cr.y=1;
-        VShape::setSize(VSize(1,1));
+        cr.width=cr.height=0;
         return;
     }
-    if(shapes.size()==1)
-    {
-        cr.x=cr.y=1;
-        VShape::setSize(VSize(1,1));
-        shapes[0]->setLocation(VPoint(0,0));
-        return;
-    }
-    VSize olds=getLogicalSize();
 
 //    double x1 = shapes[0]->getLocation().x, y1 = shapes[0]->getLocation().y;
 //    double x2 = x1, y2 = y1;
@@ -205,7 +183,7 @@ void VGroupShape::getCircumscribedRectangle(){
 
     for(int i=0; i<4; i++)
     {
-        point = VPoint(loc.x + der[i][0]*siz.x/2, loc.y + der[i][1]*siz.y/2);
+        point = VPoint(loc.x + der[i][0]*siz.width/2, loc.y + der[i][1]*siz.height/2);
         point=point.rotate(loc, a);
         maxX = point.x;
         maxY = point.y;
@@ -221,7 +199,7 @@ void VGroupShape::getCircumscribedRectangle(){
         a = it->getAngle();
         for(int i=0; i<4; i++)
         {
-            point = VPoint(loc.x + der[i][0]*siz.x/2, loc.y + der[i][1]*siz.y/2);
+            point = VPoint(loc.x + der[i][0]*siz.width/2, loc.y + der[i][1]*siz.height/2);
             point=point.rotate( loc, a);
 //            qDebug()<<"point "<<point;
             maxX = std::max(maxX, point.x);
@@ -246,10 +224,6 @@ void VGroupShape::getCircumscribedRectangle(){
     }
 
     cr=VSize(maxX-minX,maxY-minY);
-    qDebug()<<"~~~~~size "<<getSize();
-    VShape::setSize(VSize(getSize().x*cr.x/olds.x,getSize().y*cr.y/olds.y));
-    qDebug()<<"~~~~~size "<<getSize();
-    qDebug()<<"cr"<<cr<<endl;
 }
 
 bool VGroupShape::eraseShape(int i)
@@ -269,13 +243,12 @@ QString VGroupShape::type()const
 
 bool VGroupShape::contains(VPoint point)
 {
-    point=point.retranslate(getTranslate());
     VPoint subPoint, subLocation;
     for(auto & it: shapes)
     {
         subLocation = it->getLocation();
         subPoint = VPoint(point.x - subLocation.x, point.y - subLocation.y);
-        if(it->contains(subPoint.rotate(VPoint(0,0), it->getAngle()))) return false;
+        if(it->contains(subPoint.rotate(VPoint(0,0), it->getAngle())/it->getMagnification())) return false;
     }
     return true;
 }
@@ -284,7 +257,11 @@ QJsonObject VGroupShape::toJsonObject()const
 {
     QJsonObject jsonObject(VShape::toJsonObject());
     if(isRoot)
+    {
         jsonObject.erase(jsonObject.find("location"));
+        jsonObject.erase(jsonObject.find("magnification"));
+        jsonObject.erase(jsonObject.find("angle"));
+    }
     QJsonArray jsonArray;
     for(const auto &it: shapes)
     {
@@ -305,9 +282,7 @@ VGroupShape::VGroupShape(const QJsonObject &jsonObject):VShape(jsonObject)
         if(tmp != nullptr)
             shapes.push_back(tmp);
     }
-    VSize size=getSize();
     getCircumscribedRectangle();
-    VShape::setSize(size);
 }
 
 QVector<VShape *> VGroupShape::breakUp (VGroupShape * group)
@@ -334,20 +309,7 @@ void VGroupShape::clear()
     this->shapes.clear();
 }
 
-
-void VGroupShape::setSize(const VSize &size)
-{
-    VSize gsize=getSize();
-    VSize der(size.x-gsize.x,size.y-gsize.y);
-    for(const auto &i:shapes)
-    {
-        VSize isize=i->getSize();
-        i->setSize(VSize(isize.x+der.x*isize.x/gsize.x,isize.y+der.y*isize.y/gsize.y));
-    }
-    VShape::setSize(size);
-}
-
-VSize VGroupShape::getLogicalSize()
+VSize VGroupShape::getSize()
 {
     return cr;
 //    if(shapes.empty())return VSize(1,1);

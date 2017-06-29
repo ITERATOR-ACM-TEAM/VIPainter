@@ -4,6 +4,7 @@
 #include "vsize.h"
 #include <QPointF>
 #include <QJsonObject>
+#include <vmagnification.h>
 
 class VPoint{   
 public:
@@ -19,10 +20,9 @@ public:
 
     operator QJsonValue()const;
     QJsonObject toJsonObject()const;
-    VPoint translate(VSize scale);
-    VPoint retranslate(VSize scale);
-    VPoint operator*(VSize scale);
-    VPoint operator/(VSize scale);
+    VPoint operator*(const VMagnification &magnification)const;
+    VPoint operator/(const VMagnification &magnification)const;
+    double operator-(const VPoint &point)const;
 
     VPoint rotate(const VPoint & center, double a);
 };

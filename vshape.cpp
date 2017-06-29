@@ -16,8 +16,8 @@ VShape::~VShape()
 {
 }
 
-VShape::VShape(const QString &name, const VPoint &location, const VSize &size, double angle):
-    name(name),location(location),size(size),angle(angle)
+VShape::VShape(const QString &name, const VPoint &location, const VMagnification &magnification, double angle):
+    name(name),location(location),magnification(magnification),angle(angle)
 {
 }
 
@@ -43,11 +43,6 @@ void VShape::setLocation(const VPoint &location)
 }
 
 
-VSize VShape::getLogicalSize()
-{
-    return this->size;
-}
-
 VPoint VShape::getLocation()const
 {
     return location;
@@ -58,13 +53,7 @@ void VShape::setAngle(double angle)
     this->angle=angle;
 }
 
-VSize VShape::getTranslate()
-{
-    VSize logicalSize=getLogicalSize();
-    return VSize(size.x/logicalSize.x,size.y/logicalSize.y);
-}
-
-void VShape::setName(QString name)
+void VShape::setName(const QString &name)
 {
     this->name=name;
 }
@@ -81,19 +70,19 @@ VShape::operator QJsonValue()const
 
 VShape::VShape(const QJsonObject jsonObject)
 {
-    setName(jsonObject.value("name").toString());
-    setSize(jsonObject.value("size").toObject());
-    setAngle(jsonObject.value("angle").toDouble());
-    setLocation(jsonObject.value("location").toObject());
+    name=jsonObject.value("name").toString();
+    magnification=jsonObject.value("magnification").toObject();
+    angle=jsonObject.value("angle").toDouble();
+    location=jsonObject.value("location").toObject();
 }
 
 
 const VShape& VShape::operator=(const QJsonObject &jsonObject)
 {
-    setName(jsonObject.value("name").toString());
-    setSize(jsonObject.value("size").toObject());
-    setAngle(jsonObject.value("angle").toDouble());
-    setLocation(jsonObject.value("location").toObject());
+    name=jsonObject.value("name").toString();
+    magnification=jsonObject.value("magnification").toObject();
+    angle=jsonObject.value("angle").toDouble();
+    location=jsonObject.value("location").toObject();
     return *this;
 }
 
@@ -102,7 +91,7 @@ QJsonObject VShape::toJsonObject()const
     QJsonObject jsonObject;
     jsonObject.insert("type",this->type());
     jsonObject.insert("name",this->getName());
-    jsonObject.insert("size",this->getSize());
+    jsonObject.insert("magnification",this->getMagnification());
     jsonObject.insert("angle",this->getAngle());
     jsonObject.insert("location",this->getLocation());
     return jsonObject;
@@ -113,12 +102,12 @@ double VShape::getAngle()const
     return angle;
 }
 
-VSize VShape::getSize()const
+void VShape::setMagnification(const VMagnification &magnification)
 {
-    return size;
+    this->magnification=magnification;
 }
 
-void VShape::setSize(const VSize &size)
+VMagnification VShape::getMagnification()const
 {
-    this->size=size;
+    return magnification;
 }

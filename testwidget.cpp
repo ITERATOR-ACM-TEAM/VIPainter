@@ -4,6 +4,7 @@
 #include "vpoint.h"
 #include "vsize.h"
 #include "vcurveline.h"
+#include "vmagnification.h"
 #include <QPainter>
 #include <QSize>
 #include <QPen>
@@ -93,12 +94,9 @@ void TestWidget::paintEvent(QPaintEvent *)
     painter.setBrush(QBrush(Qt::white));
     painter.setPen(QPen(Qt::lightGray,1));
     painter.scale(scale,scale);
-    painter.drawRect(-canvasSize.x/2, -canvasSize.y/2, canvasSize.x, canvasSize.y);
+    painter.drawRect(-canvasSize.width/2, -canvasSize.height/2, canvasSize.width, canvasSize.height);
     painter.restore();
 
-    VSize size=groupShape.getSize();
-    groupShape.setSize(VSize(size.x*scale,size.y*scale));
-    groupShape.draw(&painter);
+    groupShape.draw(&painter,VMagnification(scale,scale));
 
-    groupShape.setSize(size);
 }

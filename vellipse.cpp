@@ -4,7 +4,7 @@
 #include <QDebug>
 #include <vtype.h>
 
-VEllipse::VEllipse(const QString &name, const VPoint &location, const VSize &size, double angle):VShape(name,location,size,angle)
+VEllipse::VEllipse(const QString &name, const VPoint &location, const VMagnification &magnification, double angle):VShape(name,location,magnification,angle)
 {
 }
 
@@ -12,9 +12,8 @@ VEllipse::~VEllipse()
 {
 }
 
-VEllipse::VEllipse(const QJsonObject &jsonObject)
+VEllipse::VEllipse(const QJsonObject &jsonObject):VShape(jsonObject)
 {
-    *this=jsonObject;
 }
 
 
@@ -31,11 +30,11 @@ const VEllipse& VEllipse::operator=(const VEllipse &shape)
     return *this;
 }
 
-void VEllipse::draw(QPainter *painter)
+void VEllipse::draw(QPainter *painter, const VMagnification &magnification)
 {
     painter->setPen(defaultPen);
     painter->setBrush(defaultBrush);
-    painter->drawEllipse(-getSize().x/2.0,-getSize().y/2.0,getSize().x,getSize().y);
+    painter->drawEllipse(-magnification.horizontal/2.0,-magnification.vertical/2.0,magnification.horizontal,magnification.vertical);
 }
 
 
@@ -45,17 +44,22 @@ QJsonObject VEllipse::toJsonObject()const
     return jsonObject;
 }
 
+VShape* VEllipse::clone()
+{
+    return new VEllipse(*this);
+}
 
 bool VEllipse::contains(VPoint point)
 {
-    double x=point.x;
-    double y=point.y;
-    double a=getSize().x/2;
-    double b=getSize().y/2;
-    return (x*x)/(a*a)+(y*y)/(b*b)<=1;
+    return point.x*point.x+point.y*point.y;
 }
 
 QString VEllipse::type()const
 {
     return VType::Ellipse;
+}
+
+VSize VEllipse::getSize()
+{
+    return VSize(1,1);
 }

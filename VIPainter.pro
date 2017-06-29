@@ -28,7 +28,8 @@ SOURCES += main.cpp\
     vcurveline.cpp \
     testwidget.cpp \
     interpolation.cpp \
-    vpointgroupshape.cpp
+    vpointgroupshape.cpp \
+    vmagnification.cpp
 
 HEADERS  += mainwindow.h \
     vpoint.h \
@@ -42,7 +43,8 @@ HEADERS  += mainwindow.h \
     vcurveline.h \
     testwidget.h \
     interpolation.h \
-    vpointgroupshape.h
+    vpointgroupshape.h \
+    vmagnification.h
 
 FORMS    += mainwindow.ui
 

@@ -1,45 +1,56 @@
 #include "vsize.h"
 
-VSize::VSize():x(0), y(0){}
+VSize::VSize():width(0), height(0){}
 
-VSize::VSize(double x,double y):x(x), y(y){}
+VSize::VSize(double x,double y):width(x), height(y){}
 
 const VSize& VSize::operator=(const VSize &size){
-    this->x = size.x;
-    this->y = size.y;
+    this->width = size.width;
+    this->height = size.height;
     return *this;
 }
 
 const VSize& VSize::operator=(const QJsonObject &jsonObject)
 {
-    this->x=jsonObject.value("width").toDouble();
-    this->y=jsonObject.value("height").toDouble();
+    this->width=jsonObject.value("width").toDouble();
+    this->height=jsonObject.value("height").toDouble();
     return *this;
 }
 
-VSize VSize::operator +(const VSize & Right)
+
+VSize VSize::operator *(const VMagnification &magnification)const
 {
-    return VSize(x+Right.x, y+Right.y);
+    return VSize(width*magnification.horizontal,height*magnification.vertical);
 }
 
-VSize VSize::operator -(const VSize & Right)
+VSize VSize::operator /(const VMagnification &magnification)const
 {
-    return VSize(x-Right.x, y-Right.y);
+    return VSize(width/magnification.horizontal,height/magnification.vertical);
+}
+
+VSize VSize::operator +(const VSize & Right)const
+{
+    return VSize(width+Right.width, height+Right.height);
+}
+
+VSize VSize::operator -(const VSize & Right)const
+{
+    return VSize(width-Right.width, height-Right.height);
 }
 
 VSize::operator QJsonValue()const
 {
     QJsonObject jsonObject;
-    jsonObject.insert("width",x);
-    jsonObject.insert("height",y);
+    jsonObject.insert("width",width);
+    jsonObject.insert("height",height);
     return jsonObject;
 }
 
 QJsonObject VSize::toJsonObject()const
 {
     QJsonObject jsonObject;
-    jsonObject.insert("width",x);
-    jsonObject.insert("height",y);
+    jsonObject.insert("width",width);
+    jsonObject.insert("height",height);
     return jsonObject;
 }
 

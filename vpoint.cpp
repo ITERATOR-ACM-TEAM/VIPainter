@@ -29,26 +29,20 @@ QPointF VPoint::toQPointF()
     return QPointF(x,y);
 }
 
-VPoint VPoint::translate(VSize scale)
+VPoint VPoint::operator*(const VMagnification &magnification)const
 {
-    return VPoint(x*scale.x,y*scale.y);
+    return VPoint(x*magnification.horizontal,y*magnification.vertical);
 }
 
 
-VPoint VPoint::operator*(VSize scale)
+VPoint VPoint::operator/(const VMagnification &magnification)const
 {
-    return VPoint(x*scale.x,y*scale.y);
+    return VPoint(x/magnification.horizontal,y/magnification.vertical);
 }
 
-VPoint VPoint::retranslate(VSize scale)
+double VPoint::operator-(const VPoint &point)const
 {
-    return VPoint(x/scale.x,y/scale.y);
-}
-
-
-VPoint VPoint::operator/(VSize scale)
-{
-    return VPoint(x/scale.x,y/scale.y);
+    return sqrt(pow(point.x-x,2)+pow(point.y-y,2));
 }
 
 VPoint::operator QJsonValue()const
