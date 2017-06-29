@@ -70,7 +70,7 @@ QJsonObject VPoint::toJsonObject()const
 VPoint VPoint::rotate(const VPoint & center, double a)
 {
     VPoint point(*this);
-    a = (360 - a) / 180 * VShape::PI;
+    a = a / 180 * VShape::PI;
     double x = point.x - center.x;
     double y = point.y - center.y;
     point.x = x*cos(a) - y*sin(a) + center.x;
