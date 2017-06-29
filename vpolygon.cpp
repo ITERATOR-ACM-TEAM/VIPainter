@@ -35,14 +35,16 @@ const VPolygon& VPolygon::operator=(const QJsonObject &jsonObject){
 }
 
 void VPolygon::draw(QPainter *painter){
+    VSize size(getTranslate());
     painter->setPen(QPen(QBrush(Qt::black),1,Qt::SolidLine,Qt::SquareCap,Qt::MiterJoin));
     painter->setBrush(defaultBrush);
     QPolygonF qpf;
     for(auto &i : points){
-        qpf << i.toQPointF();
+        qpf << i.translate(size).toQPointF();
     }
     painter->drawPolygon(qpf);
 }
+
 //QImage VPolygon::toImage(){
 //    int width = cr2.y-cr1.y, height = cr2.x-cr1.x;
 //    QImage image(width, height, QImage::Format_ARGB32);

@@ -38,7 +38,7 @@ public:
     QVector<VShape *> getShapeVector();
 
     int getVectorSize()const;
-    VSize getLogicalSize();
+    VSize getLogicalSize()override;
 
     void draw(QPainter *painter)override;
     QString type()const override;

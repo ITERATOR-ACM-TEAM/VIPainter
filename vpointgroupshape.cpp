@@ -111,6 +111,11 @@ void VPointGroupShape::getCircumscribedRectangle(){
     cr2.y -= y1;
 }
 
+VSize VPointGroupShape::getLogicalSize()
+{
+    return cr2;
+}
+
 QJsonObject VPointGroupShape::toJsonObject()const
 {
     QJsonObject jsonObject(VShape::toJsonObject());

@@ -51,6 +51,11 @@ void VShape::setAngle(double angle)
     this->angle=angle;
 }
 
+VSize VShape::getTranslate()
+{
+    VSize logicalSize=getLogicalSize();
+    return VSize(size.x/logicalSize.x,size.y/logicalSize.y);
+}
 
 void VShape::setName(QString name)
 {

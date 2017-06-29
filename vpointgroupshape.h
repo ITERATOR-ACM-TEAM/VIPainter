@@ -24,7 +24,7 @@ public:
     const VPointGroupShape& operator=(const VPointGroupShape &polyline);
     const VPointGroupShape& operator=(const QJsonObject &jsonObject);
     virtual void getCircumscribedRectangle();//获得外接矩形的左上点、右下点
-//    VSize getSize()const override;
+    VSize getLogicalSize()const override;
 //    void setSize(const VSize &size) override;
 };
 

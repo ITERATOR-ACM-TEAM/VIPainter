@@ -34,7 +34,7 @@ void VEllipse::draw(QPainter *painter)
 {
     painter->setPen(defaultPen);
     painter->setBrush(defaultBrush);
-    painter->drawEllipse(-size.x/2.0,-size.y/2.0,size.x,size.y);
+    painter->drawEllipse(-getSize().x/2.0,-getSize().y/2.0,getSize().x,getSize().y);
 }
 
 
@@ -49,8 +49,8 @@ bool VEllipse::contains(const VPoint &point)
 {
     double x=point.x;
     double y=point.y;
-    double a=size.x/2;
-    double b=size.y/2;
+    double a=getSize().x/2;
+    double b=getSize().y/2;
     return (x*x)/(a*a)+(y*y)/(b*b)<=1;
 }
 

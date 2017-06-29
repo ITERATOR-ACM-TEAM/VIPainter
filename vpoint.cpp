@@ -33,6 +33,12 @@ VPoint translate(VSize scale)
     return VPoint(x*scale.x,y*scale.y);
 }
 
+
+VPoint operator*(VSize scale)
+{
+    return VPoint(x*scale.x,y*scale.y);
+}
+
 VPoint::operator QJsonValue()const
 {
     QJsonObject jsonObject;

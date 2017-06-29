@@ -48,6 +48,9 @@ public:
     void setName(QString name);
     QString getName()const;
 
+    virtual VSize getLogicalSize()=0;
+    VSize getTranslate();
+
 };
 
 #endif //#ifndef VSHAPE_H
