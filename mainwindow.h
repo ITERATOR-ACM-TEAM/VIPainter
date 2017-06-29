@@ -52,13 +52,13 @@ private slots:
 private:
     Ui::MainWindow *ui;
 
-    TestWidget *focus;
-    QVector<TestWidget *> widgetVector;
+    QDockWidget *focus;
+    QVector<QDockWidget *> docks;
 
     QActionGroup  *group;
     int cursorState;
 
-    TestWidget * newDock();
+    QDockWidget * newDock();
     void saveFile(QString filename);
 
 

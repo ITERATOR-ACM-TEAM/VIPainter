@@ -13,7 +13,7 @@
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::MainWindow),focus(nullptr)
 {
     ui->setupUi(this);
     delete takeCentralWidget();
@@ -24,26 +24,29 @@ MainWindow::MainWindow(QWidget *parent) :
     group->addAction(ui->actionMove);
     connect(this, SIGNAL(cursorChange(int)), this, SLOT(changeCursor(int)));
     focus = newDock();
-    widgetVector.push_back(focus);
+    docks.push_back(focus);
     update();
 }
 
-TestWidget* MainWindow::newDock()
+QDockWidget* MainWindow::newDock()
 {
+    QDockWidget *old = focus;
     TestWidget* newWidget=new TestWidget(this);
     connect(this, SIGNAL(cursorChange(int)), newWidget, SLOT(changeCursor(int)));
     emit cursorChange(this->cursorState);
     QDockWidget *dockWidget=new QDockWidget;
     dockWidget->setWidget(newWidget);
-    dockWidget->setAttribute(Qt::WA_DeleteOnClose);
+    //dockWidget->setAttribute(Qt::WA_DeleteOnClose);
     this->addDockWidget(Qt::TopDockWidgetArea,dockWidget);
 
-    newWidget->setFocusPolicy(Qt::StrongFocus);
-    newWidget->installEventFilter(this);
+    dockWidget->setFocusPolicy(Qt::StrongFocus);
+    dockWidget->installEventFilter(this);
 
     dockWidget->show();
+    if(old != nullptr)
+        this->tabifyDockWidget(old, dockWidget);
 
-    return newWidget;
+    return dockWidget;
 }
 
 MainWindow::~MainWindow()
@@ -53,24 +56,25 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_actionZoomIn_triggered()
 {
-    focus->scale*=1.1;
-    qDebug()<<"scale:"<<focus->scale<<endl;
-    focus->update();
+
+    qobject_cast<TestWidget *>(focus->widget())->scale*=1.1;
+    qDebug()<<"scale:"<<qobject_cast<TestWidget *>(focus->widget())->scale<<endl;
+    qobject_cast<TestWidget *>(focus->widget())->update();
 }
 
 void MainWindow::on_actionZoomOut_triggered()
 {
-    focus->scale/=1.1;
-    qDebug()<<"scale:"<<focus->scale<<endl;
-    focus->update();
+    qobject_cast<TestWidget *>(focus->widget())->scale/=1.1;
+    qDebug()<<"scale:"<<qobject_cast<TestWidget *>(focus->widget())->scale<<endl;
+    qobject_cast<TestWidget *>(focus->widget())->update();
 }
 
 void MainWindow::on_actionResume_triggered()
 {
-    focus->scale=1.0;
-    focus->canvasLocation=VPoint(0,0);
-    qDebug()<<"scale:"<<focus->scale<<endl;
-    focus->update();
+    qobject_cast<TestWidget *>(focus->widget())->scale=1.0;
+    qobject_cast<TestWidget *>(focus->widget())->canvasLocation=VPoint(0,0);
+    qDebug()<<"scale:"<<qobject_cast<TestWidget *>(focus->widget())->scale<<endl;
+    qobject_cast<TestWidget *>(focus->widget())->update();
 }
 
 void MainWindow::on_actionSave_triggered()
@@ -83,7 +87,7 @@ void MainWindow::saveFile(QString filename)
     if(filename.split('.').back()==tr("vp"))
     {
         QJsonDocument jsonDocument;
-        jsonDocument.setObject(focus->groupShape.toJsonObject());
+        jsonDocument.setObject(qobject_cast<TestWidget *>(focus->widget())->groupShape.toJsonObject());
         QFile file(filename);
         file.open(QFile::WriteOnly|QFile::Text);
         file.write(jsonDocument.toJson());
@@ -91,12 +95,12 @@ void MainWindow::saveFile(QString filename)
     }
     else
     {
-        QImage image(focus->canvasSize.width,focus->canvasSize.height,QImage::Format_ARGB32);
+        QImage image(qobject_cast<TestWidget *>(focus->widget())->canvasSize.width,qobject_cast<TestWidget *>(focus->widget())->canvasSize.height,QImage::Format_ARGB32);
         image.fill(0x00ffffff);
         QPainter painter(&image);
         painter.setRenderHint(QPainter::Antialiasing);
-        painter.translate(focus->canvasSize.width/2,focus->canvasSize.height/2);
-        focus->groupShape.draw(&painter,VMagnification(1,1));
+        painter.translate(qobject_cast<TestWidget *>(focus->widget())->canvasSize.width/2,qobject_cast<TestWidget *>(focus->widget())->canvasSize.height/2);
+        qobject_cast<TestWidget *>(focus->widget())->groupShape.draw(&painter,VMagnification(1,1));
         image.save(filename);
     }
 }
@@ -124,9 +128,9 @@ void MainWindow::on_actionOpen_triggered()
 
     QFile file(filename);
     file.open(QFile::ReadOnly|QFile::Text);
-    TestWidget * newWidget = newDock();
-    widgetVector.push_back(newWidget);
-    newWidget->groupShape=QJsonDocument::fromJson(file.readAll()).object();
+    QDockWidget * newWidget = newDock();
+    docks.push_back(newWidget);
+    qobject_cast<TestWidget *>(newWidget->widget())->groupShape=QJsonDocument::fromJson(file.readAll()).object();
     file.close();
     newWidget->update();
 }
@@ -138,9 +142,10 @@ void MainWindow::on_actionTestShape1_triggered()
     file.open(QFile::ReadOnly|QFile::Text);
     VGroupShape * gs= new VGroupShape(QJsonDocument::fromJson(file.readAll()).object());
     if(focus==nullptr)return;
-    focus->groupShape.insertShape(gs);
+    qDebug() << focus ;
+    qobject_cast<TestWidget *>(focus->widget())->groupShape.insertShape(gs);
     file.close();
-    focus->update();
+    qobject_cast<TestWidget *>(focus->widget())->update();
 }
 
 void MainWindow::on_actionMove_triggered()
@@ -166,12 +171,12 @@ void MainWindow::changeCursor(int type)
 
 void MainWindow::on_actionNew_triggered()
 {
-    widgetVector.push_back(newDock());
+    docks.push_back(newDock());
 }
 
 bool MainWindow::eventFilter(QObject * obj, QEvent * ev)
 {
-    for(auto it = widgetVector.begin(); it != widgetVector.end(); it++)
+    for(auto it = docks.begin(); it != docks.end(); it++)
     {
         if(obj == *it)
         {
@@ -180,16 +185,32 @@ bool MainWindow::eventFilter(QObject * obj, QEvent * ev)
                 qDebug() << "focusing";
                 focus = *it;
                 return false;
-            }else if(ev->type() == QEvent::Hide)
+            }else if(ev->type() == QEvent::Close)
             {
                 qDebug() << "closing";
-                //delete *it;
-                widgetVector.erase(it);
-                if(widgetVector.empty()) focus = nullptr;
-                else widgetVector.back()->setFocus();
+                delete *it;
+                docks.erase(it);
+                focus = nullptr;
+                if(!docks.empty())
+                {
+                    docks.back()->raise();
+                    docks.back()->setFocus();
+                    docks.back()->activateWindow();
+                }
+                qDebug() << docks.size();
                 return true;
             }
-
+//            else if(ev->type() == QEvent::TabletPress)
+//            {
+//                qDebug() << "pressing";
+//                if(!docks.empty())
+//                {
+//                    docks.back()->raise();
+//                    docks.back()->setFocus();
+//                    docks.back()->activateWindow();
+//                }
+//                return false;
+//            }
         }
     }
 
