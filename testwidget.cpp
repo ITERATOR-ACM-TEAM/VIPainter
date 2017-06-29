@@ -49,11 +49,14 @@ void TestWidget::wheelEvent(QWheelEvent * event)
 void TestWidget::mousePressEvent(QMouseEvent *event)
 {
     pressPoint=event->pos();
+    if(mainwindow->getCursonState() == MainWindow::STATE_MOVE)
+        this->setCursor(Qt::ClosedHandCursor);
 }
 
 void TestWidget::mouseReleaseEvent(QMouseEvent *event)
 {
-    Q_UNUSED(event);
+    if(mainwindow->getCursonState() == MainWindow::STATE_MOVE)
+        this->setCursor(Qt::OpenHandCursor);
 }
 
 void TestWidget::mouseMoveEvent(QMouseEvent *event)
