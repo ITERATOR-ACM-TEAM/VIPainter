@@ -13,8 +13,8 @@
 #include <QDebug>
 #include <QVector>
 
-TestWidget::TestWidget(MainWindow *parent) :
-    QWidget(parent),canvasLocation(0,0),canvasSize(400,300)
+TestWidget::TestWidget(QMainWindow *parent) :
+    QWidget(parent),canvasLocation(0,0),canvasSize(400,300),cursorType(VCursorType::CHOOSE)
 {
     mainwindow=parent;
     setMouseTracking(true);
@@ -49,13 +49,13 @@ void TestWidget::wheelEvent(QWheelEvent * event)
 void TestWidget::mousePressEvent(QMouseEvent *event)
 {
     pressPoint=event->pos();
-    if(mainwindow->getCursonState() == MainWindow::STATE_MOVE)
+    if(cursorType == VCursorType::MOVE)
         this->setCursor(Qt::ClosedHandCursor);
 }
 
 void TestWidget::mouseReleaseEvent(QMouseEvent *event)
 {
-    if(mainwindow->getCursonState() == MainWindow::STATE_MOVE)
+    if(cursorType == VCursorType::MOVE)
         this->setCursor(Qt::OpenHandCursor);
 }
 
@@ -64,15 +64,14 @@ void TestWidget::mouseMoveEvent(QMouseEvent *event)
     QPoint qpoint=event->pos();
     if(event->buttons()&Qt::LeftButton)
     {
-        if(this->mainwindow->getCursonState() == MainWindow::STATE_MOVE)
+        if(cursorType == VCursorType::MOVE)
         {
             canvasLocation.x+=qpoint.x()-pressPoint.x();
             canvasLocation.y+=qpoint.y()-pressPoint.y();
             pressPoint=qpoint;
             //qDebug()<<"canvasLocation: ("<<canvasLocation.x<<","<<canvasLocation.y<<")"<<endl;
+            update();
         }
-
-        update();
     }
     else
     {
@@ -99,4 +98,20 @@ void TestWidget::paintEvent(QPaintEvent *)
     groupShape.draw(&painter);
 
     groupShape.setSize(size);
+}
+
+void TestWidget::changeCursor(int type)
+{
+    this->cursorType = type;
+    switch(type)
+    {
+    case VCursorType::CHOOSE:
+    {
+        this->setCursor(Qt::ArrowCursor);
+    }break;
+    case VCursorType::MOVE:
+    {
+        this->setCursor(Qt::OpenHandCursor);
+    }break;
+    }
 }

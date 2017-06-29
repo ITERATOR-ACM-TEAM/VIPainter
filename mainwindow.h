@@ -2,11 +2,11 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QVector>
 #include <QPaintEvent>
 #include <QActionGroup>
+#include <vcursortype.h>
 #include "testwidget.h"
-
-class TestWidget;
 
 namespace Ui {
 class MainWindow;
@@ -17,12 +17,15 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    static const int STATE_MOVE;
-    static const int STATE_CHOOSE;
-
     explicit MainWindow(QWidget *parent = 0);
-    int getCursonState();
     ~MainWindow();
+
+signals:
+    void cursorChange(int type);
+
+protected:
+    bool eventFilter(QObject * obj, QEvent * ev)override;
+
 private slots:
     void on_actionZoomIn_triggered();
 
@@ -42,13 +45,23 @@ private slots:
 
     void on_actionChoose_triggered();
 
+    void changeCursor(int type);
+
+    void on_actionNew_triggered();
+
 private:
     Ui::MainWindow *ui;
-    TestWidget *testWidget;
+
+    TestWidget *focus;
+    QVector<TestWidget *> widgetVector;
+
     QActionGroup  *group;
     int cursorState;
-    void newDock();
+
+    TestWidget * newDock();
     void saveFile(QString filename);
+
+
 };
 
 #endif // MAINWINDOW_H

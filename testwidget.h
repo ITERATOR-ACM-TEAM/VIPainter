@@ -9,20 +9,18 @@
 #include <QRect>
 #include <QWheelEvent>
 #include "vgroupshape.h"
-#include "mainwindow.h"
 #include "vsize.h"
 #include "vpoint.h"
-
-class MainWindow;
+#include "vcursortype.h"
 
 class TestWidget : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit TestWidget(MainWindow *mainwindow);
+    explicit TestWidget(QMainWindow *mainwindow);
     double scale=1;
-    MainWindow *mainwindow;
+    QMainWindow *mainwindow;
     VGroupShape groupShape;
     VPoint canvasLocation;
     VSize canvasSize;
@@ -38,6 +36,10 @@ protected:
     void wheelEvent(QWheelEvent * event)override;
 
 private:
+    int cursorType;
+
+public slots:
+    void changeCursor(int type);
 };
 
 #endif // TESTWIDGET_H
