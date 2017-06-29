@@ -12,11 +12,12 @@
 #include "vsize.h"
 
 class VShape{
-protected:
+private:
     QString name;
     VPoint location;
     VSize size;
     double angle;
+protected:
     static const QPen defaultPen;
     static const QBrush defaultBrush;
 public:

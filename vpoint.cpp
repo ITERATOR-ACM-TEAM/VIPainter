@@ -1,4 +1,5 @@
 #include "vpoint.h"
+#include "vshape.h"
 
 VPoint::VPoint():x(0), y(0){}
 
@@ -41,4 +42,15 @@ QJsonObject VPoint::toJsonObject()const
     jsonObject.insert("x",x);
     jsonObject.insert("y",y);
     return jsonObject;
+}
+
+VPoint VPoint::rotate(const VPoint & center, double a)
+{
+    VPoint point(*this);
+    a = (360 - a) / 180 * VShape::PI;
+    double x = point.x - center.x;
+    double y = point.y - center.y;
+    point.x = x*cos(a) - y*sin(a) + center.x;
+    point.y = x*sin(a) + y*cos(a) + center.y;
+    return point;
 }
