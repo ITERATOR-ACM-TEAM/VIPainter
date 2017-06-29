@@ -6,6 +6,7 @@
 #include "vgroupshape.h"
 #include <vtype.h>
 #include <cmath>
+#include <QDebug>
 
 const double VShape::PI=atan(1)*4.0;
 const QPen VShape::defaultPen(QBrush(Qt::black),1);
@@ -120,7 +121,5 @@ VSize VShape::getSize()const
 void VShape::setSize(const VSize &size)
 {
     this->size=size;
-    if(this->size.x<1)this->size.x=1;
-    if(this->size.y<1)this->size.y=1;
-
+    qDebug()<<size<<endl;
 }

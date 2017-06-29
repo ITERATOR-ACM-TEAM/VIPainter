@@ -34,10 +34,11 @@ const VPolygon& VPolygon::operator=(const QJsonObject &jsonObject){
     return *this;
 }
 
-void VPolygon::draw(QPainter *painter){
-    VSize trans(getTranslate());
+void VPolygon::draw(QPainter *painter)
+{
     painter->setPen(QPen(QBrush(Qt::black),1,Qt::SolidLine,Qt::SquareCap,Qt::MiterJoin));
     painter->setBrush(defaultBrush);
+    VSize trans(getTranslate());
     QPolygonF qpf;
     for(auto &i : points){
         qpf << i.translate(trans).toQPointF();

@@ -61,8 +61,8 @@
                 {
                     "angle": 0,
                     "location": {
-                        "x": -10200.000000000002,
-                        "y": -10200.000000000002
+                        "x": -102,
+                        "y": -102
                     },
                     "name": "",
                     "points": [
@@ -87,7 +87,7 @@
                         "height": 51,
                         "width": 51
                     },
-                    "type": "Polygon"
+                    "type": "Polyline"
                 }
             ],
             "size": {
@@ -133,8 +133,8 @@
         }
     ],
     "size": {
-        "height": 100,
-        "width": 100
+        "height": 1,
+        "width": 1
     },
     "type": "GroupShape"
 }

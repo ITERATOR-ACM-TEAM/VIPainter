@@ -37,7 +37,7 @@ public:
 
 /*****************setter and getter*********************/
     VSize getSize()const;
-    void setSize(const VSize &size);
+    virtual void setSize(const VSize &size);
 
     void setLocation(const VPoint &location);
     VPoint getLocation()const;

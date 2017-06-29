@@ -79,18 +79,17 @@ void TestWidget::paintEvent(QPaintEvent *)
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
     painter.translate(this->width()/2+canvasLocation.x,this->height()/2+canvasLocation.y);
-    painter.scale(scale,scale);
 
-    QPen oldPen=painter.pen();
-    QBrush oldBrush=painter.brush();
-
+    painter.save();
     painter.setBrush(QBrush(Qt::white));
     painter.setPen(QPen(Qt::lightGray,1));
-
+    painter.scale(scale,scale);
     painter.drawRect(-canvasSize.x/2, -canvasSize.y/2, canvasSize.x, canvasSize.y);
+    painter.restore();
 
-    painter.setPen(oldPen);
-    painter.setBrush(oldBrush);
-
+    VSize size=groupShape.getSize();
+    groupShape.setSize(VSize(size.x*scale,size.y*scale));
     groupShape.draw(&painter);
+
+    groupShape.setSize(size);
 }

@@ -1,5 +1,6 @@
 #include "vpoint.h"
 #include "vshape.h"
+#include <cmath>
 
 VPoint::VPoint():x(0), y(0){}
 

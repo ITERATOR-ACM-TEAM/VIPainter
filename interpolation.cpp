@@ -78,10 +78,10 @@ void Newton::print_f()
 //    }
 }
 
-QVector<VPoint> Newton::getFunc(double h){
+QVector<VPoint> Newton::getFunc(double hh){
     QVector<VPoint> vec;
-    this->h = h;
-    int len = (int)((R-L)/h);
+    this->h = 1*(R-L)/hh;
+    int len = (int)(hh);
     for(int i = 0; i <= len; i++){
         VPoint point(L+i*h, this->calNewDiffer(L+i*h));
         vec.push_back(point);

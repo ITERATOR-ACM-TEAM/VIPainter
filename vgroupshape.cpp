@@ -22,12 +22,10 @@ VGroupShape::~VGroupShape()
 
 VGroupShape::VGroupShape(const VGroupShape &shape):VShape(shape)
 {
-    this->clear();
     for(auto & it : shape.shapes)
     {
         this->shapes.push_back(it->clone());
     }
-
 }
 
 const VGroupShape & VGroupShape:: operator=(const VGroupShape &shape)
@@ -54,59 +52,72 @@ const VGroupShape & VGroupShape:: operator=(const QJsonObject &jsonObject)
         if(tmp != nullptr)
             shapes.push_back(tmp);
     }
+    setSize(getSize());
     return *this;
 }
 
 int VGroupShape::insertShape(VShape * other)
 {
-    if(other == nullptr) return -1;
-    this->shapes.push_back(other);
-    VPoint orign = other->getLocation();
-    other->setLocation(VPoint(orign.x-getLocation().x, orign.y-getLocation().y));
-    return this->getVectorSize()-1;
+    return insertShape(other,shapes.size());
 }
 
 int VGroupShape::insertShape(VShape * other, int pos)
 {
-    if(pos<0 || pos>=this->shapes.size() || other == nullptr) return -1;
+    VSize olds=getLogicalSize();
+    VSize trans=getTranslate();
+    if(pos<0 || pos>this->shapes.size() || other == nullptr) return -1;
     this->shapes.insert(this->shapes.begin()+pos, other);
     VPoint orign = other->getLocation();
-    other->setLocation(VPoint(orign.x-getLocation().x, orign.y-getLocation().y));
+    other->setLocation(VPoint(orign.x-getLocation().x, orign.y-getLocation().y).translate(trans));
+
+    VSize news=getLogicalSize();
+    VShape::setSize(VSize(getSize().x*news.x/olds.x,getSize().y*news.y/olds.y));
     return pos;
 }
 
 int VGroupShape::insertShape(const QVector<VShape *> & other)
 {
+    VSize olds=getLogicalSize();
+    VSize trans=getTranslate();
     VPoint  orign;
     for(auto &it:other)
     {
         this->shapes.push_back(it);
         orign = it->getLocation();
-        it->setLocation(VPoint(orign.x-getLocation().x, orign.y-getLocation().y));
+        it->setLocation(VPoint(orign.x-getLocation().x, orign.y-getLocation().y).translate(trans));
     }
+    VSize news=getLogicalSize();
+    VShape::setSize(VSize(getSize().x*news.x/olds.x,getSize().y*news.y/olds.y));
     return this->getVectorSize()-1;
 }
 
 int VGroupShape::insertShape(const QVector<VShape *> & other, int pos)
 {
+    VSize olds=getLogicalSize();
+    VSize trans=getTranslate();
     if(pos<0 || pos>=this->shapes.size()) return -1;
     VPoint orign;
     for(auto &it:other)
     {
         this->shapes.insert(this->shapes.begin()+(pos++), it);
         orign = it->getLocation();
-        it->setLocation(VPoint(orign.x-getLocation().x, orign.y-getLocation().y));
+        it->setLocation(VPoint(orign.x-getLocation().x, orign.y-getLocation().y).translate(trans));
     }
+    VSize news=getLogicalSize();
+    VShape::setSize(VSize(getSize().x*news.x/olds.x,getSize().y*news.y/olds.y));
     return pos-1;
 }
 
 bool VGroupShape::moveShape(int i,  VPoint  location)
 {
+    VSize olds=getLogicalSize();
     location=location.retranslate(getTranslate());
     if(i<0 || i>=shapes.size()) return false;
 
     this->shapes[i]->setLocation(location);
 
+    VSize news=getLogicalSize();
+    VShape::setSize(VSize(getSize().x*news.x/olds.x,getSize().y*news.y/olds.y));
     return true;
 }
 
@@ -132,14 +143,18 @@ void VGroupShape::draw(QPainter *painter)
         painter->rotate(-angle);
         painter->translate(-loc.x, -loc.y);
     }
+    painter->drawRect(0,0,1,1);
 }
 
 bool VGroupShape::eraseShape(int i)
 {
+    VSize olds=getLogicalSize();
     if(i<0 || i>=shapes.size()) return false;
     VShape * tmp = shapes[i];
     shapes.erase(shapes.begin()+i);
     delete tmp;
+    VSize news=getLogicalSize();
+    VShape::setSize(VSize(getSize().x*news.x/olds.x,getSize().y*news.y/olds.y));
     return true;
 }
 
@@ -185,6 +200,7 @@ VGroupShape::VGroupShape(const QJsonObject &jsonObject):VShape(jsonObject)
         if(tmp != nullptr)
             shapes.push_back(tmp);
     }
+    setSize(getSize());
 }
 
 QVector<VShape *> VGroupShape::breakUp (VGroupShape * group)
@@ -211,14 +227,27 @@ void VGroupShape::clear()
     this->shapes.clear();
 }
 
+
+void VGroupShape::setSize(const VSize &size)
+{
+    VSize gsize=getSize();
+    VSize der(size.x-gsize.x,size.y-gsize.y);
+    for(const auto &i:shapes)
+    {
+        VSize isize=i->getSize();
+        i->setSize(VSize(isize.x+der.x*isize.x/gsize.x,isize.y+der.y*isize.y/gsize.y));
+    }
+    VShape::setSize(size);
+}
+
 VSize VGroupShape::getLogicalSize()
 {
+    if(shapes.empty())return VSize(1,1);
     double minX, minY;
     double maxX, maxY;
     int der[4][2] = {1,1,-1,1,-1,-1,1,-1};
 
     // if no subShape, return (0,0)
-    if(shapes.empty()) return VSize(0, 0);
 
     //init max&min
     VPoint point;
@@ -252,6 +281,11 @@ VSize VGroupShape::getLogicalSize()
             minX = std::min(minX, point.x);
             minY = std::min(minY, point.y);
         }
+    }
+    VPoint mid((minX+maxX)/2,(minY+maxY)/2);
+    for(const auto&i:shapes)
+    {
+        i->setLocation(mid);
     }
     return VSize(maxX-minX, maxY-minY);
 }

@@ -61,12 +61,15 @@ void VCurveline::draw(QPainter *painter)
         //qDebug()<<">>> "<<x[i]<<" "<<y[i]<<endl;
     }
     Newton newton(points.size()-1, x, y);
-    QVector<VPoint> vec = newton.getFunc(getSize().x);
+
     QPolygonF qpf;
-    for(auto &i : vec){
-        qpf << i.translate(trans).toQPointF();
-        qDebug()<<i.x*trans.x<<" "<<i.y*trans.y<<endl;
+    double h = 1*(newton.R-newton.L)/getSize().x;
+    int len = (int)(getSize().x);
+    for(int i = 0; i <= len; i++){
+        VPoint point(newton.L+i*h, newton.calNewDiffer(newton.L+i*h));
+        qpf << point.translate(trans).toQPointF();
     }
+
     painter->drawPolyline(qpf);
 //    QPainterPath path;
 //    auto nextit=vec.begin();

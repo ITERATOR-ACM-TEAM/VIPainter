@@ -12,8 +12,8 @@ private:
     double x[N];
     double f[N][N];
     double h = 0.1;
-    double L, R;//x的左右区间范围
 public:
+    double L, R;//x的左右区间范围
     Newton();
     Newton(int n, double *x, double *y);//差分形式
     ~Newton();

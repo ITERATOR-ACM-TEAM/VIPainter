@@ -12,6 +12,7 @@ class VGroupShape : public VShape
 private:
     QVector<VShape*> shapes;
     bool isRoot;
+    void caculateSubShapeAndSize();
 
 public:
 
@@ -45,6 +46,7 @@ public:
 
     const VGroupShape& operator=(const VGroupShape &shape);
     const VGroupShape& operator=(const QJsonObject &jsonObject);
+    void setSize(const VSize &size)override;
 };
 
 #endif // VGROUPSHAPE_H
