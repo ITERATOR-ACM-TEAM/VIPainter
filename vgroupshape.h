@@ -13,6 +13,7 @@ private:
     QVector<VShape*> shapes;
     bool isRoot;
     void caculateSubShapeAndSize();
+    VSize cr;
 
 public:
 
@@ -46,6 +47,7 @@ public:
 
     const VGroupShape& operator=(const VGroupShape &shape);
     const VGroupShape& operator=(const QJsonObject &jsonObject);
+    virtual void getCircumscribedRectangle();//获得外接矩形的左上点、右下点
     void setSize(const VSize &size)override;
 };
 

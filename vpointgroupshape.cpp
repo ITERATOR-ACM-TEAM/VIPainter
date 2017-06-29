@@ -4,18 +4,18 @@
 #include <QJsonArray>
 #include <cmath>
 
-VPointGroupShape::VPointGroupShape():cr2(0,0)
+VPointGroupShape::VPointGroupShape():cr2(1,1)
 {
 }
 
-VPointGroupShape::VPointGroupShape(const VPointGroupShape &shape):VShape(shape),cr2(0,0){
+VPointGroupShape::VPointGroupShape(const VPointGroupShape &shape):VShape(shape),cr2(1,1){
     points=shape.getPointList();
     VSize size=getSize();
     getCircumscribedRectangle();
     setSize(size);
 }
 
-VPointGroupShape::VPointGroupShape(const QJsonObject &jsonObject):VShape(jsonObject),cr2(0,0){
+VPointGroupShape::VPointGroupShape(const QJsonObject &jsonObject):VShape(jsonObject),cr2(1,1){
     QJsonArray jsonArray = jsonObject.value("points").toArray();
     for(const auto &it: jsonArray)
     {
@@ -27,7 +27,7 @@ VPointGroupShape::VPointGroupShape(const QJsonObject &jsonObject):VShape(jsonObj
     setSize(size);
 }
 
-VPointGroupShape::VPointGroupShape(QVector<VPoint> vec):cr2(0,0){
+VPointGroupShape::VPointGroupShape(QVector<VPoint> vec):cr2(1,1){
     for(auto &i : vec){
         this->points.push_back(i);
     }
