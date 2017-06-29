@@ -181,7 +181,7 @@ bool MainWindow::eventFilter(QObject * obj, QEvent * ev)
             }else if(ev->type() == QEvent::Hide)
             {
                 qDebug() << "closing";
-                delete *it;
+                //delete *it;
                 widgetVector.erase(it);
                 if(widgetVector.empty()) focus = nullptr;
                 else widgetVector.back()->setFocus();
