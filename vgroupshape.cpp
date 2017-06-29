@@ -55,7 +55,9 @@ const VGroupShape & VGroupShape:: operator=(const QJsonObject &jsonObject)
         if(tmp != nullptr)
             shapes.push_back(tmp);
     }
-    setSize(getSize());
+    VSize size=getSize();
+    getCircumscribedRectangle();
+    setSize(size);
     return *this;
 }
 
