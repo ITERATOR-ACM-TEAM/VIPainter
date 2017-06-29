@@ -121,5 +121,5 @@ VSize VShape::getSize()const
 void VShape::setSize(const VSize &size)
 {
     this->size=size;
-    qDebug()<<size<<endl;
+    // qDebug()<<size<<endl;
 }

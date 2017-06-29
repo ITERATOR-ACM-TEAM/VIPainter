@@ -13,7 +13,7 @@
 #include <QDebug>
 #include <QVector>
 
-TestWidget::TestWidget(QMainWindow *parent) :
+TestWidget::TestWidget(MainWindow *parent) :
     QWidget(parent),canvasLocation(0,0),canvasSize(400,300)
 {
     mainwindow=parent;
@@ -61,6 +61,7 @@ void TestWidget::mouseMoveEvent(QMouseEvent *event)
     QPoint qpoint=event->pos();
     if(event->buttons()&Qt::LeftButton)
     {
+        if(this->mainwindow)
         canvasLocation.x+=qpoint.x()-pressPoint.x();
         canvasLocation.y+=qpoint.y()-pressPoint.y();
         pressPoint=qpoint;

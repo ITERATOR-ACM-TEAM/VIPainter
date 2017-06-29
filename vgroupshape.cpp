@@ -146,9 +146,11 @@ void VGroupShape::draw(QPainter *painter)
         painter->translate(loc.x, loc.y);
         painter->rotate(angle);
         it->draw(painter);
+        qDebug() << it->type() << " Loc" << it->getLocation() << " Siz" << it->getSize();
         painter->rotate(-angle);
         painter->translate(-loc.x, -loc.y);
     }
+
     //painter->drawRect(0,0,1,1);
 }
 //获得外接矩形的左上点、右下点
@@ -243,6 +245,7 @@ QJsonObject VGroupShape::toJsonObject()const
 
 VGroupShape::VGroupShape(const QJsonObject &jsonObject):VShape(jsonObject)
 {
+    cr=VSize(0,0);
     QJsonArray jsonArray = jsonObject.value("shapes").toArray();
     VShape * tmp ;
     for(const auto &it: jsonArray)

@@ -181,6 +181,9 @@
    </property>
   </action>
   <action name="actionChoose">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="icon.qrc">
      <normaloff>:/icon/cursor.png</normaloff>:/icon/cursor.png</iconset>
@@ -193,6 +196,9 @@
    </property>
   </action>
   <action name="actionMove">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="icon.qrc">
      <normaloff>:/icon/mover.png</normaloff>:/icon/mover.png</iconset>
