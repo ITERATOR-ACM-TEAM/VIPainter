@@ -8,7 +8,7 @@
 #include "vtype.h"
 
 
-VGroupShape::VGroupShape(bool isRoot):isRoot(isRoot)
+VGroupShape::VGroupShape(bool isRoot):isRoot(isRoot),cr(1,1)
 {
 }
 
@@ -20,7 +20,7 @@ VGroupShape::~VGroupShape()
     }
 }
 
-VGroupShape::VGroupShape(const VGroupShape &shape):VShape(shape),cr(0,0)
+VGroupShape::VGroupShape(const VGroupShape &shape):VShape(shape),cr(1,1)
 {
     for(auto & it : shape.shapes)
     {
@@ -28,7 +28,7 @@ VGroupShape::VGroupShape(const VGroupShape &shape):VShape(shape),cr(0,0)
     }
     VSize size=getSize();
     getCircumscribedRectangle();
-    setSize(size);
+    VShape::setSize(size);
 }
 
 const VGroupShape & VGroupShape:: operator=(const VGroupShape &shape)
@@ -36,10 +36,14 @@ const VGroupShape & VGroupShape:: operator=(const VGroupShape &shape)
     if(this==&shape)return *this;
     VShape::operator =(shape);
     this->clear();
+    cr=VSize(0,0);
     for(auto & it : shape.shapes)
     {
         this->shapes.push_back(it->clone());
     }
+    VSize size=getSize();
+    getCircumscribedRectangle();
+    VShape::setSize(size);
     return *this;
 }
 
@@ -47,6 +51,7 @@ const VGroupShape & VGroupShape:: operator=(const QJsonObject &jsonObject)
 {
     VShape::operator =(jsonObject);
     this->clear();
+    cr=VSize(0,0);
     QJsonArray jsonArray = jsonObject.value("shapes").toArray();
     VShape * tmp ;
     for(const auto &it: jsonArray)
@@ -57,7 +62,7 @@ const VGroupShape & VGroupShape:: operator=(const QJsonObject &jsonObject)
     }
     VSize size=getSize();
     getCircumscribedRectangle();
-    setSize(size);
+    VShape::setSize(size);
     return *this;
 }
 
@@ -144,7 +149,7 @@ void VGroupShape::draw(QPainter *painter)
         painter->rotate(-angle);
         painter->translate(-loc.x, -loc.y);
     }
-    painter->drawRect(0,0,1,1);
+    //painter->drawRect(0,0,1,1);
 }
 //获得外接矩形的左上点、右下点
 void VGroupShape::getCircumscribedRectangle(){
@@ -153,13 +158,13 @@ void VGroupShape::getCircumscribedRectangle(){
     if(shapes.empty())
     {
         cr2.x=cr2.y=1;
-        setSize(VSize(1,1));
+        VShape::setSize(VSize(1,1));
         return;
     }
     if(shapes.size()==1)
     {
         cr2.x=cr2.y=1;
-        setSize(VSize(1,1));
+        VShape::setSize(VSize(1,1));
         shapes[0]->setLocation(VPoint(0,0));
         return;
     }
@@ -248,7 +253,7 @@ VGroupShape::VGroupShape(const QJsonObject &jsonObject):VShape(jsonObject)
     }
     VSize size=getSize();
     getCircumscribedRectangle();
-    setSize(size);
+    VShape::setSize(size);
 }
 
 QVector<VShape *> VGroupShape::breakUp (VGroupShape * group)
@@ -305,7 +310,7 @@ VSize VGroupShape::getLogicalSize()
 //    VSize siz = first->getSize();
 //    double a = first->getAngle();
 
-//    for(int i=0; i<4; i++)\
+//    for(int i=0; i<4; i++)
 //    {
 //        point = VPoint(loc.x + der[i][0]*siz.x, loc.y + der[i][1]*siz.y);
 //        point=point.rotate(loc, a);
@@ -321,7 +326,7 @@ VSize VGroupShape::getLogicalSize()
 //        loc = it->getLocation();
 //        siz = it->getSize();
 //        a = it->getAngle();
-//        for(int i=0; i<4; i++)\
+//        for(int i=0; i<4; i++)
 //        {
 //            point = VPoint(loc.x + der[i][0]*siz.x, loc.y + der[i][1]*siz.y);
 //            point=point.rotate( loc, a);
