@@ -1,6 +1,6 @@
 #include "vpolygon.h"
 #include "vpoint.h"
-#include "QDebug"
+#include <QDebug>
 #include <QPainter>
 #include "vtype.h"
 
@@ -38,6 +38,7 @@ void VPolygon::draw(QPainter *painter)
 {
     painter->setPen(QPen(QBrush(Qt::black),1,Qt::SolidLine,Qt::SquareCap,Qt::MiterJoin));
     painter->setBrush(defaultBrush);
+    qDebug()<<painter<<endl;
     VSize trans(getTranslate());
     QPolygonF qpf;
     for(auto &i : points){

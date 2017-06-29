@@ -12,7 +12,7 @@ VPointGroupShape::VPointGroupShape(const VPointGroupShape &shape):VShape(shape),
     points=shape.getPointList();
     VSize size=getSize();
     getCircumscribedRectangle();
-    setSize(size);
+    VShape::setSize(size);
 }
 
 VPointGroupShape::VPointGroupShape(const QJsonObject &jsonObject):VShape(jsonObject),cr2(1,1){
@@ -24,7 +24,7 @@ VPointGroupShape::VPointGroupShape(const QJsonObject &jsonObject):VShape(jsonObj
     }
     VSize size=getSize();
     getCircumscribedRectangle();
-    setSize(size);
+    VShape::setSize(size);
 }
 
 VPointGroupShape::VPointGroupShape(QVector<VPoint> vec):cr2(1,1){
@@ -87,7 +87,7 @@ const VPointGroupShape& VPointGroupShape::operator=(const QJsonObject &jsonObjec
     }
     VSize size=getSize();
     getCircumscribedRectangle();
-    setSize(size);
+    VShape::setSize(size);
     return *this;
 }
 
@@ -135,7 +135,7 @@ void VPointGroupShape::getCircumscribedRectangle(){
     cr2.x -= x1;
     cr2.y -= y1;
 
-    setSize(VSize(getSize().x*cr2.x/olds.x,getSize().y*cr2.y/olds.y));
+    VShape::setSize(VSize(getSize().x*cr2.x/olds.x,getSize().y*cr2.y/olds.y));
 }
 
 VSize VPointGroupShape::getLogicalSize()
