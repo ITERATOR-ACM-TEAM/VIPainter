@@ -9,17 +9,20 @@
 #include <QRect>
 #include <QWheelEvent>
 #include "vgroupshape.h"
+#include "mainwindow.h"
 #include "vsize.h"
 #include "vpoint.h"
+
+class MainWindow;
 
 class TestWidget : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit TestWidget(QMainWindow *mainwindow);
+    explicit TestWidget(MainWindow *mainwindow);
     double scale=1;
-    QMainWindow *mainwindow;
+    MainWindow *mainwindow;
     VGroupShape groupShape;
     VPoint canvasLocation;
     VSize canvasSize;

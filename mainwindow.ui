@@ -52,6 +52,19 @@
    <addaction name="actionResume"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
+  <widget class="QToolBar" name="shapeBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>true</bool>
+   </attribute>
+   <addaction name="actionTestShape1"/>
+   <addaction name="actionTestShape2"/>
+  </widget>
   <action name="actionPen">
    <property name="icon">
     <iconset resource="icon.qrc">
@@ -168,6 +181,9 @@
    </property>
   </action>
   <action name="actionChoose">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="icon.qrc">
      <normaloff>:/icon/cursor.png</normaloff>:/icon/cursor.png</iconset>
@@ -180,6 +196,9 @@
    </property>
   </action>
   <action name="actionMove">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="icon.qrc">
      <normaloff>:/icon/mover.png</normaloff>:/icon/mover.png</iconset>
@@ -201,6 +220,22 @@
    </property>
    <property name="toolTip">
     <string>还原</string>
+   </property>
+  </action>
+  <action name="actionTestShape1">
+   <property name="text">
+    <string>testShape1</string>
+   </property>
+   <property name="toolTip">
+    <string>testShape1</string>
+   </property>
+  </action>
+  <action name="actionTestShape2">
+   <property name="text">
+    <string>testShape2</string>
+   </property>
+   <property name="toolTip">
+    <string>testShape1</string>
    </property>
   </action>
  </widget>

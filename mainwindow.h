@@ -5,6 +5,8 @@
 #include <QPaintEvent>
 #include "testwidget.h"
 
+class TestWidget;
+
 namespace Ui {
 class MainWindow;
 }
@@ -29,9 +31,15 @@ private slots:
 
     void on_actionOpen_triggered();
 
+    void on_actionTestShape1_triggered();
+
 private:
+    static const int STATE_MOVE;
+    static const int STATE_CHOOSE;
+
     Ui::MainWindow *ui;
     TestWidget *testWidget;
+    int cursorState;
     void newDock();
     void saveFile(QString filename);
 };

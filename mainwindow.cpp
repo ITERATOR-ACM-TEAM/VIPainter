@@ -11,6 +11,9 @@
 #include <QString>
 #include <QFileDialog>
 
+const int MainWindow::STATE_CHOOSE = 0;
+const int MainWindow::STATE_MOVE = 1;
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -116,3 +119,15 @@ void MainWindow::on_actionOpen_triggered()
     file.close();
     testWidget->update();
 }
+
+void MainWindow::on_actionTestShape1_triggered()
+{
+    QString filename = "F:\\OOC\\VIPainter\\plugin\\testShape1.vp";
+    QFile file(filename);
+    file.open(QFile::ReadOnly|QFile::Text);
+    VGroupShape * gs= new VGroupShape(QJsonDocument::fromJson(file.readAll()).object());
+    testWidget->groupShape.insertShape(gs);
+    file.close();
+    testWidget->update();
+}
+
