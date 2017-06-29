@@ -35,6 +35,7 @@ TestWidget* MainWindow::newDock()
     emit cursorChange(this->cursorState);
     QDockWidget *dockWidget=new QDockWidget;
     dockWidget->setWidget(newWidget);
+    dockWidget->setAttribute(Qt::WA_DeleteOnClose);
     this->addDockWidget(Qt::TopDockWidgetArea,dockWidget);
 
     newWidget->setFocusPolicy(Qt::StrongFocus);
@@ -90,12 +91,12 @@ void MainWindow::saveFile(QString filename)
     }
     else
     {
-        QImage image(focus->canvasSize.x,focus->canvasSize.y,QImage::Format_ARGB32);
+        QImage image(focus->canvasSize.width,focus->canvasSize.height,QImage::Format_ARGB32);
         image.fill(0x00ffffff);
         QPainter painter(&image);
         painter.setRenderHint(QPainter::Antialiasing);
-        painter.translate(focus->canvasSize.x/2,focus->canvasSize.y/2);
-        focus->groupShape.draw(&painter);
+        painter.translate(focus->canvasSize.width/2,focus->canvasSize.height/2);
+        focus->groupShape.draw(&painter,VMagnification(1,1));
         image.save(filename);
     }
 }
@@ -132,10 +133,11 @@ void MainWindow::on_actionOpen_triggered()
 
 void MainWindow::on_actionTestShape1_triggered()
 {
-    QString filename = "F:\\OOC\\VIPainter\\plugin\\testShape1.vp";
+    QString filename = "plugin/testShape1.vp";
     QFile file(filename);
     file.open(QFile::ReadOnly|QFile::Text);
     VGroupShape * gs= new VGroupShape(QJsonDocument::fromJson(file.readAll()).object());
+    if(focus==nullptr)return;
     focus->groupShape.insertShape(gs);
     file.close();
     focus->update();

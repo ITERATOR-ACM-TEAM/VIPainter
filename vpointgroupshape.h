@@ -18,13 +18,12 @@ public:
     QJsonObject toJsonObject()const;
     virtual void movePoint(int i, VPoint point);//move the ith point to (x,y)
     virtual void erasePoint(int i);
-    int getN() const;
-    virtual void addPoint(VPoint p);
+    virtual void addPoint(const VPoint &p);
     virtual QVector<VPoint> getPointList() const;
     const VPointGroupShape& operator=(const VPointGroupShape &polyline);
     const VPointGroupShape& operator=(const QJsonObject &jsonObject);
     virtual void getCircumscribedRectangle();//获得外接矩形的左上点、右下点
-    VSize getLogicalSize()override;
+    VSize getSize()override;
 //    void setSize(const VSize &size) override;
 };
 

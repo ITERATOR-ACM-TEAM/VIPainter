@@ -18,7 +18,8 @@ public:
     bool contains(VPoint point) override;
     QString type()const;
     //QImage toImage() override;
-    void draw(QPainter *painter)override;
+    void draw(QPainter *painter,const VMagnification & magnification)override;
+    VShape* clone()override;
 };
 
 #endif // VPOLYLINE_H

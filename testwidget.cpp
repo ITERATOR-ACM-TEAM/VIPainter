@@ -4,6 +4,7 @@
 #include "vpoint.h"
 #include "vsize.h"
 #include "vcurveline.h"
+#include "vmagnification.h"
 #include <QPainter>
 #include <QSize>
 #include <QPen>
@@ -37,8 +38,10 @@ void TestWidget::wheelEvent(QWheelEvent * event)
     update();
     if(event->delta() > 0){
         scale*=1.1;
+        if(scale>10)scale=10;
     }else{
         scale/=1.1;
+        if(scale<0.05)scale=0.05;
     }
     VPoint newp(point.x/scale,point.y/scale);
     canvasLocation.x+=(newp.x-oldp.x)*scale;
@@ -55,6 +58,7 @@ void TestWidget::mousePressEvent(QMouseEvent *event)
 
 void TestWidget::mouseReleaseEvent(QMouseEvent *event)
 {
+    Q_UNUSED(event);
     if(cursorType == VCursorType::MOVE)
         this->setCursor(Qt::OpenHandCursor);
 }
@@ -76,7 +80,7 @@ void TestWidget::mouseMoveEvent(QMouseEvent *event)
     else
     {
         VPoint point(qpoint.x()-(this->width()/2+canvasLocation.x),qpoint.y()-(this->height()/2+canvasLocation.y));
-        mainwindow->statusBar()->showMessage(QString("%1,%2").arg(floor(point.x/scale)).arg(floor(point.y/scale)));
+        mainwindow->statusBar()->showMessage(QString("%1,%2").arg(floor(point.x/scale+0.5)).arg(floor(point.y/scale+0.5)));
     }
 }
 
@@ -86,18 +90,15 @@ void TestWidget::paintEvent(QPaintEvent *)
     painter.setRenderHint(QPainter::Antialiasing);
     painter.translate(this->width()/2+canvasLocation.x,this->height()/2+canvasLocation.y);
 
+    painter.scale(scale,scale);
     painter.save();
     painter.setBrush(QBrush(Qt::white));
     painter.setPen(QPen(Qt::lightGray,1));
-    painter.scale(scale,scale);
-    painter.drawRect(-canvasSize.x/2, -canvasSize.y/2, canvasSize.x, canvasSize.y);
+    painter.drawRect(-canvasSize.width/2, -canvasSize.height/2, canvasSize.width, canvasSize.height);
     painter.restore();
 
-    VSize size=groupShape.getSize();
-    groupShape.setSize(VSize(size.x*scale,size.y*scale));
-    groupShape.draw(&painter);
+    groupShape.draw(&painter,VMagnification(1,1));
 
-    groupShape.setSize(size);
 }
 
 void TestWidget::changeCursor(int type)

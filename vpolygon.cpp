@@ -34,15 +34,18 @@ const VPolygon& VPolygon::operator=(const QJsonObject &jsonObject){
     return *this;
 }
 
-void VPolygon::draw(QPainter *painter)
+VShape* VPolygon::clone()
+{
+    return new VPolygon(*this);
+}
+
+void VPolygon::draw(QPainter *painter, const VMagnification &magnification)
 {
     painter->setPen(QPen(QBrush(Qt::black),1,Qt::SolidLine,Qt::SquareCap,Qt::MiterJoin));
     painter->setBrush(defaultBrush);
-    qDebug()<<painter<<endl;
-    VSize trans(getTranslate());
     QPolygonF qpf;
     for(auto &i : points){
-        qpf << i.translate(trans).toQPointF();
+        qpf << (i*magnification).toQPointF();
     }
     painter->drawPolygon(qpf);
 }

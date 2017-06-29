@@ -40,15 +40,15 @@ public:
     QVector<VShape *> getShapeVector();
 
     int getVectorSize()const;
-    VSize getLogicalSize()override;
+    VSize getSize()override;
 
-    void draw(QPainter *painter)override;
+    void draw(QPainter *painter,const VMagnification &magnification)override;
     QString type()const override;
 
     const VGroupShape& operator=(const VGroupShape &shape);
     const VGroupShape& operator=(const QJsonObject &jsonObject);
     virtual void getCircumscribedRectangle();//获得外接矩形的左上点、右下点
-    void setSize(const VSize &size)override;
+    VShape* clone()override;
 };
 
 #endif // VGROUPSHAPE_H

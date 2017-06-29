@@ -29,14 +29,13 @@ const VPolyline& VPolyline::operator=(const QJsonObject &jsonObject){
     return *this;
 }
 
-void VPolyline::draw(QPainter *painter)
+void VPolyline::draw(QPainter *painter,const VMagnification &magnification)
 {
     painter->setPen(QPen(QBrush(Qt::black),1,Qt::SolidLine,Qt::SquareCap,Qt::MiterJoin));
     painter->setBrush(defaultBrush);
-    VSize trans(getTranslate());
     QPolygonF qpf;
     for(auto &i : this->points){
-        qpf << i.translate(trans).toQPointF();
+        qpf << (i*magnification).toQPointF();
     }
     painter->drawPolyline(qpf);
 }
@@ -74,6 +73,10 @@ bool VPolyline::contains(VPoint point){
 //    else return false;
 }
 
+VShape* VPolyline::clone()
+{
+    return new VPolyline(*this);
+}
 
 //VPolyline* VPolyline::fromJsonObject(const QJsonObject &jsonObject)
 //{
