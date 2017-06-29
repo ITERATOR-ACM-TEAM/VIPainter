@@ -150,7 +150,7 @@ int MainWindow::getCursonState()
 void MainWindow::on_actionMove_triggered()
 {
     if(ui->actionMove->isChecked())
-        testWidget->setCursor(QCursor(QPixmap("://icon/mover.png").scaled(5,5),-1,-1));
+        testWidget->setCursor(QCursor(Qt::OpenHandCursor));
     else
         testWidget->setCursor(Qt::ArrowCursor);
 }
@@ -158,7 +158,7 @@ void MainWindow::on_actionMove_triggered()
 void MainWindow::on_actionChoose_triggered()
 {
     if(ui->actionChoose->isChecked())
-        testWidget->setCursor(QCursor(QPixmap("://icon/cursor.png"),0,0));
+        testWidget->setCursor(QCursor(Qt::ArrowCursor));
     else
         testWidget->setCursor(Qt::ArrowCursor);
 }
