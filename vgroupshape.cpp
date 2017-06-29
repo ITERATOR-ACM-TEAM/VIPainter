@@ -235,7 +235,7 @@ void VGroupShape::getCircumscribedRectangle(){
     for(int i = 0; i < shapes.size(); i++){
         shapes[i]->setLocation(VPoint(shapes[i]->getLocation().x-midx,shapes[i]->getLocation().y-midy));
     }
-    qDebug()<<midx<<midy<<endl;
+    qDebug()<<midx<<""<<midy<<endl;
 
     VShape::setSize(VSize(getSize().x*maxX/olds.x,getSize().y*maxY/olds.y));
     cr=VSize(maxX,maxY);
