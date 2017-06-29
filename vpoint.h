@@ -1,6 +1,7 @@
 #ifndef VPOINT_H
 #define VPOINT_H
 
+#include "vsize.h"
 #include <QPointF>
 #include <QJsonObject>
 
@@ -17,6 +18,7 @@ public:
     const VPoint& operator=(const QJsonObject &jsonObject);
     operator QJsonValue()const;
     QJsonObject toJsonObject()const;
+    VPoint translate(VSize scale);
 };
 
 #endif //#ifndef VPOINT_H
