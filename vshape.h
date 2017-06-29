@@ -23,7 +23,7 @@ protected:
 public:
     static const double PI;
     static VShape* fromJsonObject(const QJsonObject &jsonObject);
-    VShape(const QString &name="",const VPoint &location=VPoint(0,0),const VSize &size=VSize(0,0),double angle=0);
+    VShape(const QString &name="",const VPoint &location=VPoint(0,0),const VSize &size=VSize(1,1),double angle=0);
     VShape(const QJsonObject jsonObject);
     virtual QJsonObject toJsonObject()const;
     operator QJsonValue()const;
@@ -31,7 +31,7 @@ public:
     virtual VShape* clone();
 
     virtual void draw(QPainter *painter)=0;
-    virtual bool contains(const VPoint &point)=0;
+    virtual bool contains(VPoint point)=0;
     virtual QString type()const=0;
     virtual ~VShape();
 
@@ -48,7 +48,7 @@ public:
     void setName(QString name);
     QString getName()const;
 
-    virtual VSize getLogicalSize()=0;
+    virtual VSize getLogicalSize();
     VSize getTranslate();
 
 };

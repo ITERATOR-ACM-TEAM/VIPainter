@@ -21,7 +21,7 @@ public:
     double calNewDiffer(double X);//差分形式计算
     double calNew(double X);//均差形式计算
     void print_f();
-    QVector<VPoint> getFunc();//返回区间[L, R]上的函数点对
+    QVector<VPoint> getFunc(double h);//返回区间[L, R]上的函数点对
 };
 
 #endif // INTERPOLATION_H

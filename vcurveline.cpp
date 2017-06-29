@@ -16,7 +16,7 @@ VCurveline::VCurveline(const QJsonObject &jsonObject):VPointGroupShape(jsonObjec
 }
 
 
-bool VCurveline::contains(const VPoint &point)
+bool VCurveline::contains(VPoint point)
 {
     Q_UNUSED(point);
     return false;
@@ -52,6 +52,8 @@ void VCurveline::draw(QPainter *painter)
 {
     painter->setPen(QPen(QBrush(Qt::black),1,Qt::SolidLine,Qt::RoundCap,Qt::RoundJoin));
     painter->setBrush(defaultBrush);
+    VSize trans(getTranslate());
+
     double x[20], y[20];
     for(int i = 0; i < points.size(); i++){
         x[i] = this->points[i].x;
@@ -59,11 +61,11 @@ void VCurveline::draw(QPainter *painter)
         //qDebug()<<">>> "<<x[i]<<" "<<y[i]<<endl;
     }
     Newton newton(points.size()-1, x, y);
-    QVector<VPoint> vec = newton.getFunc();
+    QVector<VPoint> vec = newton.getFunc(getSize().x);
     QPolygonF qpf;
     for(auto &i : vec){
-        qpf << i.toQPointF();
-        qDebug()<<i.x<<" "<<i.y<<endl;
+        qpf << i.translate(trans).toQPointF();
+        qDebug()<<i.x*trans.x<<" "<<i.y*trans.y<<endl;
     }
     painter->drawPolyline(qpf);
 //    QPainterPath path;

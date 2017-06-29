@@ -16,7 +16,7 @@ VPolygon::VPolygon(const VPolygon &shape):VPointGroupShape(shape){
 VPolygon::VPolygon(const QJsonObject &jsonObject):VPointGroupShape(jsonObject){
 }
 
-bool VPolygon::contains(const VPoint &point)
+bool VPolygon::contains(VPoint point)
 {
     Q_UNUSED(point);
     return false;
@@ -35,12 +35,12 @@ const VPolygon& VPolygon::operator=(const QJsonObject &jsonObject){
 }
 
 void VPolygon::draw(QPainter *painter){
-    VSize size(getTranslate());
+    VSize trans(getTranslate());
     painter->setPen(QPen(QBrush(Qt::black),1,Qt::SolidLine,Qt::SquareCap,Qt::MiterJoin));
     painter->setBrush(defaultBrush);
     QPolygonF qpf;
     for(auto &i : points){
-        qpf << i.translate(size).toQPointF();
+        qpf << i.translate(trans).toQPointF();
     }
     painter->drawPolygon(qpf);
 }

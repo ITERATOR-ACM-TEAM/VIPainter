@@ -2,6 +2,7 @@
 #include "vtype.h"
 #include <QPainter>
 #include <QJsonArray>
+#include <QDebug>
 #include <cmath>
 
 VPolyline::VPolyline()
@@ -32,9 +33,10 @@ void VPolyline::draw(QPainter *painter)
 {
     painter->setPen(QPen(QBrush(Qt::black),1,Qt::SolidLine,Qt::SquareCap,Qt::MiterJoin));
     painter->setBrush(defaultBrush);
+    VSize trans(getTranslate());
     QPolygonF qpf;
     for(auto &i : this->points){
-        qpf << i.toQPointF();
+        qpf << i.translate(trans).toQPointF();
     }
     painter->drawPolyline(qpf);
 }
@@ -55,10 +57,10 @@ QString VPolyline::type() const{
     return VType::Polyline;
 }
 
-bool VPolyline::contains(const VPoint &point){
+bool VPolyline::contains(VPoint point){
     double width = 5.0;
-    double x = point.x-location.x;
-    double y = point.y-location.y;
+    double x = point.x-getLocation().x;
+    double y = point.y-getLocation().y;
     for(int i = 1; i < points.size(); i++){
         double A = points[i].y-points[i-1].y;
         double B = points[i].x-points[i-1].x;

@@ -15,7 +15,7 @@ public:
     QJsonObject toJsonObject()const;
     const VPolyline& operator=(const VPolyline &polyline);
     const VPolyline& operator=(const QJsonObject &jsonObject);
-    bool contains(const VPoint &point) override;
+    bool contains(VPoint point) override;
     QString type()const;
     //QImage toImage() override;
     void draw(QPainter *painter)override;

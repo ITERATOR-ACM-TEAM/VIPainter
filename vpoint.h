@@ -20,7 +20,9 @@ public:
     operator QJsonValue()const;
     QJsonObject toJsonObject()const;
     VPoint translate(VSize scale);
+    VPoint retranslate(VSize scale);
     VPoint operator*(VSize scale);
+    VPoint operator/(VSize scale);
 
     VPoint rotate(const VPoint & center, double a);
 };

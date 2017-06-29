@@ -18,7 +18,7 @@ public:
     QJsonObject toJsonObject()const override;
     void draw(QPainter *painter)override;
     QString type()const override;
-    bool contains(const VPoint &point)override;
+    bool contains(VPoint point)override;
 };
 
 #endif // VCURVELINE_H

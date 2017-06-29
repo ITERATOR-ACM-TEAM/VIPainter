@@ -1,0 +1,140 @@
+{
+    "angle": 0,
+    "location": {
+        "x": 0,
+        "y": 0
+    },
+    "name": "",
+    "shapes": [
+        {
+            "angle": 0,
+            "location": {
+                "x": 0,
+                "y": 0
+            },
+            "name": "test shape",
+            "size": {
+                "height": 50,
+                "width": 40
+            },
+            "type": "Ellipse"
+        },
+        {
+            "angle": 0,
+            "location": {
+                "x": 0,
+                "y": 0
+            },
+            "name": "",
+            "shapes": [
+                {
+                    "angle": 0,
+                    "location": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "name": "",
+                    "points": [
+                        {
+                            "x": 0,
+                            "y": 0
+                        },
+                        {
+                            "x": 50,
+                            "y": 0
+                        },
+                        {
+                            "x": 0,
+                            "y": 50
+                        },
+                        {
+                            "x": 50,
+                            "y": 50
+                        }
+                    ],
+                    "size": {
+                        "height": 51,
+                        "width": 51
+                    },
+                    "type": "Polyline"
+                },
+                {
+                    "angle": 0,
+                    "location": {
+                        "x": -10200.000000000002,
+                        "y": -10200.000000000002
+                    },
+                    "name": "",
+                    "points": [
+                        {
+                            "x": 0,
+                            "y": 0
+                        },
+                        {
+                            "x": 50,
+                            "y": 0
+                        },
+                        {
+                            "x": 50,
+                            "y": 50
+                        },
+                        {
+                            "x": 0,
+                            "y": 50
+                        }
+                    ],
+                    "size": {
+                        "height": 51,
+                        "width": 51
+                    },
+                    "type": "Polygon"
+                }
+            ],
+            "size": {
+                "height": 100,
+                "width": 100
+            },
+            "type": "GroupShape"
+        },
+        {
+            "angle": 0,
+            "location": {
+                "x": 0,
+                "y": 0
+            },
+            "name": "",
+            "points": [
+                {
+                    "x": 0,
+                    "y": 6.0621778264910686
+                },
+                {
+                    "x": 7,
+                    "y": 12.124355652982139
+                },
+                {
+                    "x": 14,
+                    "y": 12.124355652982139
+                },
+                {
+                    "x": 21,
+                    "y": 6.0621778264910695
+                },
+                {
+                    "x": 28,
+                    "y": 0
+                }
+            ],
+            "size": {
+                "height": 13.124355652982139,
+                "width": 29
+            },
+            "type": "Curveline"
+        }
+    ],
+    "size": {
+        "height": 100,
+        "width": 100
+    },
+    "type": "GroupShape"
+}

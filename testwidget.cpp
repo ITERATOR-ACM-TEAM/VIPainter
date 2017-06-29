@@ -11,6 +11,7 @@
 #include <QtMath>
 #include <QStatusBar>
 #include <QDebug>
+#include <QVector>
 
 TestWidget::TestWidget(QMainWindow *parent) :
     QWidget(parent),canvasLocation(0,0),canvasSize(400,300)
@@ -20,31 +21,6 @@ TestWidget::TestWidget(QMainWindow *parent) :
 //    groupShape.setName("main shape");
 //    groupShape.setLocation(VPoint(0,0));
 //    groupShape.setSize(VSize(10,10));
-
-    VEllipse *ellipse=new VEllipse("test shape",VPoint(0,0),VSize(40,50));
-
-    VGroupShape *polygroup=new VGroupShape;
-    VPolyline *polyline=new VPolyline;
-    polyline->addPoint(VPoint(0,0));
-    polyline->addPoint(VPoint(50,0));
-    polyline->addPoint(VPoint(0,50));
-    polyline->addPoint(VPoint(50,50));
-    polygroup->insertShape(polyline);
-
-    VPolygon *polygon=new VPolygon;
-    polygon->addPoint(VPoint(0,0));
-    polygon->addPoint(VPoint(50,0));
-    polygon->addPoint(VPoint(50,50));
-    polygon->addPoint(VPoint(0,50));
-    polygroup->insertShape(polygon);
-    polygroup->moveShape(1,VPoint(-100,-100));
-
-    VCurveline *vcurve = new VCurveline;
-    for(int i=0;i<5;i++)vcurve->addPoint(VPoint(i*7,7*sin(i/3.0*VShape::PI)));
-
-    groupShape.insertShape(ellipse);
-    groupShape.insertShape(polygroup);
-    groupShape.insertShape(vcurve);
 
     update();
 }

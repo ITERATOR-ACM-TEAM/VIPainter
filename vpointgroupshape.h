@@ -16,7 +16,7 @@ public:
     VPointGroupShape(const QJsonObject &jsonObject);
     VPointGroupShape(QVector<VPoint> vec);
     QJsonObject toJsonObject()const;
-    virtual void movePoint(int i,const VPoint &point);//move the ith point to (x,y)
+    virtual void movePoint(int i, VPoint point);//move the ith point to (x,y)
     virtual void erasePoint(int i);
     int getN() const;
     virtual void addPoint(VPoint p);
@@ -24,7 +24,7 @@ public:
     const VPointGroupShape& operator=(const VPointGroupShape &polyline);
     const VPointGroupShape& operator=(const QJsonObject &jsonObject);
     virtual void getCircumscribedRectangle();//获得外接矩形的左上点、右下点
-    VSize getLogicalSize()const override;
+    VSize getLogicalSize()override;
 //    void setSize(const VSize &size) override;
 };
 

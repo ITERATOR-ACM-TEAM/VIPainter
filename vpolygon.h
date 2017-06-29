@@ -13,7 +13,7 @@ public:
     ~VPolygon()override;
     const VPolygon& operator=(const VPolygon &shape);
     const VPolygon& operator=(const QJsonObject &jsonObject);
-    bool contains(const VPoint &point) override;
+    bool contains(VPoint point) override;
     //QImage toImage()override;
     void draw(QPainter *painter)override;
     QString type()const override;

@@ -45,7 +45,7 @@ QJsonObject VEllipse::toJsonObject()const
 }
 
 
-bool VEllipse::contains(const VPoint &point)
+bool VEllipse::contains(VPoint point)
 {
     double x=point.x;
     double y=point.y;

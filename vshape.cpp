@@ -41,6 +41,12 @@ void VShape::setLocation(const VPoint &location)
     this->location=location;
 }
 
+
+VSize VShape::getLogicalSize()
+{
+    return this->size;
+}
+
 VPoint VShape::getLocation()const
 {
     return location;
@@ -114,4 +120,7 @@ VSize VShape::getSize()const
 void VShape::setSize(const VSize &size)
 {
     this->size=size;
+    if(this->size.x<1)this->size.x=1;
+    if(this->size.y<1)this->size.y=1;
+
 }
