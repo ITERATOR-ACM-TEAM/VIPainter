@@ -60,7 +60,7 @@ void VCurveline::draw(QPainter *painter)
         y[i] = this->points[i].y;
         //qDebug()<<">>> "<<x[i]<<" "<<y[i]<<endl;
     }
-    int seg = (points.size()-1)/2;
+    //int seg = (points.size()-1)/2;
     //for(int sg = 0; sg < seg; sg++){
         Newton newton(points.size()-1, x, y);
         QPolygonF qpf;
