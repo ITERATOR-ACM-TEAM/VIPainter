@@ -11,9 +11,6 @@
 #include <QString>
 #include <QFileDialog>
 
-const int MainWindow::STATE_CHOOSE = 0;
-const int MainWindow::STATE_MOVE = 1;
-
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -25,18 +22,27 @@ MainWindow::MainWindow(QWidget *parent) :
     group = new QActionGroup(this);
     group->addAction(ui->actionChoose);
     group->addAction(ui->actionMove);
-
-    newDock();
+    connect(this, SIGNAL(cursorChange(int)), this, SLOT(changeCursor(int)));
+    focus = newDock();
+    widgetVector.push_back(focus);
     update();
 }
 
-void MainWindow::newDock()
+TestWidget* MainWindow::newDock()
 {
-    testWidget=new TestWidget(this);
+    TestWidget* newWidget=new TestWidget(this);
+    connect(this, SIGNAL(cursorChange(int)), newWidget, SLOT(changeCursor(int)));
+    emit cursorChange(this->cursorState);
     QDockWidget *dockWidget=new QDockWidget;
-    dockWidget->setWidget(testWidget);
+    dockWidget->setWidget(newWidget);
     this->addDockWidget(Qt::TopDockWidgetArea,dockWidget);
+
+    newWidget->setFocusPolicy(Qt::StrongFocus);
+    newWidget->installEventFilter(this);
+
     dockWidget->show();
+
+    return newWidget;
 }
 
 MainWindow::~MainWindow()
@@ -46,26 +52,24 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_actionZoomIn_triggered()
 {
-    testWidget->scale*=1.1;
-    qDebug()<<"scale:"<<testWidget->scale<<endl;
-    testWidget->update();
+    focus->scale*=1.1;
+    qDebug()<<"scale:"<<focus->scale<<endl;
+    focus->update();
 }
 
 void MainWindow::on_actionZoomOut_triggered()
 {
-    testWidget->scale/=1.1;
-    if(testWidget->scale<0.05)testWidget->scale=0.05;
-    qDebug()<<"scale:"<<testWidget->scale<<endl;
-    testWidget->update();
+    focus->scale/=1.1;
+    qDebug()<<"scale:"<<focus->scale<<endl;
+    focus->update();
 }
 
 void MainWindow::on_actionResume_triggered()
 {
-    testWidget->scale=1.0;
-    if(testWidget->scale>20)testWidget->scale=20;
-    testWidget->canvasLocation=VPoint(0,0);
-    qDebug()<<"scale:"<<testWidget->scale<<endl;
-    testWidget->update();
+    focus->scale=1.0;
+    focus->canvasLocation=VPoint(0,0);
+    qDebug()<<"scale:"<<focus->scale<<endl;
+    focus->update();
 }
 
 void MainWindow::on_actionSave_triggered()
@@ -74,10 +78,11 @@ void MainWindow::on_actionSave_triggered()
 
 void MainWindow::saveFile(QString filename)
 {
+    if(focus == nullptr) return;
     if(filename.split('.').back()==tr("vp"))
     {
         QJsonDocument jsonDocument;
-        jsonDocument.setObject(testWidget->groupShape.toJsonObject());
+        jsonDocument.setObject(focus->groupShape.toJsonObject());
         QFile file(filename);
         file.open(QFile::WriteOnly|QFile::Text);
         file.write(jsonDocument.toJson());
@@ -85,12 +90,12 @@ void MainWindow::saveFile(QString filename)
     }
     else
     {
-        QImage image(testWidget->canvasSize.width,testWidget->canvasSize.height,QImage::Format_ARGB32);
+        QImage image(focus->canvasSize.width,focus->canvasSize.height,QImage::Format_ARGB32);
         image.fill(0x00ffffff);
         QPainter painter(&image);
         painter.setRenderHint(QPainter::Antialiasing);
-        painter.translate(testWidget->canvasSize.width/2,testWidget->canvasSize.height/2);
-        testWidget->groupShape.draw(&painter,VMagnification(1,1));
+        painter.translate(focus->canvasSize.width/2,focus->canvasSize.height/2);
+        focus->groupShape.draw(&painter,VMagnification(1,1));
         image.save(filename);
     }
 }
@@ -118,9 +123,11 @@ void MainWindow::on_actionOpen_triggered()
 
     QFile file(filename);
     file.open(QFile::ReadOnly|QFile::Text);
-    testWidget->groupShape=QJsonDocument::fromJson(file.readAll()).object();
+    TestWidget * newWidget = newDock();
+    widgetVector.push_back(newWidget);
+    newWidget->groupShape=QJsonDocument::fromJson(file.readAll()).object();
     file.close();
-    testWidget->update();
+    newWidget->update();
 }
 
 void MainWindow::on_actionTestShape1_triggered()
@@ -129,36 +136,60 @@ void MainWindow::on_actionTestShape1_triggered()
     QFile file(filename);
     file.open(QFile::ReadOnly|QFile::Text);
     VGroupShape * gs= new VGroupShape(QJsonDocument::fromJson(file.readAll()).object());
-    testWidget->groupShape.insertShape(gs);
+    focus->groupShape.insertShape(gs);
     file.close();
-    testWidget->update();
+    focus->update();
 }
-
-int MainWindow::getCursonState()
-{
-    if(ui->actionChoose->isChecked())
-    {
-        return STATE_CHOOSE;
-    }else if(ui->actionMove->isChecked())
-    {
-        return STATE_MOVE;
-    }
-    return -1;
-}
-
 
 void MainWindow::on_actionMove_triggered()
 {
     if(ui->actionMove->isChecked())
-        testWidget->setCursor(QCursor(Qt::OpenHandCursor));
+        emit cursorChange(VCursorType::MOVE);
     else
-        testWidget->setCursor(Qt::ArrowCursor);
+        emit cursorChange(VCursorType::CHOOSE);
 }
 
 void MainWindow::on_actionChoose_triggered()
 {
     if(ui->actionChoose->isChecked())
-        testWidget->setCursor(QCursor(Qt::ArrowCursor));
+        emit cursorChange(VCursorType::CHOOSE);
     else
-        testWidget->setCursor(Qt::ArrowCursor);
+        emit cursorChange(VCursorType::CHOOSE);
+}
+
+void MainWindow::changeCursor(int type)
+{
+    cursorState = type;
+}
+
+void MainWindow::on_actionNew_triggered()
+{
+    widgetVector.push_back(newDock());
+}
+
+bool MainWindow::eventFilter(QObject * obj, QEvent * ev)
+{
+    for(auto it = widgetVector.begin(); it != widgetVector.end(); it++)
+    {
+        if(obj == *it)
+        {
+            if(ev->type() == QEvent::FocusIn)
+            {
+                qDebug() << "focusing";
+                focus = *it;
+                return false;
+            }else if(ev->type() == QEvent::Hide)
+            {
+                qDebug() << "closing";
+                delete *it;
+                widgetVector.erase(it);
+                if(widgetVector.empty()) focus = nullptr;
+                else widgetVector.back()->setFocus();
+                return true;
+            }
+
+        }
+    }
+
+    return QWidget::eventFilter(obj, ev);
 }
