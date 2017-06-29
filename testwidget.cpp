@@ -38,7 +38,7 @@ void TestWidget::wheelEvent(QWheelEvent * event)
     update();
     if(event->delta() > 0){
         scale*=1.1;
-        if(scale>20)scale=20;
+        if(scale>10)scale=10;
     }else{
         scale/=1.1;
         if(scale<0.05)scale=0.05;
@@ -90,14 +90,14 @@ void TestWidget::paintEvent(QPaintEvent *)
     painter.setRenderHint(QPainter::Antialiasing);
     painter.translate(this->width()/2+canvasLocation.x,this->height()/2+canvasLocation.y);
 
+    painter.scale(scale,scale);
     painter.save();
     painter.setBrush(QBrush(Qt::white));
     painter.setPen(QPen(Qt::lightGray,1));
-    painter.scale(scale,scale);
     painter.drawRect(-canvasSize.width/2, -canvasSize.height/2, canvasSize.width, canvasSize.height);
     painter.restore();
 
-    groupShape.draw(&painter,VMagnification(scale,scale));
+    groupShape.draw(&painter,VMagnification(1,1));
 
 }
 

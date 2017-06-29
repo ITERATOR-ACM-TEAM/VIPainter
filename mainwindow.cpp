@@ -35,6 +35,7 @@ TestWidget* MainWindow::newDock()
     emit cursorChange(this->cursorState);
     QDockWidget *dockWidget=new QDockWidget;
     dockWidget->setWidget(newWidget);
+    dockWidget->setAttribute(Qt::WA_DeleteOnClose);
     this->addDockWidget(Qt::TopDockWidgetArea,dockWidget);
 
     newWidget->setFocusPolicy(Qt::StrongFocus);
@@ -136,6 +137,7 @@ void MainWindow::on_actionTestShape1_triggered()
     QFile file(filename);
     file.open(QFile::ReadOnly|QFile::Text);
     VGroupShape * gs= new VGroupShape(QJsonDocument::fromJson(file.readAll()).object());
+    if(focus==nullptr)return;
     focus->groupShape.insertShape(gs);
     file.close();
     focus->update();
@@ -181,7 +183,7 @@ bool MainWindow::eventFilter(QObject * obj, QEvent * ev)
             }else if(ev->type() == QEvent::Hide)
             {
                 qDebug() << "closing";
-                delete *it;
+                //delete *it;
                 widgetVector.erase(it);
                 if(widgetVector.empty()) focus = nullptr;
                 else widgetVector.back()->setFocus();
