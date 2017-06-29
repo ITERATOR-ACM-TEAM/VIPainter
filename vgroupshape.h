@@ -14,7 +14,7 @@ private:
     bool isRoot;
 
 public:
-    static void rotate(VPoint & point, const VPoint & center, double a);
+
     static QVector<VShape *> breakUp (VGroupShape * group);
 
     VGroupShape(bool isRoot=false);
@@ -37,10 +37,8 @@ public:
 
     QVector<VShape *> getShapeVector();
 
-//    void setSize(const VSize & size)override;
-//    VSize getSize()const override;
-
     int getVectorSize()const;
+    VSize getLogicalSize();
 
     void draw(QPainter *painter)override;
     QString type()const override;
