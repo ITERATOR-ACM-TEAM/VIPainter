@@ -37,8 +37,10 @@ void TestWidget::wheelEvent(QWheelEvent * event)
     update();
     if(event->delta() > 0){
         scale*=1.1;
+        if(scale>20)scale=20;
     }else{
         scale/=1.1;
+        if(scale<0.05)scale=0.05;
     }
     VPoint newp(point.x/scale,point.y/scale);
     canvasLocation.x+=(newp.x-oldp.x)*scale;
@@ -70,7 +72,7 @@ void TestWidget::mouseMoveEvent(QMouseEvent *event)
     else
     {
         VPoint point(qpoint.x()-(this->width()/2+canvasLocation.x),qpoint.y()-(this->height()/2+canvasLocation.y));
-        mainwindow->statusBar()->showMessage(QString("%1,%2").arg(floor(point.x/scale)).arg(floor(point.y/scale)));
+        mainwindow->statusBar()->showMessage(QString("%1,%2").arg(floor(point.x/scale+0.5)).arg(floor(point.y/scale+0.5)));
     }
 }
 

@@ -48,6 +48,7 @@ void MainWindow::on_actionZoomIn_triggered()
 void MainWindow::on_actionZoomOut_triggered()
 {
     testWidget->scale/=1.1;
+    if(testWidget->scale<0.05)testWidget->scale=0.05;
     qDebug()<<"scale:"<<testWidget->scale<<endl;
     testWidget->update();
 }
@@ -55,6 +56,7 @@ void MainWindow::on_actionZoomOut_triggered()
 void MainWindow::on_actionResume_triggered()
 {
     testWidget->scale=1.0;
+    if(testWidget->scale>20)testWidget->scale=20;
     testWidget->canvasLocation=VPoint(0,0);
     qDebug()<<"scale:"<<testWidget->scale<<endl;
     testWidget->update();

@@ -119,8 +119,8 @@ void VPointGroupShape::getCircumscribedRectangle(){
     }
     cr1.x = x1;
     cr1.y = y1;
-    cr2.x = x2+1;
-    cr2.y = y2+1;
+    cr2.x = x2;
+    cr2.y = y2;
 
     double midx=(x1+x2)/2;
     double midy=(y1+y2)/2;
