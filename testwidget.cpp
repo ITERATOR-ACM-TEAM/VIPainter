@@ -72,6 +72,7 @@ void TestWidget::mouseReleaseEvent(QMouseEvent *event)
 void TestWidget::mouseMoveEvent(QMouseEvent *event)
 {
     QPoint qpoint=event->pos();
+    VPoint vpoint(qpoint.x(), qpoint.y());
     if(event->buttons()&Qt::LeftButton)
     {
         if(cursorType == VCursorType::MOVE)
@@ -80,6 +81,10 @@ void TestWidget::mouseMoveEvent(QMouseEvent *event)
             canvasLocation.y+=qpoint.y()-pressPoint.y();
             pressPoint=qpoint;
             //qDebug()<<"canvasLocation: ("<<canvasLocation.x<<","<<canvasLocation.y<<")"<<endl;
+            update();
+        }else if(cursorType == VCursorType::CHOOSE){
+            if(focusShape == nullptr) return;
+            VPoint loc = focusShape->setLocation();
             update();
         }
     }
@@ -153,6 +158,5 @@ VShape * TestWidget::getShape(const VPoint &point)
 
 VPoint TestWidget::getLoc(const VPoint & point)
 {
-
     return VPoint((point.x-(this->width()/2+canvasLocation.x))/scale,(point.y-(this->height()/2+canvasLocation.y))/scale);
 }
