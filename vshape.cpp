@@ -5,6 +5,7 @@
 #include "vcurveline.h"
 #include "vgroupshape.h"
 #include <vtype.h>
+#include <vpoint.h>
 #include <cmath>
 #include <QDebug>
 
@@ -130,12 +131,12 @@ VShape * VShape::getParent()const
 
 QList<VPoint> VShape::getCircumscribedRectangle()
 {
-    QList<Vpoint> points;
+    QList<VPoint> points;
     VSize size=getSize()/VMagnification(2);
     VPoint center(0,0);
-    points.append(location+VPoint(size.width,size.height).rotate(center,angle)*magnificatio);
-    points.append(location+VPoint(-size.width,size.height).rotate(center,angle)*magnificatio);
-    points.append(location+VPoint(-size.width,-size.height).rotate(center,angle)*magnificatio);
-    points.append(location+VPoint(size.width,-size.height).rotate(center,angle)*magnificatio);
+    points.append(location+VPoint(size.width,size.height).rotate(center,angle)*magnification);
+    points.append(location+VPoint(-size.width,size.height).rotate(center,angle)*magnification);
+    points.append(location+VPoint(-size.width,-size.height).rotate(center,angle)*magnification);
+    points.append(location+VPoint(size.width,-size.height).rotate(center,angle)*magnification);
     return points;
 }

@@ -56,6 +56,11 @@ VPoint VPoint::operator+(const VSize &size)const
     return VPoint(x+size.width,y+size.height);
 }
 
+VPoint VPoint::operator+(const VPoint &point)const
+{
+    return VPoint(x+point.x,y+point.y);
+}
+
 VPoint VPoint::operator-(const VSize &size)const
 {
     return VPoint(x-size.width,y-size.height);

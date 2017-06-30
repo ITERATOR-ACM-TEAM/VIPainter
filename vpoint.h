@@ -25,6 +25,7 @@ public:
     double operator-(const VPoint &point)const;
     VPoint operator-()const;
     VPoint operator+(const VSize &size)const;
+    VPoint operator+(const VPoint &size)const;
     VPoint operator-(const VSize &size)const;
 
     VPoint rotate(const VPoint & center, double a);
