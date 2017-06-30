@@ -251,7 +251,7 @@ bool VGroupShape::contains(VPoint point)
         subLocation = it->getLocation();
         subAngle = it->getAngle();
         subMag = it->getMagnification();
-        subPoint = VPoint(point.x - subLocation.x, point.y - subLocation.y).rotate(VPoint(0,0),-subAngle)*subMag;
+        subPoint = VPoint(point.x - subLocation.x, point.y - subLocation.y).rotate(VPoint(0,0),-subAngle)/subMag;
         if(it->contains(subPoint))
         {
             return true;
