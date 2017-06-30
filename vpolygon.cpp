@@ -18,9 +18,23 @@ VPolygon::VPolygon(const QJsonObject &jsonObject):VPointGroupShape(jsonObject){
 
 bool VPolygon::contains(VPoint point)
 {
-    Q_UNUSED(point);
-    return false;
+//    Q_UNUSED(point);
+//    return false;
     //TODO:
+    qreal x=Point.x,y=Point.y;
+        int left=0;
+        int right=0;
+        int j=points.size()-1;
+        for(int i=0;i<points.size();i++){
+            if((points[i].y()<y&&points[j].y()>=y)||(points[j].y()<y&&points[i].y()>=y)){
+                if((y-points[i].y())*(points[i].x()-points[j].x())/(points[i].y()-points[j].y())+points[i].x()<x){
+                    left++;
+                }
+                else right++;
+            }
+            j=i;
+        }
+        return left&right;
 }
 
 const VPolygon& VPolygon::operator=(const VPolygon &vpolygon){
