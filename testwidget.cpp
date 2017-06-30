@@ -136,6 +136,7 @@ VShape * TestWidget::getShape(const VPoint &point)
         subAngle = it->getAngle();
         subMag = it->getMagnification();
         subPoint = VPoint(loc.x - subLocation.x, loc.y - subLocation.y).rotate(VPoint(0,0),-subAngle)*subMag;
+        qDebug() << subPoint;
         if(it->contains(subPoint))
         {
             qDebug() << it->type();
