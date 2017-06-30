@@ -1,6 +1,7 @@
 #include "interpolation.h"
 #include <cstring>
 #include <QDebug>
+#include <cmath>
 
 Newton::Newton():n(0)
 {

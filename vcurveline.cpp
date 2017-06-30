@@ -5,6 +5,7 @@
 #include "vtype.h"
 #include <QDebug>
 #include <QPainterPath>
+#include <cmath>
 
 VCurveline::VCurveline(){
 }
@@ -31,7 +32,7 @@ bool VCurveline::contains(VPoint point)
             }
             Lagrange lag;
             lag.Init(vec);
-            if(abs(lag.calLag(point.x) - point.y) > distance)
+            if(std::abs(lag.calLag(point.x) - point.y) > distance)
                 return true;
             else return false;
         }
