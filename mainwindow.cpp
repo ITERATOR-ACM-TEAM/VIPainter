@@ -11,6 +11,7 @@
 #include <QPainter>
 #include <QString>
 #include <QFileDialog>
+#include <QDir>
 #include "canvassizedialog.h"
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -24,8 +25,16 @@ MainWindow::MainWindow(QWidget *parent) :
     group = new QActionGroup(this);
     group->addAction(ui->actionChoose);
     group->addAction(ui->actionMove);
+    initAction();
     connect(this, SIGNAL(cursorChange(int)), this, SLOT(changeCursor(int)));
     update();
+}
+
+
+void initAction()
+{
+    QDir dir("plugin");
+    dir.
 }
 
 QDockWidget* MainWindow::newDock()

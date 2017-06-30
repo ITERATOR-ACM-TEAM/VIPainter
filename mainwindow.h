@@ -55,6 +55,7 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+    void initAction();
 
     QDockWidget *focus;
     QVector<QDockWidget *> docks;
