@@ -62,6 +62,8 @@ private:
     void saveFile(QString filename);
 
     void focusDock(QDockWidget * target);
+    TestWidget * getTestWidget();
+    TestWidget * getTestWidget(QDockWidget * target);
 };
 
 #endif // MAINWINDOW_H
