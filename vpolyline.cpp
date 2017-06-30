@@ -57,14 +57,13 @@ QString VPolyline::type() const{
 }
 
 bool VPolyline::contains(VPoint point){
-    double width = 5.0;
-    double x = point.x-getLocation().x;
-    double y = point.y-getLocation().y;
+    double width = 1;
+    double x = point.x;
+    double y = point.y;
     for(int i = 1; i < points.size(); i++){
         double A = points[i].y-points[i-1].y;
         double B = points[i].x-points[i-1].x;
-        double C = points[i-1].x*(points[i].y-points[i-1].y)+points[i-1].y*(points[i].x-points[i-1].x);
-        if(std::abs(A*x+B*y+C)/(A*A+B*B) <= width*width)
+        if(abs(B*(y-points[i-1].y)-A*(x-points[i-1].x))<=width)
             return true;
     }
     return false;
