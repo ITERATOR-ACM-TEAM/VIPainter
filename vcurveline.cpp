@@ -58,12 +58,12 @@ void VCurveline::draw(QPainter *painter,const VMagnification &magnification)
     painter->setPen(QPen(QBrush(Qt::black),1,Qt::SolidLine,Qt::RoundCap,Qt::RoundJoin));
     painter->setBrush(defaultBrush);
 
-    double x[20], y[20];
-    for(int i = 0; i < points.size(); i++){
-        x[i] = this->points[i].x;
-        y[i] = this->points[i].y;
+//    double x[20], y[20];
+//    for(int i = 0; i < points.size(); i++){
+//        x[i] = this->points[i].x;
+//        y[i] = this->points[i].y;
 
-    }
+//    }
 
     int seg = (points.size()-1)/2;
     for(int sg = 0; sg < seg; sg++){
