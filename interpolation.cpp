@@ -1,5 +1,6 @@
 #include "interpolation.h"
 #include <cstring>
+#include <QDebug>
 
 Newton::Newton():n(0)
 {
@@ -17,7 +18,9 @@ Newton::Newton(int n, double *x, double *y)//差分形式
         f[i][0] = y[i];
         L = L < x[i] ? L : x[i];
         R = R > x[i] ? R : x[i];
+        qDebug()<<"### "<<x[i]<<" "<<y[i]<<endl;
     }
+    qDebug()<<"L-> "<<L<<" R->"<<R<<endl;
     for(int i = 1; i <= n; i++)
         for(int j = i; j <= n; j++)
             f[j][i] = f[j][i-1]-f[j-1][i-1];
@@ -84,6 +87,66 @@ QVector<VPoint> Newton::getFunc(double hh){
     int len = (int)(hh);
     for(int i = 0; i <= len; i++){
         VPoint point(L+i*h, this->calNewDiffer(L+i*h));
+        vec.push_back(point);
+    }
+    return vec;
+}
+
+Lagrange::Lagrange():n(0), x(nullptr), f(nullptr){
+}
+
+Lagrange::Lagrange(int n = 0, double *x = nullptr, double *f = nullptr)
+{
+    this->n = n;
+    if(n==0)return ;
+    this->x = new double[n+1];
+    this->f = new double[n+1];
+    for(int i = 0; i <= n; i++)
+    {
+        this->x[i] = x[i];
+        this->f[i] = f[i];
+    }
+}
+
+Lagrange::~Lagrange(){}
+
+void Lagrange::Init(QVector<VPoint> points)
+{
+    this->n = points.size()-1;
+    this->x = new double[n+1];
+    this->f = new double[n+1];
+    L = R = points[0].x;
+    for(int i = 0; i <= n; i++)
+    {
+        this->x[i] = points[i].x;
+        this->f[i] = points[i].y;
+        L = L < x[i] ? L : x[i];
+        R = R > x[i] ? R : x[i];
+        //qDebug()<<"### "<<x[i]<<" "<<f[i]<<endl;
+    }
+    //qDebug()<<"L->"<<L<<" R->"<<R<<endl;
+}
+double Lagrange::calLag(double X)
+{
+    double ans = 0;
+    for(int k = 0; k <= n; k++)
+    {
+        double l = 1.0;
+        for(int i = 0; i <= n; i++)
+            if(i != k)
+                l *= (X-x[i])/(x[k]-x[i]);
+
+        ans += f[k]*l;
+    }
+    return ans;
+}
+
+QVector<VPoint> Lagrange::getFunc(double hh){
+    QVector<VPoint> vec;
+    this->h = 1*(R-L)/hh;
+    int len = floor(hh+0.5);
+    for(int i = 0; i <= len; i++){
+        VPoint point(L+i*h, this->calLag(L+i*h));
         vec.push_back(point);
     }
     return vec;
