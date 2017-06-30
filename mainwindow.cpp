@@ -130,7 +130,7 @@ void MainWindow::saveFile(QString filename)
         QPainter painter(&image);
         painter.setRenderHint(QPainter::Antialiasing);
         painter.translate(getTestWidget()->canvasSize.width/2,getTestWidget()->canvasSize.height/2);
-        getTestWidget()->groupShape.draw(&painter,VMagnification(1,1));
+        getTestWidget()->groupShape.draw(&painter,getTestWidget()->groupShape.getMagnification());
         image.save(filename);
     }
     focus->setWindowTitle(filename.split("/").back());
@@ -247,16 +247,20 @@ void MainWindow::focusDock(QDockWidget * target)
 
 void MainWindow::on_actionCanvasSize_triggered()
 {
-    getTestWidget()->canvasSize=CanvasSizeDialog::showDialog(tr("画布大小"),getTestWidget()->canvasSize);
+    TestWidget *widget=getTestWidget();
+    if(widget==nullptr)return;
+    widget->canvasSize=CanvasSizeDialog::showDialog(tr("画布大小"),widget->canvasSize);
 }
 
 void MainWindow::on_actionShapeSize_triggered()
 {
+    TestWidget *widget=getTestWidget();
+    if(widget==nullptr)return;
     VSize size=
-            getTestWidget()->groupShape.getSize()*
-            getTestWidget()->groupShape.getMagnification();
+            widget->groupShape.getSize()*
+            widget->groupShape.getMagnification();
     VSize toSize=CanvasSizeDialog::showDialog(tr("图像大小"),size);
-    getTestWidget()->groupShape.zoomin(toSize/size);
+    widget->groupShape.zoomin(toSize/size);
 }
 
 TestWidget * MainWindow::getTestWidget()
