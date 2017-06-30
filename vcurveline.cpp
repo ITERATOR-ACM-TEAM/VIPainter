@@ -18,9 +18,25 @@ VCurveline::VCurveline(const QJsonObject &jsonObject):VPointGroupShape(jsonObjec
 
 bool VCurveline::contains(VPoint point)
 {
-    Q_UNUSED(point);
-    return false;
+    //Q_UNUSED(point);
+    //return false;
     //TODO:
+    double distance = 5;
+    for(int i = 0; i < points.size(); i+=2){
+        if(i+2 > points.size())break;
+        if(points[i].x <= point.x && points[i+2].x >= point.x){
+            QVector<VPoint> vec;
+            for(int j = 0; j < 3; j++){
+                vec.push_back(points[j]);
+            }
+            Lagrange lag;
+            lag.Init(vec);
+            if(abs(lag.calLag(point.x) - point.y) > distance)
+                return true;
+            else return false;
+        }
+    }
+    return false;
 }
 
 const VCurveline& VCurveline::operator=(const VCurveline &vcurveline){

@@ -101,10 +101,27 @@ Lagrange::Lagrange(int n = 0, double *x = nullptr, double *f = nullptr)
     if(n==0)return ;
     this->x = new double[n+1];
     this->f = new double[n+1];
+    L = R = x[0];
     for(int i = 0; i <= n; i++)
     {
         this->x[i] = x[i];
         this->f[i] = f[i];
+        L = L < x[i] ? L : x[i];
+        R = R > x[i] ? R : x[i];
+    }
+}
+
+Lagrange::Lagrange(QVector<VPoint> points){
+    this->n = points.size()-1;
+    if(n == 0)return;
+    this->x = new double[n];
+    this->f = new double[n];
+    L = R = points[0].x;
+    for(int i = 0; i <= n; i++){
+        this->x[i] = points[i].x;
+        this->f[i] = points[i].y;
+        L = L < x[i] ? L : x[i];
+        R = R > x[i] ? R : x[i];
     }
 }
 

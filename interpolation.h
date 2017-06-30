@@ -35,6 +35,7 @@ public:
     double L, R;//x的左右区间范围
     Lagrange();
     Lagrange(int n, double *x, double *f);
+    Lagrange(QVector<VPoint> points);
     ~Lagrange();
     void Init(QVector<VPoint> points);
     double calLag(double X);
