@@ -244,13 +244,20 @@ QString VGroupShape::type()const
 bool VGroupShape::contains(VPoint point)
 {
     VPoint subPoint, subLocation;
-    for(auto & it: shapes)
+    double subAngle;
+    VMagnification subMag;
+    for(VShape * it:this->shapes)
     {
         subLocation = it->getLocation();
-        subPoint = VPoint(point.x - subLocation.x, point.y - subLocation.y);
-        if(it->contains(subPoint.rotate(VPoint(0,0), it->getAngle())/it->getMagnification())) return false;
+        subAngle = it->getAngle();
+        subMag = it->getMagnification();
+        subPoint = VPoint(point.x - subLocation.x, point.y - subLocation.y).rotate(VPoint(0,0),-subAngle)*subMag;
+        if(it->contains(point))
+        {
+            return true;
+        }
     }
-    return true;
+    return false;
 }
 
 QJsonObject VGroupShape::toJsonObject()const

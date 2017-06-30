@@ -12,6 +12,8 @@
 #include "vsize.h"
 #include "vpoint.h"
 #include "vcursortype.h"
+#include "vshape.h"
+#include "vpoint.h"
 
 class TestWidget : public QWidget
 {
@@ -22,6 +24,7 @@ public:
     double scale=1;
     QMainWindow *mainwindow;
     VGroupShape groupShape;
+    VShape * focusShape;
     VPoint canvasLocation;
     VSize canvasSize;
     QPoint pressPoint;
@@ -37,6 +40,8 @@ protected:
 
 private:
     int cursorType;
+    VShape * getShape(const VPoint &point);
+    VPoint getLoc(const VPoint & point);
 
 public slots:
     void changeCursor(int type);
