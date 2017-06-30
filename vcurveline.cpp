@@ -62,23 +62,35 @@ void VCurveline::draw(QPainter *painter,const VMagnification &magnification)
     for(int i = 0; i < points.size(); i++){
         x[i] = this->points[i].x;
         y[i] = this->points[i].y;
-        //qDebug()<<">>> "<<x[i]<<" "<<y[i]<<endl;
+
     }
-    //int seg = (points.size()-1)/2;
-    //for(int sg = 0; sg < seg; sg++){
-    double sx=painter->worldTransform().m11();
-        Newton newton(points.size()-1, x, y);
+
+    int seg = (points.size()-1)/2;
+    for(int sg = 0; sg < seg; sg++){
         QPolygonF qpf;
+        double sx=painter->worldTransform().m11();
+        //Newton newton(2, x+sg*2, y+sg*2);
+        QVector<VPoint> vec;
+        for(int i = 0; i < 3; i++){
+            vec.push_back(points[sg*2+i]);
+            qDebug()<<">>> "<<points[sg*2+i].x<<" "<<points[sg*2+i].y<<endl;
+        }
+        Lagrange lag;
+        lag.Init(vec);
+        //for(int i = 0; i < 3; i++)
+        //    qDebug()<<">>> "<<x[sg*2+i]<<" "<<y[sg*2+i]<<endl;
         double tmp=magnification.horizontal*sx;
         double h = 1.0/tmp;
-        int len = (int)((newton.R-newton.L)*tmp);
+        int len = (int)((lag.R-lag.L)*tmp);
         for(int i = 0; i <= len; i++){
-            VPoint point(newton.L+i*h, newton.calNewDiffer(newton.L+i*h));
+            VPoint point(lag.L+i*h, lag.calLag(lag.L+i*h));
+            if(lag.L+i*h>lag.R)break;
             qpf << (point*magnification).toQPointF();
         }
-        qpf << (points.back()*magnification).toQPointF();
+        qpf << (vec.back()*magnification).toQPointF();
+        qDebug() <<lag.L<<" "<<lag.R<<endl;
         painter->drawPolyline(qpf);
-    //}
+    }
 //    QPainterPath path;
 //    auto nextit=vec.begin();
 //    auto nowit=nextit++;

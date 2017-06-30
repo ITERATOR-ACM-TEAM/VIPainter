@@ -24,4 +24,21 @@ public:
     QVector<VPoint> getFunc(double h);//返回区间[L, R]上的函数点对
 };
 
+class Lagrange//拉格朗日插值
+{
+private:
+    int n;//最高项次数，点的个数减一
+    double *x;
+    double *f;
+    double h = 0.1;
+public:
+    double L, R;//x的左右区间范围
+    Lagrange();
+    Lagrange(int n, double *x, double *f);
+    ~Lagrange();
+    void Init(QVector<VPoint> points);
+    double calLag(double X);
+    QVector<VPoint> getFunc(double h);//返回区间[L, R]上的函数点对
+};
+
 #endif // INTERPOLATION_H
