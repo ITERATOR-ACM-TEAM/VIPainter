@@ -3,7 +3,6 @@
 #include <QJsonArray>
 #include <QDebug>
 #include "vtype.h"
-#include <QDebug>
 #include <QPainterPath>
 #include <cmath>
 
@@ -90,7 +89,7 @@ void VCurveline::draw(QPainter *painter,const VMagnification &magnification)
         QVector<VPoint> vec;
         for(int i = 0; i < 3; i++){
             vec.push_back(points[sg*2+i]);
-            qDebug()<<">>> "<<points[sg*2+i].x<<" "<<points[sg*2+i].y<<endl;
+            // qDebug()<<">>> "<<points[sg*2+i].x<<" "<<points[sg*2+i].y<<endl;
         }
         Lagrange lag;
         lag.Init(vec);
@@ -105,7 +104,7 @@ void VCurveline::draw(QPainter *painter,const VMagnification &magnification)
             qpf << (point*magnification).toQPointF();
         }
         qpf << (vec.back()*magnification).toQPointF();
-        qDebug() <<lag.L<<" "<<lag.R<<endl;
+        // qDebug() <<lag.L<<" "<<lag.R<<endl;
         painter->drawPolyline(qpf);
     }
 //    QPainterPath path;
