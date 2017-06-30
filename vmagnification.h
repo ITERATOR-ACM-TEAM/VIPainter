@@ -9,6 +9,7 @@ public:
     VMagnification();
     double horizontal=1;
     double vertical=1;
+    VMagnification(double magnification);
     VMagnification(double horizontal,double vertical );
     VMagnification(const QJsonObject &jsonObject);
 

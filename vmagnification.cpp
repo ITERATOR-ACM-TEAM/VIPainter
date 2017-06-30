@@ -2,6 +2,8 @@
 
 VMagnification::VMagnification():horizontal(1), vertical (1){}
 
+VMagnification::VMagnification(double magnification):horizontal(magnification), vertical (magnification);
+
 VMagnification::VMagnification(double x,double y):horizontal(x), vertical (y){}
 
 const VMagnification& VMagnification::operator=(const VMagnification &magnification){

@@ -45,6 +45,22 @@ double VPoint::operator-(const VPoint &point)const
     return sqrt(pow(point.x-x,2)+pow(point.y-y,2));
 }
 
+
+VPoint VPoint::operator-()const
+{
+    return VPoint(-x,-y);
+}
+
+VPoint VPoint::operator+(const VSize &size)const
+{
+    return VPoint(x+size.width,y+size.height);
+}
+
+VPoint VPoint::operator-(const VSize &size)const
+{
+    return VPoint(x-size.width,y-size.height);
+}
+
 VPoint::operator QJsonValue()const
 {
     QJsonObject jsonObject;

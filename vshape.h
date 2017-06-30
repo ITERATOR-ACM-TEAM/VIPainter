@@ -8,6 +8,7 @@
 #include <QPainter>
 #include <QPen>
 #include <QBrush>
+#include <QList>
 #include "vpoint.h"
 #include "vsize.h"
 #include <vmagnification.h>
@@ -18,13 +19,14 @@ private:
     VPoint location;
     VMagnification magnification;
     double angle;
+    VShape *parent=nullptr;
 protected:
     static const QPen defaultPen;
     static const QBrush defaultBrush;
 public:
     static const double PI;
     static VShape* fromJsonObject(const QJsonObject &jsonObject);
-    VShape(const QString &name="",const VPoint &location=VPoint(0,0),const VMagnification &magnification=VMagnification(1,1),double angle=0);
+    VShape(const QString &name="",const VPoint &location=VPoint(0,0),const VMagnification &magnification=VMagnification(1,1),double angle=0,VShape *parent=nullptr);
     VShape(const QJsonObject jsonObject);
     virtual QJsonObject toJsonObject()const;
     operator QJsonValue()const;
@@ -50,6 +52,9 @@ public:
     void setName(const QString &name);
     QString getName()const;
 
+    void setParent(VShape *parent);
+    VShape * getParent()const;
+    QList<VPoint> getCircumscribedRectangle();
 
     virtual VSize getSize()=0;
 
