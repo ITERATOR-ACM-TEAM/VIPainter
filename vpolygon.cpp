@@ -21,13 +21,13 @@ bool VPolygon::contains(VPoint point)
 //    Q_UNUSED(point);
 //    return false;
     //TODO:
-    qreal x=Point.x,y=Point.y;
+    qreal x=point.x,y=point.y;
         int left=0;
         int right=0;
         int j=points.size()-1;
         for(int i=0;i<points.size();i++){
-            if((points[i].y()<y&&points[j].y()>=y)||(points[j].y()<y&&points[i].y()>=y)){
-                if((y-points[i].y())*(points[i].x()-points[j].x())/(points[i].y()-points[j].y())+points[i].x()<x){
+            if((points[i].y<y&&points[j].y>=y)||(points[j].y<y&&points[i].y>=y)){
+                if((y-points[i].y)*(points[i].x-points[j].x)/(points[i].y-points[j].y)+points[i].x<x){
                     left++;
                 }
                 else right++;
