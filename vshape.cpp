@@ -5,6 +5,7 @@
 #include "vcurveline.h"
 #include "vgroupshape.h"
 #include <vtype.h>
+#include <vpoint.h>
 #include <cmath>
 #include <QDebug>
 
@@ -16,8 +17,8 @@ VShape::~VShape()
 {
 }
 
-VShape::VShape(const QString &name, const VPoint &location, const VMagnification &magnification, double angle):
-    name(name),location(location),magnification(magnification),angle(angle)
+VShape::VShape(const QString &name, const VPoint &location, const VMagnification &magnification, double angle,VShape *parent):
+    name(name),location(location),magnification(magnification),angle(angle),parent(parent)
 {
 }
 
@@ -116,4 +117,26 @@ void VShape::setMagnification(const VMagnification &magnification)
 VMagnification VShape::getMagnification()const
 {
     return magnification;
+}
+
+void VShape::setParent(VShape *parent)
+{
+    this->parent=parent;
+}
+
+VShape * VShape::getParent()const
+{
+    return parent;
+}
+
+QList<VPoint> VShape::getCircumscribedRectangle()
+{
+    QList<VPoint> points;
+    VSize size=getSize()/VMagnification(2);
+    VPoint center(0,0);
+    points.append(location+VPoint(size.width,size.height).rotate(center,angle)*magnification);
+    points.append(location+VPoint(-size.width,size.height).rotate(center,angle)*magnification);
+    points.append(location+VPoint(-size.width,-size.height).rotate(center,angle)*magnification);
+    points.append(location+VPoint(size.width,-size.height).rotate(center,angle)*magnification);
+    return points;
 }

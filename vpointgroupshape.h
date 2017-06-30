@@ -22,7 +22,7 @@ public:
     virtual QVector<VPoint> getPointList() const;
     const VPointGroupShape& operator=(const VPointGroupShape &polyline);
     const VPointGroupShape& operator=(const QJsonObject &jsonObject);
-    virtual void getCircumscribedRectangle();//获得外接矩形的左上点、右下点
+    virtual void getCircumscribedRectangle();//获得外接矩形的右下点
     VSize getSize()override;
 //    void setSize(const VSize &size) override;
 };

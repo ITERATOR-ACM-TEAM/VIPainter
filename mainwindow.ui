@@ -50,11 +50,11 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actionPen"/>
+   <addaction name="actionChoose"/>
    <addaction name="actionMove"/>
+   <addaction name="actionPen"/>
    <addaction name="actionUndo"/>
    <addaction name="actionRedo"/>
-   <addaction name="actionChoose"/>
    <addaction name="actionZoomIn"/>
    <addaction name="actionZoomOut"/>
    <addaction name="actionResume"/>
@@ -196,7 +196,7 @@
     <bool>true</bool>
    </property>
    <property name="checked">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="icon">
     <iconset resource="icon.qrc">

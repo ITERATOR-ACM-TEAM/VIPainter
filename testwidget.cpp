@@ -19,6 +19,7 @@ TestWidget::TestWidget(QMainWindow *parent) :
 {
     mainwindow=parent;
     setMouseTracking(true);
+    focusShape = nullptr;
 //    groupShape.setName("main shape");
 //    groupShape.setLocation(VPoint(0,0));
 //    groupShape.setSize(VSize(10,10));
@@ -52,8 +53,13 @@ void TestWidget::wheelEvent(QWheelEvent * event)
 void TestWidget::mousePressEvent(QMouseEvent *event)
 {
     pressPoint=event->pos();
+    VPoint point(pressPoint.x(), pressPoint.y());
     if(cursorType == VCursorType::MOVE)
         this->setCursor(Qt::ClosedHandCursor);
+    else if(cursorType == VCursorType::CHOOSE)
+    {
+        focusShape = getShape(point);
+    }
 }
 
 void TestWidget::mouseReleaseEvent(QMouseEvent *event)
@@ -115,4 +121,34 @@ void TestWidget::changeCursor(int type)
         this->setCursor(Qt::OpenHandCursor);
     }break;
     }
+}
+
+VShape * TestWidget::getShape(const VPoint &point)
+{
+    VPoint subPoint, subLocation;
+    double subAngle;
+    VPoint loc = getLoc(point);
+    qDebug() << loc;
+    VMagnification subMag;
+    for(VShape * it:this->groupShape.getShapeVector())
+    {
+        subLocation = it->getLocation();
+        subAngle = it->getAngle();
+        subMag = it->getMagnification();
+        subPoint = VPoint(loc.x - subLocation.x, loc.y - subLocation.y).rotate(VPoint(0,0),-subAngle)/subMag;
+        qDebug() << subPoint;
+        qDebug() << subMag;
+        if(it->contains(subPoint))
+        {
+            qDebug() << it->type();
+            return it;
+        }
+    }
+    return nullptr;
+}
+
+VPoint TestWidget::getLoc(const VPoint & point)
+{
+
+    return VPoint((point.x-(this->width()/2+canvasLocation.x))/scale,(point.y-(this->height()/2+canvasLocation.y))/scale);
 }
