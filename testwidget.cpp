@@ -97,7 +97,7 @@ void TestWidget::paintEvent(QPaintEvent *)
     painter.drawRect(-canvasSize.width/2, -canvasSize.height/2, canvasSize.width, canvasSize.height);
     painter.restore();
 
-    groupShape.draw(&painter,VMagnification(1,1));
+    groupShape.draw(&painter,groupShape.getMagnification());
 
 }
 

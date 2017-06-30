@@ -37,6 +37,12 @@ VShape* VShape::fromJsonObject(const QJsonObject &jsonObject)
     else return nullptr;
 }
 
+
+void VShape::zoomin(VMagnification magnification)
+{
+    this->magnification=this->magnification*magnification;
+}
+
 void VShape::setLocation(const VPoint &location)
 {
     this->location=location;

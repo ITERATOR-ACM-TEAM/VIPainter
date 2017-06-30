@@ -87,24 +87,24 @@ MainWindow::~MainWindow()
 void MainWindow::on_actionZoomIn_triggered()
 {
 
-    qobject_cast<TestWidget *>(focus->widget())->scale*=1.1;
-    qDebug()<<"scale:"<<qobject_cast<TestWidget *>(focus->widget())->scale<<endl;
-    qobject_cast<TestWidget *>(focus->widget())->update();
+    getTestWidget()->scale*=1.1;
+    qDebug()<<"scale:"<<getTestWidget()->scale<<endl;
+    getTestWidget()->update();
 }
 
 void MainWindow::on_actionZoomOut_triggered()
 {
-    qobject_cast<TestWidget *>(focus->widget())->scale/=1.1;
-    qDebug()<<"scale:"<<qobject_cast<TestWidget *>(focus->widget())->scale<<endl;
-    qobject_cast<TestWidget *>(focus->widget())->update();
+    getTestWidget()->scale/=1.1;
+    qDebug()<<"scale:"<<getTestWidget()->scale<<endl;
+    getTestWidget()->update();
 }
 
 void MainWindow::on_actionResume_triggered()
 {
-    qobject_cast<TestWidget *>(focus->widget())->scale=1.0;
-    qobject_cast<TestWidget *>(focus->widget())->canvasLocation=VPoint(0,0);
-    qDebug()<<"scale:"<<qobject_cast<TestWidget *>(focus->widget())->scale<<endl;
-    qobject_cast<TestWidget *>(focus->widget())->update();
+    getTestWidget()->scale=1.0;
+    getTestWidget()->canvasLocation=VPoint(0,0);
+    qDebug()<<"scale:"<<getTestWidget()->scale<<endl;
+    getTestWidget()->update();
 }
 
 void MainWindow::on_actionSave_triggered()
@@ -117,7 +117,7 @@ void MainWindow::saveFile(QString filename)
     if(filename.split('.').back()==tr("vp"))
     {
         QJsonDocument jsonDocument;
-        jsonDocument.setObject(qobject_cast<TestWidget *>(focus->widget())->groupShape.toJsonObject());
+        jsonDocument.setObject(getTestWidget()->groupShape.toJsonObject());
         QFile file(filename);
         file.open(QFile::WriteOnly|QFile::Text);
         file.write(jsonDocument.toJson());
@@ -125,12 +125,12 @@ void MainWindow::saveFile(QString filename)
     }
     else
     {
-        QImage image(qobject_cast<TestWidget *>(focus->widget())->canvasSize.width,qobject_cast<TestWidget *>(focus->widget())->canvasSize.height,QImage::Format_ARGB32);
+        QImage image(getTestWidget()->canvasSize.width,getTestWidget()->canvasSize.height,QImage::Format_ARGB32);
         image.fill(0x00ffffff);
         QPainter painter(&image);
         painter.setRenderHint(QPainter::Antialiasing);
-        painter.translate(qobject_cast<TestWidget *>(focus->widget())->canvasSize.width/2,qobject_cast<TestWidget *>(focus->widget())->canvasSize.height/2);
-        qobject_cast<TestWidget *>(focus->widget())->groupShape.draw(&painter,VMagnification(1,1));
+        painter.translate(getTestWidget()->canvasSize.width/2,getTestWidget()->canvasSize.height/2);
+        getTestWidget()->groupShape.draw(&painter,VMagnification(1,1));
         image.save(filename);
     }
     focus->setWindowTitle(filename.split("/").back());
@@ -160,7 +160,7 @@ void MainWindow::on_actionOpen_triggered()
     QFile file(filename);
     file.open(QFile::ReadOnly|QFile::Text);
     QDockWidget * newWidget = newDock();
-    qobject_cast<TestWidget *>(newWidget->widget())->groupShape=QJsonDocument::fromJson(file.readAll()).object();
+    getTestWidget(newWidget)->groupShape=QJsonDocument::fromJson(file.readAll()).object();
     newWidget->setWindowTitle(filename.split("/").back());
     file.close();
     newWidget->update();
@@ -174,9 +174,9 @@ void MainWindow::on_actionTestShape1_triggered()
     VGroupShape * gs= new VGroupShape(QJsonDocument::fromJson(file.readAll()).object());
     if(focus==nullptr)return;
     qDebug() << focus ;
-    qobject_cast<TestWidget *>(focus->widget())->groupShape.insertShape(gs);
+    getTestWidget()->groupShape.insertShape(gs);
     file.close();
-    qobject_cast<TestWidget *>(focus->widget())->update();
+    getTestWidget()->update();
 }
 
 void MainWindow::on_actionMove_triggered()
@@ -247,14 +247,24 @@ void MainWindow::focusDock(QDockWidget * target)
 
 void MainWindow::on_actionCanvasSize_triggered()
 {
-    qobject_cast<TestWidget *>(focus->widget())->canvasSize=CanvasSizeDialog::showDialog(tr("画布大小"),qobject_cast<TestWidget *>(focus->widget())->canvasSize);
+    getTestWidget()->canvasSize=CanvasSizeDialog::showDialog(tr("画布大小"),getTestWidget()->canvasSize);
 }
 
 void MainWindow::on_actionShapeSize_triggered()
 {
     VSize size=
-            qobject_cast<TestWidget *>(focus->widget())->groupShape.getSize()*
-            qobject_cast<TestWidget *>(focus->widget())->groupShape.getMagnification();
+            getTestWidget()->groupShape.getSize()*
+            getTestWidget()->groupShape.getMagnification();
     VSize toSize=CanvasSizeDialog::showDialog(tr("图像大小"),size);
-    qobject_cast<TestWidget *>(focus->widget())->groupShape.zoomin(toSize/size);
+    getTestWidget()->groupShape.zoomin(toSize/size);
+}
+
+TestWidget * MainWindow::getTestWidget()
+{
+    return qobject_cast<TestWidget *>(focus->widget());
+}
+
+TestWidget * MainWindow::getTestWidget(QDockWidget * target)
+{
+    return qobject_cast<TestWidget *>(target->widget());
 }
