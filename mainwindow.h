@@ -61,7 +61,7 @@ private:
     QDockWidget * newDock();
     void saveFile(QString filename);
 
-
+    void focusDock(QDockWidget * target);
 };
 
 #endif // MAINWINDOW_H

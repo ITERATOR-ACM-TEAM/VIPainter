@@ -23,17 +23,19 @@ MainWindow::MainWindow(QWidget *parent) :
     group->addAction(ui->actionChoose);
     group->addAction(ui->actionMove);
     connect(this, SIGNAL(cursorChange(int)), this, SLOT(changeCursor(int)));
-    focus = newDock();
-    docks.push_back(focus);
     update();
 }
 
 QDockWidget* MainWindow::newDock()
 {
     QDockWidget *old = focus;
+
+    static int id = 0;
+
     TestWidget* newWidget=new TestWidget(this);
     connect(this, SIGNAL(cursorChange(int)), newWidget, SLOT(changeCursor(int)));
     emit cursorChange(this->cursorState);
+
     QDockWidget *dockWidget=new QDockWidget;
     dockWidget->setWidget(newWidget);
     //dockWidget->setAttribute(Qt::WA_DeleteOnClose);
@@ -43,9 +45,33 @@ QDockWidget* MainWindow::newDock()
     dockWidget->installEventFilter(this);
 
     dockWidget->show();
-    if(old != nullptr)
+    if(old != nullptr && !old->isFloating())
+    {
         this->tabifyDockWidget(old, dockWidget);
+    }
+    else
+    {
+        for(auto it: docks)
+        {
+            if(!it->isFloating())
+            {
+                this->tabifyDockWidget(it, dockWidget);
+            }
+        }
+    }
 
+    this->focusDock(dockWidget);
+
+//    connect(dockWidget->toggleViewAction(), &QAction::toggled,
+//            [dockWidget](bool checked){
+//        qDebug()<<"triggled"<<checked;
+//        dockWidget->raise();
+//        dockWidget->setFocus();
+//        dockWidget->activateWindow();
+//    });
+
+    dockWidget->setWindowTitle(QString("untitled %1").arg(id++));
+    docks.push_back(dockWidget);
     return dockWidget;
 }
 
@@ -103,6 +129,7 @@ void MainWindow::saveFile(QString filename)
         qobject_cast<TestWidget *>(focus->widget())->groupShape.draw(&painter,VMagnification(1,1));
         image.save(filename);
     }
+    focus->setWindowTitle(filename.split("/").back());
 }
 
 void MainWindow::on_actionSaveAs_triggered()
@@ -129,8 +156,8 @@ void MainWindow::on_actionOpen_triggered()
     QFile file(filename);
     file.open(QFile::ReadOnly|QFile::Text);
     QDockWidget * newWidget = newDock();
-    docks.push_back(newWidget);
     qobject_cast<TestWidget *>(newWidget->widget())->groupShape=QJsonDocument::fromJson(file.readAll()).object();
+    newWidget->setWindowTitle(filename.split("/").back());
     file.close();
     newWidget->update();
 }
@@ -171,7 +198,7 @@ void MainWindow::changeCursor(int type)
 
 void MainWindow::on_actionNew_triggered()
 {
-    docks.push_back(newDock());
+    QDockWidget * newWidget = newDock();
 }
 
 bool MainWindow::eventFilter(QObject * obj, QEvent * ev)
@@ -193,26 +220,23 @@ bool MainWindow::eventFilter(QObject * obj, QEvent * ev)
                 focus = nullptr;
                 if(!docks.empty())
                 {
-                    docks.back()->raise();
-                    docks.back()->setFocus();
-                    docks.back()->activateWindow();
+                    this->focusDock(docks.back());
                 }
                 qDebug() << docks.size();
                 return true;
             }
-//            else if(ev->type() == QEvent::TabletPress)
-//            {
-//                qDebug() << "pressing";
-//                if(!docks.empty())
-//                {
-//                    docks.back()->raise();
-//                    docks.back()->setFocus();
-//                    docks.back()->activateWindow();
-//                }
-//                return false;
-//            }
         }
     }
 
-    return QWidget::eventFilter(obj, ev);
+    return false;
+}
+
+
+void MainWindow::focusDock(QDockWidget * target)
+{
+    target->raise();
+    target->setFocus();
+    qApp->postEvent(target, new QFocusEvent(QEvent::FocusIn));
+//    qDebug() << "focusing";
+//    focus = target;
 }
