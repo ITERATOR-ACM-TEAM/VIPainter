@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "vdocktitlebar.h"
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QFile>
@@ -59,6 +60,8 @@ QDockWidget* MainWindow::newDock()
             }
         }
     }
+    //dockWidget->setTitleBarWidget(new VDockTitleBar());
+    dockWidget->setBaseSize(400,300);
 
     this->focusDock(dockWidget);
 
@@ -198,7 +201,7 @@ void MainWindow::changeCursor(int type)
 
 void MainWindow::on_actionNew_triggered()
 {
-    QDockWidget * newWidget = newDock();
+    newDock();
 }
 
 bool MainWindow::eventFilter(QObject * obj, QEvent * ev)

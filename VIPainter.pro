@@ -30,7 +30,8 @@ SOURCES += main.cpp\
     interpolation.cpp \
     vpointgroupshape.cpp \
     vmagnification.cpp \
-    vcursortype.cpp
+    vcursortype.cpp \
+    vdocktitlebar.cpp
 
 HEADERS  += mainwindow.h \
     vpoint.h \
@@ -46,7 +47,8 @@ HEADERS  += mainwindow.h \
     interpolation.h \
     vpointgroupshape.h \
     vmagnification.h \
-    vcursortype.h
+    vcursortype.h \
+    vdocktitlebar.h
 
 FORMS    += mainwindow.ui
 
