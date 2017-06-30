@@ -20,6 +20,7 @@ public:
     VSize operator -(const VSize & Right)const;
     VSize operator *(const VMagnification &magnification)const;
     VSize operator /(const VMagnification &magnification)const;
+    VMagnification operator /(const VSize &size)const;
     operator QJsonValue()const;
     QJsonObject toJsonObject()const;
 };

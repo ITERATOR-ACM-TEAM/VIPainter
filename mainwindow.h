@@ -49,6 +49,10 @@ private slots:
 
     void on_actionNew_triggered();
 
+    void on_actionCanvasSize_triggered();
+
+    void on_actionShapeSize_triggered();
+
 private:
     Ui::MainWindow *ui;
 

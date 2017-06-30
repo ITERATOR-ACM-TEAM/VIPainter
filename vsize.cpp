@@ -28,6 +28,11 @@ VSize VSize::operator /(const VMagnification &magnification)const
     return VSize(width/magnification.horizontal,height/magnification.vertical);
 }
 
+VMagnification VSize::operator /(const VSize &size)const
+{
+    return VMagnification(width/size.width,height/size.height);
+}
+
 VSize VSize::operator +(const VSize & Right)const
 {
     return VSize(width+Right.width, height+Right.height);

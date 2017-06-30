@@ -33,7 +33,15 @@
     <addaction name="actionSaveAs"/>
     <addaction name="actionClose"/>
    </widget>
+   <widget class="QMenu" name="menu_2">
+    <property name="title">
+     <string>图像</string>
+    </property>
+    <addaction name="actionCanvasSize"/>
+    <addaction name="actionShapeSize"/>
+   </widget>
    <addaction name="menu"/>
+   <addaction name="menu_2"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -242,6 +250,22 @@
    </property>
    <property name="toolTip">
     <string>testShape1</string>
+   </property>
+  </action>
+  <action name="actionCanvasSize">
+   <property name="text">
+    <string>画布大小</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Alt+C</string>
+   </property>
+  </action>
+  <action name="actionShapeSize">
+   <property name="text">
+    <string>图像大小</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Alt+I</string>
    </property>
   </action>
  </widget>

@@ -11,6 +11,7 @@
 #include <QPainter>
 #include <QString>
 #include <QFileDialog>
+#include "canvassizedialog.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -242,4 +243,18 @@ void MainWindow::focusDock(QDockWidget * target)
     qApp->postEvent(target, new QFocusEvent(QEvent::FocusIn));
 //    qDebug() << "focusing";
 //    focus = target;
+}
+
+void MainWindow::on_actionCanvasSize_triggered()
+{
+    qobject_cast<TestWidget *>(focus->widget())->canvasSize=CanvasSizeDialog::showDialog(tr("画布大小"),qobject_cast<TestWidget *>(focus->widget())->canvasSize);
+}
+
+void MainWindow::on_actionShapeSize_triggered()
+{
+    VSize size=
+            qobject_cast<TestWidget *>(focus->widget())->groupShape.getSize()*
+            qobject_cast<TestWidget *>(focus->widget())->groupShape.getMagnification();
+    VSize toSize=CanvasSizeDialog::showDialog(tr("图像大小"),size);
+    qobject_cast<TestWidget *>(focus->widget())->groupShape.zoomin(toSize/size);
 }

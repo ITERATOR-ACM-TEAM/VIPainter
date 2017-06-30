@@ -31,7 +31,8 @@ SOURCES += main.cpp\
     vpointgroupshape.cpp \
     vmagnification.cpp \
     vcursortype.cpp \
-    vdocktitlebar.cpp
+    vdocktitlebar.cpp \
+    canvassizedialog.cpp
 
 HEADERS  += mainwindow.h \
     vpoint.h \
@@ -48,9 +49,11 @@ HEADERS  += mainwindow.h \
     vpointgroupshape.h \
     vmagnification.h \
     vcursortype.h \
-    vdocktitlebar.h
+    vdocktitlebar.h \
+    canvassizedialog.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    canvassizedialog.ui
 
 RESOURCES += \
     icon.qrc
