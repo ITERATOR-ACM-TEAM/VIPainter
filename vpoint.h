@@ -29,6 +29,7 @@ public:
     VPoint operator-(const VSize &size)const;
 
     VPoint rotate(const VPoint & center, double a);
+    VPoint centralTransformation();//中心变换
 };
 
 #endif //#ifndef VPOINT_H

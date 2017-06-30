@@ -15,6 +15,8 @@ public:
     const VCurveline& operator=(const VCurveline &shape);
     const VCurveline& operator=(const QJsonObject &jsonObject);
 
+    void addPoint(VPoint point);
+
     QJsonObject toJsonObject()const override;
     void draw(QPainter *painter,const VMagnification &magnification)override;
     QString type()const override;

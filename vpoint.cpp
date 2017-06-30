@@ -92,3 +92,8 @@ VPoint VPoint::rotate(const VPoint & center, double a)
     point.y = x*sin(a) + y*cos(a) + center.y;
     return point;
 }
+
+VPoint VPoint::centralTransformation(){//中心变换
+    VPoint point(y, x);
+    return point;
+}

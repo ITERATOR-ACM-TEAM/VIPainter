@@ -15,6 +15,16 @@ VCurveline::VCurveline(const VCurveline &vcurveline):VPointGroupShape(vcurveline
 VCurveline::VCurveline(const QJsonObject &jsonObject):VPointGroupShape(jsonObject){
 }
 
+void VCurveline::addPoint(VPoint point){
+    if(this->points.empty()){
+        VPoint p(point);
+        this->points.push_back(p);
+    }else{
+        VPoint tmp = this->points.back();
+        VPoint p((tmp.x+point.x)/2, (tmp.y+point.y)/2);
+        this->points.push_back(p);
+    }
+}
 
 bool VCurveline::contains(VPoint point)
 {
@@ -87,9 +97,14 @@ void VCurveline::draw(QPainter *painter,const VMagnification &magnification)
         double sx=painter->worldTransform().m11();
         //Newton newton(2, x+sg*2, y+sg*2);
         QVector<VPoint> vec;
+        VPoint &l = points[sg*2];
+        VPoint &r = points[sg*2+2];
         for(int i = 0; i < 3; i++){
-            vec.push_back(points[sg*2+i]);
-            // qDebug()<<">>> "<<points[sg*2+i].x<<" "<<points[sg*2+i].y<<endl;
+            if(abs(l.x-r.x) >= abs(l.y-r.y))
+                vec.push_back(points[sg*2+i]);
+            else
+                vec.push_back(points[sg*2+i].centralTransformation());
+            //qDebug()<<">>> "<<points[sg*2+i].x<<" "<<points[sg*2+i].y<<endl;
         }
         Lagrange lag;
         lag.Init(vec);
@@ -101,12 +116,22 @@ void VCurveline::draw(QPainter *painter,const VMagnification &magnification)
         for(int i = 0; i <= len; i++){
             VPoint point(lag.L+i*h, lag.calLag(lag.L+i*h));
             if(lag.L+i*h>lag.R)break;
-            qpf << (point*magnification).toQPointF();
+            if(abs(l.x-r.x) >= abs(l.y-r.y))
+                qpf << (point*magnification).toQPointF();
+            else
+                qpf << (point.centralTransformation()*magnification).toQPointF();
         }
-        qpf << (vec.back()*magnification).toQPointF();
-        // qDebug() <<lag.L<<" "<<lag.R<<endl;
+
+//        if(abs(l.x-r.x) >= abs(l.y-r.y))
+            qpf << (vec.back()*magnification).toQPointF();
+//        else
+//            qpf << (vec.back().centralTransformation()*magnification).toQPointF();
+        qDebug() <<lag.L<<" "<<lag.R<<endl;
         painter->drawPolyline(qpf);
+        //painter->drawPath();
     }
+//    painter->drawLine(-200, 0, 200, 0);
+//    painter->drawLine(0, -200, 0, 200);
 //    QPainterPath path;
 //    auto nextit=vec.begin();
 //    auto nowit=nextit++;
