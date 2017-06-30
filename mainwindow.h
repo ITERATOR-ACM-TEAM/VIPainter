@@ -21,7 +21,7 @@ public:
     ~MainWindow();
 
 signals:
-    void cursorChange(int type);
+    void cursorChange(VCursorType type);
 
 protected:
     bool eventFilter(QObject * obj, QEvent * ev)override;
@@ -45,7 +45,7 @@ private slots:
 
     void on_actionChoose_triggered();
 
-    void changeCursor(int type);
+    void changeCursor(VCursorType type);
 
     void on_actionNew_triggered();
 
@@ -60,7 +60,7 @@ private:
     QVector<QDockWidget *> docks;
 
     QActionGroup  *group;
-    int cursorState;
+    VCursorType cursorState;
 
     QDockWidget * newDock();
     void saveFile(QString filename);

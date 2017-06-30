@@ -107,7 +107,7 @@ void TestWidget::paintEvent(QPaintEvent *)
 
 }
 
-void TestWidget::changeCursor(int type)
+void TestWidget::changeCursor(VCursorType type)
 {
     this->cursorType = type;
     switch(type)

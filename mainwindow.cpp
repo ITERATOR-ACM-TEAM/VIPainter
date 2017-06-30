@@ -195,7 +195,7 @@ void MainWindow::on_actionChoose_triggered()
         emit cursorChange(VCursorType::DEFAULT);
 }
 
-void MainWindow::changeCursor(int type)
+void MainWindow::changeCursor(VCursorType type)
 {
     cursorState = type;
 }
