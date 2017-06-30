@@ -5,7 +5,7 @@ class VCursorType
 {
 public:
     VCursorType()=delete;
-    enum cursorType{MOVE, CHOOSE};
+    enum cursorType{MOVE, CHOOSE, DEFAULT};
 };
 
 #endif // VCURSORTYPE_H

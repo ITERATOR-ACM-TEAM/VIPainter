@@ -120,6 +120,10 @@ void TestWidget::changeCursor(int type)
     {
         this->setCursor(Qt::OpenHandCursor);
     }break;
+    default:
+    {
+        this->setCursor(Qt::ArrowCursor);
+    }
     }
 }
 

@@ -15,7 +15,7 @@
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow),focus(nullptr)
+    ui(new Ui::MainWindow),focus(nullptr),cursorState(VCursorType::CHOOSE)
 {
     ui->setupUi(this);
     delete takeCentralWidget();
@@ -184,7 +184,7 @@ void MainWindow::on_actionMove_triggered()
     if(ui->actionMove->isChecked())
         emit cursorChange(VCursorType::MOVE);
     else
-        emit cursorChange(VCursorType::CHOOSE);
+        emit cursorChange(VCursorType::DEFAULT);
 }
 
 void MainWindow::on_actionChoose_triggered()
@@ -192,7 +192,7 @@ void MainWindow::on_actionChoose_triggered()
     if(ui->actionChoose->isChecked())
         emit cursorChange(VCursorType::CHOOSE);
     else
-        emit cursorChange(VCursorType::CHOOSE);
+        emit cursorChange(VCursorType::DEFAULT);
 }
 
 void MainWindow::changeCursor(int type)
