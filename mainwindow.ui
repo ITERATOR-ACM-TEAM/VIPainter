@@ -95,6 +95,9 @@
    <property name="toolTip">
     <string>画笔</string>
    </property>
+   <property name="shortcut">
+    <string>3</string>
+   </property>
   </action>
   <action name="actionOpen">
    <property name="text">
@@ -216,6 +219,9 @@
    <property name="toolTip">
     <string>选择</string>
    </property>
+   <property name="shortcut">
+    <string>1</string>
+   </property>
   </action>
   <action name="actionMove">
    <property name="checkable">
@@ -230,6 +236,9 @@
    </property>
    <property name="toolTip">
     <string>移动</string>
+   </property>
+   <property name="shortcut">
+    <string>2</string>
    </property>
   </action>
   <action name="actionResume">

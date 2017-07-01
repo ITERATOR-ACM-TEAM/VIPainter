@@ -1,11 +1,14 @@
 #include "canvassizedialog.h"
 #include "ui_canvassizedialog.h"
+#include <QPushButton>
 
 CanvasSizeDialog::CanvasSizeDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::CanvasSizeDialog)
 {
     ui->setupUi(this);
+    ui->buttonBox->button(QDialogButtonBox::Ok)->setText(tr("确定"));
+    ui->buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("取消"));
 }
 
 CanvasSizeDialog::~CanvasSizeDialog()

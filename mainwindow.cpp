@@ -18,6 +18,7 @@
 #include <QFileInfoList>
 #include <QIcon>
 #include <QPixmap>
+#include <QMessageBox>
 #include "canvassizedialog.h"
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -44,13 +45,21 @@ void MainWindow::initAction(QDir dir)
     QStringList files=dir.entryList();
     for(auto i:files)
     {
+        ui->statusBar->showMessage(tr("加载插件 ")+i);
         QFile file(dir.filePath(i));
         if(!file.open(QFile::ReadOnly|QFile::Text))continue;
-        VGroupShape *shape=new VGroupShape(QJsonDocument::fromJson(file.readAll()).array());
-        shape->getCircumscribedRectangle(true);
+        QJsonDocument doc=QJsonDocument::fromJson(file.readAll());
         file.close();
+        VShape *shape;
+        if(doc.isArray())
+        {
+            VGroupShape *groupshape=new VGroupShape(doc.array());
+            groupshape->getCircumscribedRectangle(true);
+            shape=groupshape;
+        }
+        else if(doc.isObject())shape=VShape::fromJsonObject(doc.object());
+        else continue;
         if(shape==nullptr)continue;
-        qDebug()<<file.fileName()<<" loading";
         QAction *action=new QAction(ui->shapeBar);
 
         const int SIZE=30;
@@ -80,7 +89,7 @@ void MainWindow::initAction(QDir dir)
 
 }
 
-QDockWidget* MainWindow::newDock()
+QDockWidget* MainWindow::newDock(QString dockname)
 {
     QDockWidget *old = focus;
 
@@ -126,7 +135,8 @@ QDockWidget* MainWindow::newDock()
 //        dockWidget->activateWindow();
 //    });
 
-    dockWidget->setWindowTitle(QString("untitled %1").arg(id++));
+    if(dockname=="")dockWidget->setWindowTitle(QString("untitled %1").arg(id++));
+    else dockWidget->setWindowTitle(dockname);
     docks.push_back(dockWidget);
     return dockWidget;
 }
@@ -163,12 +173,14 @@ void MainWindow::on_actionResume_triggered()
 
 void MainWindow::on_actionSave_triggered()
 {
+    if(getTestWidget()==nullptr)return;
 }
 
 void MainWindow::saveFile(QString filename)
 {
     if(focus == nullptr) return;
-    if(filename.split('.').back()==tr("vp"))
+    ui->statusBar->showMessage(tr("保存到文件 ")+filename);
+    if(filename.split('.').back()==tr("json"))
     {
         QJsonDocument jsonDocument;
         jsonDocument.setArray(getTestWidget()->groupShape.toJsonArray());
@@ -192,9 +204,10 @@ void MainWindow::saveFile(QString filename)
 
 void MainWindow::on_actionSaveAs_triggered()
 {
+    if(getTestWidget()==nullptr)return;
     QString filename=
             QFileDialog::getSaveFileName(this,
-                                         tr("Save File"),
+                                         tr("保存文件"),
                                          tr("image.json"),
                                          tr("json file (*.json);;"
                                             "png file (*.png);;"
@@ -205,20 +218,30 @@ void MainWindow::on_actionSaveAs_triggered()
 
 void MainWindow::on_actionOpen_triggered()
 {
-    QString filename=
-            QFileDialog::getOpenFileName(this,
-                                         tr("Open File"),
+    QStringList filenames=
+            QFileDialog::getOpenFileNames(this,
+                                         tr("打开文件"),
                                          tr(""),
-                                         tr("json file (*.json)"));
-    if(filename=="")return;
-    QFile file(filename);
-    if(!file.open(QFile::ReadOnly|QFile::Text))return;
-    QDockWidget * newWidget = newDock();
-
-    getTestWidget(newWidget)->groupShape=QJsonDocument::fromJson(file.readAll()).array();
-    newWidget->setWindowTitle(filename.split("/").back());
-    file.close();
-    newWidget->update();
+                                         tr("json file (*.json);;"
+                                            "all (*)"));
+    for(auto &filename:filenames)
+    {
+        if(filename=="")return;
+        ui->statusBar->showMessage(tr("打开文件 ")+filename);
+        QFile file(filename);
+        if(!file.open(QFile::ReadOnly|QFile::Text))return;
+        QJsonDocument doc=QJsonDocument::fromJson(file.readAll());
+        file.close();
+        if(!doc.isArray()&&!doc.isObject())
+        {
+            QMessageBox::warning(this,tr("错误"),tr("打开文件 ")+filename+tr("失败"));
+            continue;
+        }
+        QDockWidget * newWidget = newDock(filename.split("/").back());
+        if(doc.isArray())getTestWidget(newWidget)->groupShape=doc.array();
+        else if(doc.isObject())getTestWidget(newWidget)->groupShape.insertShape(VShape::fromJsonObject(doc.object()));
+        newWidget->update();
+    }
 }
 
 void MainWindow::on_actionMove_triggered()
@@ -327,13 +350,13 @@ void MainWindow::on_actionBreakUp_triggered()
     if(getTestWidget()->focusShape == nullptr) return;
     if(getTestWidget()->focusShape->type() == VType::GroupShape)
     {
+        //qDebug()<<*(getTestWidget()->focusShape);
         int cnt = 0;
         for(auto it: getTestWidget()->groupShape.getShapeVector() )
         {
             if(it == getTestWidget()->focusShape)
             {
                 QVector<VShape *> shs = VGroupShape::breakUp(dynamic_cast<VGroupShape*>(it));
-                getTestWidget()->groupShape.eraseShape(cnt);
                 getTestWidget()->groupShape.insertShape(shs);
                 getTestWidget()->focusShape = nullptr;
                 break;

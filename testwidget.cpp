@@ -85,9 +85,9 @@ void TestWidget::mouseMoveEvent(QMouseEvent *event)
             update();
         }else if(cursorType == VCursorType::CHOOSE){
             if(focusShape == nullptr) return;
-            VPoint pos = groupShape.transform((getLoc(vpoint)));
+            VPoint pos = groupShape.translate((getLoc(vpoint)));
             VPoint loc = focusShape->getLocation();
-            VPoint lp = groupShape.transform(getLoc(lastMove));
+            VPoint lp = groupShape.translate(getLoc(lastMove));
             focusShape->moveLoc(loc+VPoint(pos.x-lp.x, pos.y-lp.y));
             update();
         }

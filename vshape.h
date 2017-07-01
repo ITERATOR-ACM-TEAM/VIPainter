@@ -59,7 +59,7 @@ public:
     QList<VPoint> getRect();
 
     virtual VSize getSize()=0;
-    VPoint transform(const VPoint & point);
+    VPoint translate(const VPoint & point);
     VPoint reverseTransform(const VPoint &point);
 
 };
