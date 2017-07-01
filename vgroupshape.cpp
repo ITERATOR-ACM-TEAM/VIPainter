@@ -361,6 +361,8 @@ QVector<VShape *> VGroupShape::breakUp (VGroupShape * group)
     if(group == nullptr) return tmp;
     tmp = group->getShapeVector();
 
+    double angle = group->getAngle();
+    double subAngle;
     VPoint subLoc;
     VMagnification subMag;
     VMagnification mag = group->getMagnification();
@@ -368,8 +370,10 @@ QVector<VShape *> VGroupShape::breakUp (VGroupShape * group)
     {
         subLoc = group->reverseTransform(it->reverseTransform(VPoint(0,0)));
         subMag = it->getMagnification() * mag;
+        subAngle = it->getAngle() + angle;
         it->setLocation(subLoc);
         it->setMagnification(subMag);
+        it->setAngle(subAngle);
     }
 
     group->shapes.clear();
