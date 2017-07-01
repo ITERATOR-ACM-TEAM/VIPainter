@@ -57,6 +57,8 @@ public:
     QList<VPoint> getCircumscribedRectangle();
 
     virtual VSize getSize()=0;
+    VPoint transform(const VPoint & point);
+    VPoint reverseTransform(const VPoint &point);
 
 };
 

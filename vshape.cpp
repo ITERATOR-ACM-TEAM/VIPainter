@@ -140,3 +140,19 @@ QList<VPoint> VShape::getCircumscribedRectangle()
     points.append(location+VPoint(size.width,-size.height).rotate(center,angle)*magnification);
     return points;
 }
+
+VPoint VShape::transform(const VPoint & point)
+{
+    VPoint subLocation(getLocation());
+    double subAngle = getAngle();
+    VMagnification subMag = getMagnification();
+    return VPoint(point.x - subLocation.x, point.y - subLocation.y).rotate(VPoint(0,0),-subAngle)/subMag;
+}
+
+VPoint VShape::reverseTransform(const VPoint &point)
+{
+    VPoint subLocation(getLocation());
+    double subAngle = getAngle();
+    VMagnification subMag = getMagnification();
+    return (point*subMag).rotate(VPoint(0, 0), subAngle)+subLocation;
+}

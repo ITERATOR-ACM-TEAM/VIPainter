@@ -243,15 +243,10 @@ QString VGroupShape::type()const
 
 bool VGroupShape::contains(VPoint point)
 {
-    VPoint subPoint, subLocation;
-    double subAngle;
-    VMagnification subMag;
+    VPoint subPoint;
     for(VShape * it:this->shapes)
     {
-        subLocation = it->getLocation();
-        subAngle = it->getAngle();
-        subMag = it->getMagnification();
-        subPoint = VPoint(point.x - subLocation.x, point.y - subLocation.y).rotate(VPoint(0,0),-subAngle)/subMag;
+        subPoint = it->transform(point);
         if(it->contains(subPoint))
         {
             return true;
