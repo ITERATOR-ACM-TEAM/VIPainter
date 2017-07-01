@@ -39,13 +39,13 @@ protected:
     void wheelEvent(QWheelEvent * event)override;
 
 private:
-    int cursorType;
+    VCursorType cursorType;
     VShape * getShape(const VPoint &point);
     VPoint getLoc(const VPoint & point);
     VPoint lastMove;
 
 public slots:
-    void changeCursor(int type);
+    void changeCursor(VCursorType type);
 };
 
 #endif // TESTWIDGET_H
