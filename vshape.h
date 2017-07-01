@@ -38,6 +38,8 @@ public:
     virtual QString type()const=0;
     virtual ~VShape();
 
+    void moveLoc(const VPoint & point);
+
 /*****************setter and getter*********************/
     void zoomin(VMagnification magnification);
     void setMagnification(const VMagnification &magnification);

@@ -89,6 +89,7 @@ void TestWidget::mouseMoveEvent(QMouseEvent *event)
             VPoint loc = focusShape->getLocation();
             VPoint lp = groupShape.transform(getLoc(lastMove));
             focusShape->setLocation(loc+VPoint(pos.x-lp.x, pos.y-lp.y));
+            focusShape->getParent()->getCircumscribedRectangle();
             update();
         }
     }

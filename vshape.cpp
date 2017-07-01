@@ -156,3 +156,10 @@ VPoint VShape::reverseTransform(const VPoint &point)
     VMagnification subMag = getMagnification();
     return (point*subMag).rotate(VPoint(0, 0), subAngle)+subLocation;
 }
+
+void VShape::moveLoc(const VPoint & point)
+{
+    setLocation(point);
+    if(parent == nullptr) return;
+    getParent()->getCircumscribedRectangle();
+}
