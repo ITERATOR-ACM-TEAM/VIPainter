@@ -310,6 +310,7 @@ void MainWindow::on_actionShapeSize_triggered()
 
 TestWidget * MainWindow::getTestWidget()
 {
+    if(focus==nullptr)return nullptr;
     return qobject_cast<TestWidget *>(focus->widget());
 }
 
