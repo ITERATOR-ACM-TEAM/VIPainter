@@ -366,7 +366,7 @@ QVector<VShape *> VGroupShape::breakUp (VGroupShape * group)
     VMagnification mag = group->getMagnification();
     for(VShape* it:tmp)
     {
-        subLoc = group->reverseTransform(it->reverseTransform(it->getLocation()));
+        subLoc = group->reverseTransform(it->reverseTransform(VPoint(0,0)));
         subMag = it->getMagnification() * mag;
         it->setLocation(subLoc);
         it->setMagnification(subMag);
