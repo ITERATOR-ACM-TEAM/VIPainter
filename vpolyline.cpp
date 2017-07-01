@@ -63,7 +63,7 @@ bool VPolyline::contains(VPoint point){
     for(int i = 1; i < points.size(); i++){
         double A = points[i].y-points[i-1].y;
         double B = points[i].x-points[i-1].x;
-        if(abs(B*(y-points[i-1].y)-A*(x-points[i-1].x))<=width)
+        if(std::abs(B*(y-points[i-1].y)-A*(x-points[i-1].x))<=width)
             return true;
     }
     return false;

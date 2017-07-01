@@ -3,7 +3,10 @@
 
 enum class VCursorType
 {
-    MOVE, CHOOSE, DEFAULT
+    MOVE,
+    CHOOSE,
+    DEFAULT,
+    SHAPE,
 };
 
 #endif // VCURSORTYPE_H

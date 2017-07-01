@@ -7,6 +7,7 @@
 #include <QWidget>
 #include <QMainWindow>
 #include <QRect>
+#include <QDir>
 #include <QWheelEvent>
 #include "vgroupshape.h"
 #include "vsize.h"
