@@ -56,7 +56,7 @@ public:
 
     void setParent(VShape *parent);
     VShape * getParent()const;
-    QList<VPoint> getCircumscribedRectangle();
+    QList<VPoint> getRect();
 
     virtual VSize getSize()=0;
     VPoint transform(const VPoint & point);

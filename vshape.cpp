@@ -129,7 +129,7 @@ VShape * VShape::getParent()const
     return parent;
 }
 
-QList<VPoint> VShape::getCircumscribedRectangle()
+QList<VPoint> VShape::getRect()
 {
     QList<VPoint> points;
     VSize size=getSize()/VMagnification(2);
