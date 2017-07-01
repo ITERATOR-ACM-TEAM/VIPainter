@@ -40,7 +40,7 @@ MainWindow::MainWindow(QWidget *parent) :
 void MainWindow::initAction(QDir dir)
 {
     dir.setFilter(QDir::Files|QDir::Readable);
-    dir.setNameFilters(QStringList()<<"*.vp");
+    dir.setNameFilters(QStringList()<<"*.json");
     QStringList files=dir.entryList();
     for(auto i:files)
     {
@@ -193,8 +193,8 @@ void MainWindow::on_actionSaveAs_triggered()
     QString filename=
             QFileDialog::getSaveFileName(this,
                                          tr("Save File"),
-                                         tr("image.vp"),
-                                         tr("vp file (*.vp);;"
+                                         tr("image.json"),
+                                         tr("json file (*.json);;"
                                             "png file (*.png);;"
                                             "jpg file (*.jpg);;"
                                             "bmp file (*.bmp)"));
@@ -207,7 +207,7 @@ void MainWindow::on_actionOpen_triggered()
             QFileDialog::getOpenFileName(this,
                                          tr("Open File"),
                                          tr(""),
-                                         tr("vp file (*.vp)"));
+                                         tr("json file (*.json)"));
     if(filename=="")return;
     QFile file(filename);
     if(!file.open(QFile::ReadOnly|QFile::Text))return;
