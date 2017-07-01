@@ -43,16 +43,18 @@ void MainWindow::initAction(QDir dir)
     QStringList files=dir.entryList();
     for(auto i:files)
     {
-        QFile file(i);
+        QFile file(dir.filePath(i));
         if(!file.open(QFile::ReadOnly|QFile::Text))continue;
         VShape *shape=VShape::fromJsonObject(QJsonDocument::fromJson(file.readAll()).object());
         file.close();
-        qDebug()<<file.fileName()<<" fail to load";
         if(shape==nullptr)continue;
+        qDebug()<<file.fileName()<<" loading";
         QAction *action=new QAction(ui->shapeBar);
         VSize size=shape->getSize()*shape->getMagnification();
         QPixmap pixmap(size.width,size.height);
+        pixmap.fill(Qt::transparent);
         QPainter painter(&pixmap);
+        painter.translate(size.width/2,size.height/2);
         shape->draw(&painter,shape->getMagnification());
         action->setIcon(QIcon(pixmap));
         action->setToolTip(shape->getName());
@@ -150,7 +152,7 @@ void MainWindow::saveFile(QString filename)
     if(filename.split('.').back()==tr("vp"))
     {
         QJsonDocument jsonDocument;
-        jsonDocument.setObject(getTestWidget()->groupShape.toJsonObject());
+        jsonDocument.setArray(getTestWidget()->groupShape.toJsonArray());
         QFile file(filename);
         file.open(QFile::WriteOnly|QFile::Text);
         file.write(jsonDocument.toJson());
@@ -193,7 +195,7 @@ void MainWindow::on_actionOpen_triggered()
     QFile file(filename);
     file.open(QFile::ReadOnly|QFile::Text);
     QDockWidget * newWidget = newDock();
-    getTestWidget(newWidget)->groupShape=QJsonDocument::fromJson(file.readAll()).object();
+    getTestWidget(newWidget)->groupShape=QJsonDocument::fromJson(file.readAll()).array();
     newWidget->setWindowTitle(filename.split("/").back());
     file.close();
     newWidget->update();

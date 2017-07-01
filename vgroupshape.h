@@ -3,6 +3,7 @@
 
 #include "vshape.h"
 #include "vpoint.h"
+#include <QJsonArray>
 #include <QList>
 #include <QVector>
 #include <QPair>
@@ -21,6 +22,8 @@ public:
     VGroupShape();
     VGroupShape(const VGroupShape &shape);
     VGroupShape(const QJsonObject &jsonObject);
+    VGroupShape(const QJsonArray &jsonObject);
+    QJsonArray toJsonArray()const;
     ~VGroupShape()override;
     QJsonObject toJsonObject()const;
 
@@ -46,6 +49,7 @@ public:
 
     const VGroupShape& operator=(const VGroupShape &shape);
     const VGroupShape& operator=(const QJsonObject &jsonObject);
+    const VGroupShape& operator=(const QJsonArray &jsonArray);
     virtual void getCircumscribedRectangle();//获得外接矩形的左上点、右下点
     VShape* clone()override;
 };

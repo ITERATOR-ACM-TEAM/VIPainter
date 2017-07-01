@@ -4,6 +4,7 @@
 #include "vshape.h"
 #include "QVector"
 #include "vpoint.h"
+#include <QJsonArray>
 
 class VPointGroupShape:public VShape
 {
@@ -15,7 +16,7 @@ public:
     VPointGroupShape(const VPointGroupShape &polyline);
     VPointGroupShape(const QJsonObject &jsonObject);
     VPointGroupShape(QVector<VPoint> vec);
-    QJsonObject toJsonObject()const;
+    QJsonObject toJsonObject()const override;
     virtual void movePoint(int i, VPoint point);//move the ith point to (x,y)
     virtual void erasePoint(int i);
     virtual void addPoint(const VPoint &p);
