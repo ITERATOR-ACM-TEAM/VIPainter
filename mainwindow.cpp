@@ -318,6 +318,7 @@ TestWidget * MainWindow::getTestWidget(QDockWidget * target)
 
 void MainWindow::on_actionBreakUp_triggered()
 {
+    if(focus == nullptr) return;
     if(getTestWidget()->focusShape == nullptr) return;
     if(getTestWidget()->focusShape->type() == VType::GroupShape)
     {
@@ -340,6 +341,7 @@ void MainWindow::on_actionBreakUp_triggered()
 
 void MainWindow::on_actionUndo_triggered()
 {
+    if(focus == nullptr) return;
     if(getTestWidget()->focusShape == nullptr) return;
     double angle = getTestWidget()->focusShape->getAngle();
     getTestWidget()->focusShape->setAngle(angle+10);
@@ -348,6 +350,7 @@ void MainWindow::on_actionUndo_triggered()
 
 void MainWindow::on_actionRedo_triggered()
 {
+    if(focus == nullptr) return;
     if(getTestWidget()->focusShape == nullptr) return;
     double angle = getTestWidget()->focusShape->getAngle();
     getTestWidget()->focusShape->setAngle(angle-10);
