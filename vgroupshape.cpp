@@ -319,6 +319,18 @@ QVector<VShape *> VGroupShape::breakUp (VGroupShape * group)
     QVector<VShape *> tmp;
     if(group == nullptr) return tmp;
     tmp = group->getShapeVector();
+
+    VPoint subLoc;
+    VMagnification subMag;
+    VMagnification mag = group->getMagnification();
+    for(VShape* it:tmp)
+    {
+        subLoc = group->reverseTransform(it->reverseTransform(it->getLocation()));
+        subMag = it->getMagnification() * mag;
+        it->setLocation(subLoc);
+        it->setMagnification(subMag);
+    }
+
     group->shapes.clear();
     delete group;
     return tmp;

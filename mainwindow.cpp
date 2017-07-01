@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "vdocktitlebar.h"
+#include "vtype.h"
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QFile>
@@ -68,7 +69,7 @@ QDockWidget* MainWindow::newDock()
     static int id = 0;
 
     TestWidget* newWidget=new TestWidget(this);
-    connect(this, SIGNAL(cursorChange(int)), newWidget, SLOT(changeCursor(int)));
+    connect(this, SIGNAL(cursorChange(VCursorType)), newWidget, SLOT(changeCursor(VCursorType)));
     emit cursorChange(this->cursorState);
 
     QDockWidget *dockWidget=new QDockWidget;
@@ -308,5 +309,20 @@ TestWidget * MainWindow::getTestWidget(QDockWidget * target)
 
 void MainWindow::on_actionBreakUp_triggered()
 {
-    if(getTestWidget()->focusShape);
+    if(getTestWidget()->focusShape->type() == VType::GroupShape)
+    {
+        int cnt = 0;
+        for(auto it: getTestWidget()->groupShape.getShapeVector() )
+        {
+            if(it == getTestWidget()->focusShape)
+            {
+                QVector<VShape *> shs = VGroupShape::breakUp(dynamic_cast<VGroupShape*>(it));
+                getTestWidget()->groupShape.eraseShape(cnt);
+                getTestWidget()->groupShape.insertShape(shs);
+                break;
+            }
+            cnt++;
+        }
+    }
+    getTestWidget()->update();
 }
