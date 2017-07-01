@@ -193,7 +193,7 @@ void MainWindow::on_actionOpen_triggered()
     QFile file(filename);
     file.open(QFile::ReadOnly|QFile::Text);
     QDockWidget * newWidget = newDock();
-    getTestWidget(newWidget)->groupShape=QJsonDocument::fromJson(file.readAll()).object();
+    getTestWidget(newWidget)->groupShape.insertShape(VShape::fromJsonObject(QJsonDocument::fromJson(file.readAll()).object()));
     newWidget->setWindowTitle(filename.split("/").back());
     file.close();
     newWidget->update();

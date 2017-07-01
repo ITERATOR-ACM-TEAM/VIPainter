@@ -161,5 +161,6 @@ void VShape::moveLoc(const VPoint & point)
 {
     setLocation(point);
     if(parent == nullptr) return;
-    getParent()->getCircumscribedRectangle();
+    VGroupShape *groupShape=dynamic_cast<VGroupShape*>(getParent());
+    if(groupShape!=nullptr)groupShape->getCircumscribedRectangle();
 }

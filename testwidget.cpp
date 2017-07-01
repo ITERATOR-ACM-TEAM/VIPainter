@@ -88,8 +88,7 @@ void TestWidget::mouseMoveEvent(QMouseEvent *event)
             VPoint pos = groupShape.transform((getLoc(vpoint)));
             VPoint loc = focusShape->getLocation();
             VPoint lp = groupShape.transform(getLoc(lastMove));
-            focusShape->setLocation(loc+VPoint(pos.x-lp.x, pos.y-lp.y));
-            focusShape->getParent()->getCircumscribedRectangle();
+            focusShape->moveLoc(loc+VPoint(pos.x-lp.x, pos.y-lp.y));
             update();
         }
     }
@@ -113,7 +112,6 @@ void TestWidget::paintEvent(QPaintEvent *)
     painter.setPen(QPen(Qt::lightGray,1));
     painter.drawRect(-canvasSize.width/2, -canvasSize.height/2, canvasSize.width, canvasSize.height);
     painter.restore();
-
     groupShape.draw(&painter,groupShape.getMagnification());
 
 }

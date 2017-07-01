@@ -225,20 +225,32 @@ void VGroupShape::getCircumscribedRectangle(){
 //        VPoint loc=i->getLocation();
 //        i->setLocation(VPoint(loc.x-mid.x,loc.y-mid.y));
 //    }
-
     double midx=(minX+maxX)/2;
     double midy=(minY+maxY)/2;
-    //标准化，使外接矩形的左上点移到坐标原点
-    for(int i = 0; i < shapes.size(); i++){
-        shapes[i]->setLocation(VPoint(shapes[i]->getLocation().x-midx,shapes[i]->getLocation().y-midy));
-    }
-    VPoint location=getLocation()+VSize(midx,midy);
-    location=(location*getMagnification()).rotate(location,getAngle());
-    setLocation(location);
-    VGroupShape *groupShape=dynamic_cast<VGroupShape*>(getParent());
-    if(groupShape!=nullptr)groupShape->getCircumscribedRectangle();
-
     cr=VSize(maxX-minX,maxY-minY);
+
+
+    if(!(std::abs(midx)<1e-9 && std::abs(midy)<1e-9))
+    {
+        VGroupShape *groupShape=dynamic_cast<VGroupShape*>(getParent());
+        if(groupShape==nullptr) return;
+
+
+        //标准化，使外接矩形的左上点移到坐标原点
+        for(int i = 0; i < shapes.size(); i++){
+            shapes[i]->setLocation(VPoint(shapes[i]->getLocation().x-midx,shapes[i]->getLocation().y-midy));
+        }
+
+        VPoint location=getLocation()+VSize(midx,midy);
+        location=(location*getMagnification()).rotate(location,getAngle());
+        setLocation(location);
+        qDebug() << location;
+        groupShape->getCircumscribedRectangle();
+
+
+    }
+
+
 }
 
 bool VGroupShape::eraseShape(int i)
