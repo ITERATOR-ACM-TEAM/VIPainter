@@ -57,6 +57,10 @@ private slots:
 
     void on_actionBreakUp_triggered();
 
+    void on_actionUndo_triggered();
+
+    void on_actionRedo_triggered();
+
 private:
     Ui::MainWindow *ui;
     void initAction(QDir dir);
