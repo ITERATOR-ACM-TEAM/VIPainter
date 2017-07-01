@@ -5,8 +5,10 @@
 #include <QVector>
 #include <QPaintEvent>
 #include <QActionGroup>
+#include <QDir>
 #include <vcursortype.h>
 #include "testwidget.h"
+#include "vshape.h"
 
 namespace Ui {
 class MainWindow;
@@ -55,8 +57,9 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-    void initAction();
+    void initAction(QDir dir);
 
+    VShape *chooseShape;
     QDockWidget *focus;
     QVector<QDockWidget *> docks;
 

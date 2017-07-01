@@ -11,7 +11,12 @@
 #include <QPainter>
 #include <QString>
 #include <QFileDialog>
+#include <QStringList>
 #include <QDir>
+#include <QFileInfo>
+#include <QFileInfoList>
+#include <QIcon>
+#include <QPixmap>
 #include "canvassizedialog.h"
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -25,16 +30,35 @@ MainWindow::MainWindow(QWidget *parent) :
     group = new QActionGroup(this);
     group->addAction(ui->actionChoose);
     group->addAction(ui->actionMove);
-    initAction();
+    initAction(QDir("plugin"));
     connect(this, SIGNAL(cursorChange(int)), this, SLOT(changeCursor(int)));
     update();
 }
 
 
-void initAction()
+void MainWindow::initAction(QDir dir)
 {
-    QDir dir("plugin");
-    dir.
+    dir.setFilter(QDir::Files|QDir::Readable);
+    dir.setNameFilters(QStringList()<<"*.vp");
+    QStringList files=dir.entryList();
+    for(auto i:files)
+    {
+        QFile file(i);
+        if(!file.open(QFile::ReadOnly|QFile::Text))continue;
+        VShape *shape=VShape::fromJsonObject(QJsonDocument::fromJson(file.readAll()).object());
+        file.close();
+        qDebug()<<file.fileName()<<" fail to load";
+        if(shape==nullptr)continue;
+        QAction *action=new QAction(ui->shapeBar);
+        VSize size=shape->getSize()*shape->getMagnification();
+        QPixmap pixmap(size.width,size.height);
+        QPainter painter(&pixmap);
+        shape->draw(&painter,shape->getMagnification());
+        action->setIcon(QIcon(pixmap));
+        action->setToolTip(shape->getName());
+        ui->shapeBar->addAction(action);
+    }
+
 }
 
 QDockWidget* MainWindow::newDock()

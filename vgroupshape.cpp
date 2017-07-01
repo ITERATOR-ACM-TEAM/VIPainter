@@ -8,7 +8,7 @@
 #include "vtype.h"
 
 
-VGroupShape::VGroupShape(bool isRoot):isRoot(isRoot),cr(0,0)
+VGroupShape::VGroupShape():cr(0,0)
 {
 }
 
@@ -24,7 +24,9 @@ VGroupShape::VGroupShape(const VGroupShape &shape):VShape(shape),cr(0,0)
 {
     for(auto & it : shape.shapes)
     {
-        this->shapes.push_back(it->clone());
+        VShape *sp=it->clone();
+        sp->setParent(this);
+        this->shapes.push_back(sp);
     }
     getCircumscribedRectangle();
 }
@@ -36,7 +38,9 @@ const VGroupShape & VGroupShape:: operator=(const VGroupShape &shape)
     this->clear();
     for(auto & it : shape.shapes)
     {
-        this->shapes.push_back(it->clone());
+        VShape *sp=it->clone();
+        sp->setParent(this);
+        this->shapes.push_back(sp);
     }
     getCircumscribedRectangle();
     return *this;
@@ -52,7 +56,10 @@ const VGroupShape & VGroupShape:: operator=(const QJsonObject &jsonObject)
     {
         tmp = VShape::fromJsonObject(it.toObject());
         if(tmp != nullptr)
+        {
+            tmp->setParent(this);
             shapes.push_back(tmp);
+        }
     }
     getCircumscribedRectangle();
     return *this;
@@ -66,6 +73,7 @@ int VGroupShape::insertShape(VShape * other)
 int VGroupShape::insertShape(VShape * other, int pos)
 {
     if(pos<0 || pos>this->shapes.size() || other == nullptr) return -1;
+    other->setParent(this);
     this->shapes.insert(this->shapes.begin()+pos, other);
     VPoint orign = other->getLocation();
     other->setLocation(VPoint(orign.x-getLocation().x, orign.y-getLocation().y));
@@ -78,6 +86,7 @@ int VGroupShape::insertShape(const QVector<VShape *> & other)
     VPoint  orign;
     for(auto &it:other)
     {
+        it->setParent(this);
         this->shapes.push_back(it);
         orign = it->getLocation();
         it->setLocation(VPoint(orign.x-getLocation().x, orign.y-getLocation().y));
@@ -93,6 +102,7 @@ int VGroupShape::insertShape(const QVector<VShape *> & other, int pos)
     VPoint orign;
     for(auto &it:other)
     {
+        it->setParent(this);
         this->shapes.insert(this->shapes.begin()+(pos++), it);
         orign = it->getLocation();
         it->setLocation(VPoint(orign.x-getLocation().x, orign.y-getLocation().y));
@@ -222,6 +232,11 @@ void VGroupShape::getCircumscribedRectangle(){
     for(int i = 0; i < shapes.size(); i++){
         shapes[i]->setLocation(VPoint(shapes[i]->getLocation().x-midx,shapes[i]->getLocation().y-midy));
     }
+    VPoint location=getLocation()+VSize(midx,midy);
+    location=(location*getMagnification()).rotate(location,getAngle());
+    setLocation(location);
+    VGroupShape *groupShape=dynamic_cast<VGroupShape*>(getParent());
+    if(groupShape!=nullptr)groupShape->getCircumscribedRectangle();
 
     cr=VSize(maxX-minX,maxY-minY);
 }
@@ -258,7 +273,7 @@ bool VGroupShape::contains(VPoint point)
 QJsonObject VGroupShape::toJsonObject()const
 {
     QJsonObject jsonObject(VShape::toJsonObject());
-    if(isRoot)
+    if(getParent()==nullptr)
     {
         jsonObject.erase(jsonObject.find("location"));
         jsonObject.erase(jsonObject.find("magnification"));

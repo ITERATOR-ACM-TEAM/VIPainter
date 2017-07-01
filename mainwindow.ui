@@ -20,7 +20,7 @@
      <x>0</x>
      <y>0</y>
      <width>881</width>
-     <height>26</height>
+     <height>29</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">
@@ -44,6 +44,9 @@
    <addaction name="menu_2"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
+   <property name="windowTitle">
+    <string>mainToolBar</string>
+   </property>
    <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>
    </attribute>
@@ -62,7 +65,7 @@
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QToolBar" name="shapeBar">
    <property name="windowTitle">
-    <string>toolBar</string>
+    <string>shapeBar</string>
    </property>
    <property name="allowedAreas">
     <set>Qt::AllToolBarAreas</set>

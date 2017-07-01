@@ -100,7 +100,7 @@ void VCurveline::draw(QPainter *painter,const VMagnification &magnification)
         VPoint &l = points[sg*2];
         VPoint &r = points[sg*2+2];
         for(int i = 0; i < 3; i++){
-            if(abs(l.x-r.x) >= abs(l.y-r.y))
+            if(std::abs(l.x-r.x) >= std::abs(l.y-r.y))
                 vec.push_back(points[sg*2+i]);
             else
                 vec.push_back(points[sg*2+i].centralTransformation());
@@ -116,7 +116,7 @@ void VCurveline::draw(QPainter *painter,const VMagnification &magnification)
         for(int i = 0; i <= len; i++){
             VPoint point(lag.L+i*h, lag.calLag(lag.L+i*h));
             if(lag.L+i*h>lag.R)break;
-            if(abs(l.x-r.x) >= abs(l.y-r.y))
+            if(std::abs(l.x-r.x) >= std::abs(l.y-r.y))
                 qpf << (point*magnification).toQPointF();
             else
                 qpf << (point.centralTransformation()*magnification).toQPointF();
