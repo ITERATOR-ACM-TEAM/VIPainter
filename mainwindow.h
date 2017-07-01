@@ -55,6 +55,8 @@ private slots:
 
     void on_actionShapeSize_triggered();
 
+    void on_actionBreakUp_triggered();
+
 private:
     Ui::MainWindow *ui;
     void initAction(QDir dir);

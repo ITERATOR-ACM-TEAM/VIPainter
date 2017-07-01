@@ -31,7 +31,7 @@ MainWindow::MainWindow(QWidget *parent) :
     group->addAction(ui->actionChoose);
     group->addAction(ui->actionMove);
     initAction(QDir("plugin"));
-    connect(this, SIGNAL(cursorChange(int)), this, SLOT(changeCursor(int)));
+    connect(this, SIGNAL(cursorChange(VCursorType)), this, SLOT(changeCursor(VCursorType)));
     update();
 }
 
@@ -304,4 +304,9 @@ TestWidget * MainWindow::getTestWidget()
 TestWidget * MainWindow::getTestWidget(QDockWidget * target)
 {
     return qobject_cast<TestWidget *>(target->widget());
+}
+
+void MainWindow::on_actionBreakUp_triggered()
+{
+    if(getTestWidget()->focusShape);
 }
