@@ -1,48 +1,56 @@
-{
-    "name": "",
-    "shapes": [
+[
         {
+            "angle": 0,
             "location": {
-                "x": -20,
+                "x": -5,
                 "y": 0
+            },
+            "magnification": {
+                "horizontal": 1,
+                "vertical": 1
             },
             "name": "",
             "points": [
                 {
-                    "x": 0,
+                    "x": -30,
                     "y": -10
+                },
+                {
+                    "x": -20,
+                    "y": 10
+                },
+                {
+                    "x": -10,
+                    "y": -10
+                },
+                {
+                    "x": 0,
+                    "y": 10
                 },
                 {
                     "x": 10,
-                    "y": 10
+                    "y": -10
                 },
                 {
                     "x": 20,
-                    "y": -10
+                    "y": 10
                 },
                 {
                     "x": 30,
-                    "y": 10
-                },
-                {
-                    "x": 40,
-                    "y": -10
-                },
-                {
-                    "x": 50,
-                    "y": 10
-                },
-                {
-                    "x": 60,
                     "y": -10
                 }
             ],
             "type": "Curveline"
         },
         {
+            "angle": 0,
             "location": {
-                "x": 10,
+                "x": 25,
                 "y": 0
+            },
+            "magnification": {
+                "horizontal": 1,
+                "vertical": 1
             },
             "name": "",
             "points": [
@@ -60,7 +68,18 @@
                 }
             ],
             "type": "Polygon"
+        },
+        {
+            "angle": 0,
+            "location": {
+                "x": 5,
+                "y": 0
+            },
+            "magnification": {
+                "horizontal": 20,
+                "vertical": 20
+            },
+            "name": "",
+            "type": "Ellipse"
         }
-    ],
-    "type": "GroupShape"
-}
+    ]
