@@ -200,7 +200,7 @@ void VGroupShape::draw(QPainter *painter,const VMagnification &magnification)
     //painter->drawRect(0,0,1,1);
 }
 //获得外接矩形的左上点、右下点
-void VGroupShape::getCircumscribedRectangle(){
+void VGroupShape::getCircumscribedRectangle(bool force){
 
     if(shapes.empty())
     {
@@ -276,7 +276,7 @@ void VGroupShape::getCircumscribedRectangle(){
     if(!(std::abs(midx)<1e-9 && std::abs(midy)<1e-9))
     {
         VGroupShape *groupShape=dynamic_cast<VGroupShape*>(getParent());
-        if(groupShape==nullptr) return;
+        if(groupShape==nullptr&&!force) return;
 
 
         //标准化，使外接矩形的左上点移到坐标原点
@@ -284,6 +284,7 @@ void VGroupShape::getCircumscribedRectangle(){
             shapes[i]->setLocation(VPoint(shapes[i]->getLocation().x-midx,shapes[i]->getLocation().y-midy));
         }
 
+        if(groupShape==nullptr)return;
         VPoint location=getLocation()+VSize(midx,midy);
         location=(location*getMagnification()).rotate(location,getAngle());
         setLocation(location);

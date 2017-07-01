@@ -47,7 +47,7 @@ void MainWindow::initAction(QDir dir)
         QFile file(dir.filePath(i));
         if(!file.open(QFile::ReadOnly|QFile::Text))continue;
         VGroupShape *shape=new VGroupShape(QJsonDocument::fromJson(file.readAll()).array());
-        shape->getCircumscribedRectangle();
+        shape->getCircumscribedRectangle(true);
         file.close();
         if(shape==nullptr)continue;
         qDebug()<<file.fileName()<<" loading";
