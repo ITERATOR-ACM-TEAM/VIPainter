@@ -42,8 +42,8 @@ bool VCurveline::contains(VPoint point)
             Lagrange lag;
             lag.Init(vec);
             if(std::abs(lag.calLag(point.x) - point.y) > distance)
-                return true;
-            else return false;
+                return false;
+            else return true;
         }
     }
     return false;
@@ -91,10 +91,10 @@ void VCurveline::draw(QPainter *painter,const VMagnification &magnification)
 
 //    }
 
+    double sx=painter->worldTransform().m11();
     int seg = (points.size()-1)/2;
     for(int sg = 0; sg < seg; sg++){
         QPolygonF qpf;
-        double sx=painter->worldTransform().m11();
         //Newton newton(2, x+sg*2, y+sg*2);
         QVector<VPoint> vec;
         VPoint &l = points[sg*2];
@@ -123,7 +123,7 @@ void VCurveline::draw(QPainter *painter,const VMagnification &magnification)
         }
 
 //        if(abs(l.x-r.x) >= abs(l.y-r.y))
-            qpf << (vec.back()*magnification).toQPointF();
+           // qpf << (vec.back()*magnification).toQPointF();
 //        else
 //            qpf << (vec.back().centralTransformation()*magnification).toQPointF();
         qDebug() <<lag.L<<" "<<lag.R<<endl;
