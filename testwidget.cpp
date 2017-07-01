@@ -74,6 +74,17 @@ void TestWidget::mouseMoveEvent(QMouseEvent *event)
     QPoint qpoint=event->pos();
     VPoint vpoint(qpoint.x(), qpoint.y());
     VPoint lastPress(pressPoint.x(), pressPoint.y());
+    VPoint pos = groupShape.transform((getLoc(vpoint)));
+    if(cursorType == VCursorType::CHOOSE)
+    {
+        if(groupShape.contains(pos))
+        {
+            this->setCursor(Qt::SizeAllCursor);
+        }else
+        {
+            this->setCursor(Qt::ArrowCursor);
+        }
+    }
     if(event->buttons()&Qt::LeftButton)
     {
         if(cursorType == VCursorType::MOVE)
@@ -85,10 +96,11 @@ void TestWidget::mouseMoveEvent(QMouseEvent *event)
             update();
         }else if(cursorType == VCursorType::CHOOSE){
             if(focusShape == nullptr) return;
-            VPoint pos = groupShape.transform((getLoc(vpoint)));
+
             VPoint loc = focusShape->getLocation();
             VPoint lp = groupShape.transform(getLoc(lastMove));
             focusShape->moveLoc(loc+VPoint(pos.x-lp.x, pos.y-lp.y));
+            this->setCursor(Qt::SizeAllCursor);
             update();
         }
     }
