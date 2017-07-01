@@ -72,6 +72,8 @@ void TestWidget::mouseReleaseEvent(QMouseEvent *event)
 void TestWidget::mouseMoveEvent(QMouseEvent *event)
 {
     QPoint qpoint=event->pos();
+    VPoint vpoint(qpoint.x(), qpoint.y());
+    VPoint lastPress(pressPoint.x(), pressPoint.y());
     if(event->buttons()&Qt::LeftButton)
     {
         if(cursorType == VCursorType::MOVE)
@@ -81,6 +83,13 @@ void TestWidget::mouseMoveEvent(QMouseEvent *event)
             pressPoint=qpoint;
             //qDebug()<<"canvasLocation: ("<<canvasLocation.x<<","<<canvasLocation.y<<")"<<endl;
             update();
+        }else if(cursorType == VCursorType::CHOOSE){
+            if(focusShape == nullptr) return;
+            VPoint pos = groupShape.transform((getLoc(vpoint)));
+            VPoint loc = focusShape->getLocation();
+            VPoint lp = groupShape.transform(getLoc(lastMove));
+            focusShape->moveLoc(loc+VPoint(pos.x-lp.x, pos.y-lp.y));
+            update();
         }
     }
     else
@@ -88,6 +97,7 @@ void TestWidget::mouseMoveEvent(QMouseEvent *event)
         VPoint point(qpoint.x()-(this->width()/2+canvasLocation.x),qpoint.y()-(this->height()/2+canvasLocation.y));
         mainwindow->statusBar()->showMessage(QString("%1,%2").arg(floor(point.x/scale+0.5)).arg(floor(point.y/scale+0.5)));
     }
+    lastMove = vpoint;
 }
 
 void TestWidget::paintEvent(QPaintEvent *)
@@ -102,7 +112,6 @@ void TestWidget::paintEvent(QPaintEvent *)
     painter.setPen(QPen(Qt::lightGray,1));
     painter.drawRect(-canvasSize.width/2, -canvasSize.height/2, canvasSize.width, canvasSize.height);
     painter.restore();
-
     groupShape.draw(&painter,groupShape.getMagnification());
 
 }
@@ -153,6 +162,5 @@ VShape * TestWidget::getShape(const VPoint &point)
 
 VPoint TestWidget::getLoc(const VPoint & point)
 {
-
     return VPoint((point.x-(this->width()/2+canvasLocation.x))/scale,(point.y-(this->height()/2+canvasLocation.y))/scale);
 }

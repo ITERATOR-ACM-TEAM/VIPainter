@@ -268,20 +268,32 @@ void VGroupShape::getCircumscribedRectangle(){
 //        VPoint loc=i->getLocation();
 //        i->setLocation(VPoint(loc.x-mid.x,loc.y-mid.y));
 //    }
-
     double midx=(minX+maxX)/2;
     double midy=(minY+maxY)/2;
-    //标准化，使外接矩形的左上点移到坐标原点
-    for(int i = 0; i < shapes.size(); i++){
-        shapes[i]->setLocation(VPoint(shapes[i]->getLocation().x-midx,shapes[i]->getLocation().y-midy));
-    }
-    VPoint location=getLocation()+VSize(midx,midy);
-    location=(location*getMagnification()).rotate(location,getAngle());
-    setLocation(location);
-    VGroupShape *groupShape=dynamic_cast<VGroupShape*>(getParent());
-    if(groupShape!=nullptr)groupShape->getCircumscribedRectangle();
-
     cr=VSize(maxX-minX,maxY-minY);
+
+
+    if(!(std::abs(midx)<1e-9 && std::abs(midy)<1e-9))
+    {
+        VGroupShape *groupShape=dynamic_cast<VGroupShape*>(getParent());
+        if(groupShape==nullptr) return;
+
+
+        //标准化，使外接矩形的左上点移到坐标原点
+        for(int i = 0; i < shapes.size(); i++){
+            shapes[i]->setLocation(VPoint(shapes[i]->getLocation().x-midx,shapes[i]->getLocation().y-midy));
+        }
+
+        VPoint location=getLocation()+VSize(midx,midy);
+        location=(location*getMagnification()).rotate(location,getAngle());
+        setLocation(location);
+        qDebug() << location;
+        groupShape->getCircumscribedRectangle();
+
+
+    }
+
+
 }
 
 bool VGroupShape::eraseShape(int i)
@@ -301,15 +313,10 @@ QString VGroupShape::type()const
 
 bool VGroupShape::contains(VPoint point)
 {
-    VPoint subPoint, subLocation;
-    double subAngle;
-    VMagnification subMag;
+    VPoint subPoint;
     for(VShape * it:this->shapes)
     {
-        subLocation = it->getLocation();
-        subAngle = it->getAngle();
-        subMag = it->getMagnification();
-        subPoint = VPoint(point.x - subLocation.x, point.y - subLocation.y).rotate(VPoint(0,0),-subAngle)/subMag;
+        subPoint = it->transform(point);
         if(it->contains(subPoint))
         {
             return true;
@@ -355,6 +362,18 @@ QVector<VShape *> VGroupShape::breakUp (VGroupShape * group)
     QVector<VShape *> tmp;
     if(group == nullptr) return tmp;
     tmp = group->getShapeVector();
+
+    VPoint subLoc;
+    VMagnification subMag;
+    VMagnification mag = group->getMagnification();
+    for(VShape* it:tmp)
+    {
+        subLoc = group->reverseTransform(it->reverseTransform(VPoint(0,0)));
+        subMag = it->getMagnification() * mag;
+        it->setLocation(subLoc);
+        it->setMagnification(subMag);
+    }
+
     group->shapes.clear();
     delete group;
     return tmp;

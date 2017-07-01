@@ -38,6 +38,8 @@ public:
     virtual QString type()const=0;
     virtual ~VShape();
 
+    void moveLoc(const VPoint & point);
+
 /*****************setter and getter*********************/
     void zoomin(VMagnification magnification);
     void setMagnification(const VMagnification &magnification);
@@ -57,6 +59,8 @@ public:
     QList<VPoint> getCircumscribedRectangle();
 
     virtual VSize getSize()=0;
+    VPoint transform(const VPoint & point);
+    VPoint reverseTransform(const VPoint &point);
 
 };
 

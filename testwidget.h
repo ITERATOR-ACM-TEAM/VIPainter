@@ -43,6 +43,7 @@ private:
     VCursorType cursorType;
     VShape * getShape(const VPoint &point);
     VPoint getLoc(const VPoint & point);
+    VPoint lastMove;
 
 public slots:
     void changeCursor(VCursorType type);

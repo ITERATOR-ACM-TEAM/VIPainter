@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "vdocktitlebar.h"
+#include "vtype.h"
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QFile>
@@ -31,7 +32,7 @@ MainWindow::MainWindow(QWidget *parent) :
     group->addAction(ui->actionChoose);
     group->addAction(ui->actionMove);
     initAction(QDir("plugin"));
-    connect(this, SIGNAL(cursorChange(int)), this, SLOT(changeCursor(int)));
+    connect(this, SIGNAL(cursorChange(VCursorType)), this, SLOT(changeCursor(VCursorType)));
     update();
 }
 
@@ -71,7 +72,7 @@ QDockWidget* MainWindow::newDock()
     static int id = 0;
 
     TestWidget* newWidget=new TestWidget(this);
-    connect(this, SIGNAL(cursorChange(int)), newWidget, SLOT(changeCursor(int)));
+    connect(this, SIGNAL(cursorChange(VCursorType)), newWidget, SLOT(changeCursor(VCursorType)));
     emit cursorChange(this->cursorState);
 
     QDockWidget *dockWidget=new QDockWidget;
@@ -196,6 +197,7 @@ void MainWindow::on_actionOpen_triggered()
     QFile file(filename);
     file.open(QFile::ReadOnly|QFile::Text);
     QDockWidget * newWidget = newDock();
+
     getTestWidget(newWidget)->groupShape=QJsonDocument::fromJson(file.readAll()).array();
     newWidget->setWindowTitle(filename.split("/").back());
     file.close();
@@ -312,4 +314,42 @@ TestWidget * MainWindow::getTestWidget()
 TestWidget * MainWindow::getTestWidget(QDockWidget * target)
 {
     return qobject_cast<TestWidget *>(target->widget());
+}
+
+void MainWindow::on_actionBreakUp_triggered()
+{
+    if(getTestWidget()->focusShape == nullptr) return;
+    if(getTestWidget()->focusShape->type() == VType::GroupShape)
+    {
+        int cnt = 0;
+        for(auto it: getTestWidget()->groupShape.getShapeVector() )
+        {
+            if(it == getTestWidget()->focusShape)
+            {
+                QVector<VShape *> shs = VGroupShape::breakUp(dynamic_cast<VGroupShape*>(it));
+                getTestWidget()->groupShape.eraseShape(cnt);
+                getTestWidget()->groupShape.insertShape(shs);
+                getTestWidget()->focusShape = nullptr;
+                break;
+            }
+            cnt++;
+        }
+    }
+    getTestWidget()->update();
+}
+
+void MainWindow::on_actionUndo_triggered()
+{
+    if(getTestWidget()->focusShape == nullptr) return;
+    double angle = getTestWidget()->focusShape->getAngle();
+    getTestWidget()->focusShape->setAngle(angle+10);
+    getTestWidget()->update();
+}
+
+void MainWindow::on_actionRedo_triggered()
+{
+    if(getTestWidget()->focusShape == nullptr) return;
+    double angle = getTestWidget()->focusShape->getAngle();
+    getTestWidget()->focusShape->setAngle(angle-10);
+    getTestWidget()->update();
 }
