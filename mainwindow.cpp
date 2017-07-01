@@ -45,12 +45,13 @@ void MainWindow::initAction(QDir dir)
     {
         QFile file(dir.filePath(i));
         if(!file.open(QFile::ReadOnly|QFile::Text))continue;
-        VShape *shape=VShape::fromJsonObject(QJsonDocument::fromJson(file.readAll()).object());
+        VGroupShape *shape=new VGroupShape(QJsonDocument::fromJson(file.readAll()).array());
+        shape->getCircumscribedRectangle();
         file.close();
         if(shape==nullptr)continue;
         qDebug()<<file.fileName()<<" loading";
         QAction *action=new QAction(ui->shapeBar);
-        VSize size=shape->getSize()*shape->getMagnification();
+        VSize size=shape->getSize();
         QPixmap pixmap(size.width,size.height);
         pixmap.fill(Qt::transparent);
         QPainter painter(&pixmap);
@@ -295,7 +296,12 @@ void MainWindow::on_actionShapeSize_triggered()
             widget->groupShape.getSize()*
             widget->groupShape.getMagnification();
     VSize toSize=CanvasSizeDialog::showDialog(tr("图像大小"),size);
-    widget->groupShape.zoomin(toSize/size);
+    VMagnification mag=toSize/size;
+    for(auto &i:widget->groupShape.getShapeVector())
+    {
+        i->zoomin(mag);
+        i->setLocation(i->getLocation()*mag);
+    }
 }
 
 TestWidget * MainWindow::getTestWidget()

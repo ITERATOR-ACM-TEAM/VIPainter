@@ -41,6 +41,7 @@ VGroupShape::VGroupShape(const QJsonArray &jsonArray)
         if(tmp != nullptr)
             shapes.push_back(tmp);
     }
+    getCircumscribedRectangle();
 }
 
 QJsonArray VGroupShape::toJsonArray()const
@@ -103,6 +104,7 @@ const VGroupShape & VGroupShape:: operator=(const QJsonArray &jsonArray)
             shapes.push_back(tmp);
         }
     }
+    getCircumscribedRectangle();
     return *this;
 }
 
