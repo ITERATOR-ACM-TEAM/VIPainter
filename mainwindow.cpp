@@ -138,7 +138,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_actionZoomIn_triggered()
 {
-
+    if(getTestWidget()==nullptr)return ;
     getTestWidget()->scale*=1.1;
     qDebug()<<"scale:"<<getTestWidget()->scale<<endl;
     getTestWidget()->update();
@@ -146,6 +146,7 @@ void MainWindow::on_actionZoomIn_triggered()
 
 void MainWindow::on_actionZoomOut_triggered()
 {
+    if(getTestWidget()==nullptr)return ;
     getTestWidget()->scale/=1.1;
     qDebug()<<"scale:"<<getTestWidget()->scale<<endl;
     getTestWidget()->update();
@@ -153,6 +154,7 @@ void MainWindow::on_actionZoomOut_triggered()
 
 void MainWindow::on_actionResume_triggered()
 {
+    if(getTestWidget()==nullptr)return ;
     getTestWidget()->scale=1.0;
     getTestWidget()->canvasLocation=VPoint(0,0);
     qDebug()<<"scale:"<<getTestWidget()->scale<<endl;
