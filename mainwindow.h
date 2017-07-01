@@ -41,8 +41,6 @@ private slots:
 
     void on_actionOpen_triggered();
 
-    void on_actionTestShape1_triggered();
-
     void on_actionMove_triggered();
 
     void on_actionChoose_triggered();

@@ -52,15 +52,30 @@ void MainWindow::initAction(QDir dir)
         if(shape==nullptr)continue;
         qDebug()<<file.fileName()<<" loading";
         QAction *action=new QAction(ui->shapeBar);
+
+        const int SIZE=30;
         VSize size=shape->getSize();
-        QPixmap pixmap(size.width,size.height);
+        VMagnification mag;
+        if(size.width>size.height)mag=SIZE/size.width;
+        else mag=SIZE/size.height;
+
+        QPixmap pixmap(SIZE,SIZE);
         pixmap.fill(Qt::transparent);
         QPainter painter(&pixmap);
-        painter.translate(size.width/2,size.height/2);
-        shape->draw(&painter,shape->getMagnification());
+        painter.translate(SIZE/2,SIZE/2);
+        painter.setRenderHint(QPainter::Antialiasing);
+        shape->draw(&painter,mag);
+
         action->setIcon(QIcon(pixmap));
         action->setToolTip(shape->getName());
         ui->shapeBar->addAction(action);
+
+        connect(action,&QAction::triggered,[this,shape]{
+            qDebug()<<"add"<<*shape;
+            if(getTestWidget()==nullptr)return;
+            getTestWidget()->groupShape.insertShape(shape->clone());
+            getTestWidget()->update();
+        });
     }
 
 }
@@ -193,28 +208,15 @@ void MainWindow::on_actionOpen_triggered()
                                          tr("Open File"),
                                          tr(""),
                                          tr("vp file (*.vp)"));
-
+    if(filename=="")return;
     QFile file(filename);
-    file.open(QFile::ReadOnly|QFile::Text);
+    if(!file.open(QFile::ReadOnly|QFile::Text))return;
     QDockWidget * newWidget = newDock();
 
     getTestWidget(newWidget)->groupShape=QJsonDocument::fromJson(file.readAll()).array();
     newWidget->setWindowTitle(filename.split("/").back());
     file.close();
     newWidget->update();
-}
-
-void MainWindow::on_actionTestShape1_triggered()
-{
-    QString filename = "plugin/testShape1.vp";
-    QFile file(filename);
-    file.open(QFile::ReadOnly|QFile::Text);
-    VGroupShape * gs= new VGroupShape(QJsonDocument::fromJson(file.readAll()).object());
-    if(focus==nullptr)return;
-    qDebug() << focus ;
-    getTestWidget()->groupShape.insertShape(gs);
-    file.close();
-    getTestWidget()->update();
 }
 
 void MainWindow::on_actionMove_triggered()
