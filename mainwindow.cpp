@@ -512,7 +512,7 @@ void MainWindow::on_actionPaste_triggered()
                         QJsonDocument::fromBinaryData(mimeData->data("application/x-JavaScript")).object()
                         );
             widget->groupShape.insertShape(shape);
-            update();
+            widget->update();
         }
     }
 
