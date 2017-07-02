@@ -15,8 +15,8 @@
 #include <QVector>
 #include <QAction>
 
-TestWidget::TestWidget(QMainWindow *parent) :
-    QWidget(parent),canvasLocation(0,0),canvasSize(400,300),cursorType(VCursorType::CHOOSE)
+TestWidget::TestWidget(QMainWindow *parent, bool antialiasing) :
+    QWidget(parent),canvasLocation(0,0),canvasSize(400,300),cursorType(VCursorType::CHOOSE),antialiasing(antialiasing)
 {
     mainwindow=parent;
     setMouseTracking(true);
@@ -29,6 +29,14 @@ TestWidget::TestWidget(QMainWindow *parent) :
 
 TestWidget::~TestWidget()
 {
+}
+
+
+void TestWidget::setAntialiasing(bool antialiasing)
+{
+    this->antialiasing=antialiasing;
+    qDebug()<<"antialiasing"<<antialiasing;
+    update();
 }
 
 void TestWidget::wheelEvent(QWheelEvent * event)
@@ -114,7 +122,8 @@ void TestWidget::mouseMoveEvent(QMouseEvent *event)
 void TestWidget::paintEvent(QPaintEvent *)
 {
     QPainter painter(this);
-    painter.setRenderHint(QPainter::Antialiasing);
+    if(antialiasing)painter.setRenderHint(QPainter::Antialiasing);
+    else qDebug()<<antialiasing;
     painter.translate(this->width()/2+canvasLocation.x,this->height()/2+canvasLocation.y);
 
     painter.scale(scale,scale);

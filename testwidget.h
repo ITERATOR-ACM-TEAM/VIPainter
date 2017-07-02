@@ -21,7 +21,7 @@ class TestWidget : public QWidget
     Q_OBJECT
 
 public:
-    explicit TestWidget(QMainWindow *mainwindow);
+    explicit TestWidget(QMainWindow *mainwindow,bool antialiasing);
     double scale=1;
     QMainWindow *mainwindow;
     VGroupShape groupShape;
@@ -44,9 +44,11 @@ private:
     VShape * getShape(const VPoint &point);
     VPoint getLoc(const VPoint & point);
     VPoint lastMove;
+    bool antialiasing;
 
 public slots:
     void changeCursor(VCursorType type);
+    void setAntialiasing(bool antialiasing);
 };
 
 #endif // TESTWIDGET_H

@@ -5,3 +5,4 @@ QString VType::Polyline="Polyline";
 QString VType::Ellipse="Ellipse";
 QString VType::Curveline="Curveline";
 QString VType::GroupShape="GroupShape";
+QString VType::BezlerCurve="BezlerCurve";

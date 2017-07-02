@@ -12,6 +12,7 @@ public:
     static QString Ellipse;
     static QString Curveline;
     static QString GroupShape;
+    static QString BezlerCurve;
     VType()=delete;
 };
 

@@ -18,6 +18,7 @@
 #include <QFileInfoList>
 #include <QAction>
 #include <QIcon>
+#include <QList>
 #include <QPixmap>
 #include <QMessageBox>
 #include <QTimer>
@@ -36,9 +37,53 @@ MainWindow::MainWindow(QWidget *parent) :
     group->addAction(ui->actionMove);
     connect(this, SIGNAL(cursorChange(VCursorType)), this, SLOT(changeCursor(VCursorType)));
     QTimer::singleShot(0,this,SLOT(initAction(QDir)));
+
     update();
 }
 
+void MainWindow::loadPlugin(QString filename)
+{
+    ui->statusBar->showMessage(tr("加载插件 ")+filename);
+    QFile file(filename);
+    if(!file.open(QFile::ReadOnly|QFile::Text))return;
+    QJsonDocument doc=QJsonDocument::fromJson(file.readAll());
+    file.close();
+    VShape *shape;
+    if(doc.isArray())
+    {
+        VGroupShape *groupshape=new VGroupShape(doc.array());
+        groupshape->getCircumscribedRectangle(true);
+        shape=groupshape;
+    }
+    else if(doc.isObject())shape=VShape::fromJsonObject(doc.object());
+    else return;
+    if(shape==nullptr)return;
+    QAction *action=new QAction(ui->shapeBar);
+
+    const int SIZE=30;
+    VSize size=shape->getSize();
+    VMagnification mag;
+    if(size.width>size.height)mag=SIZE/size.width;
+    else mag=SIZE/size.height;
+
+    QPixmap pixmap(SIZE,SIZE);
+    pixmap.fill(Qt::transparent);
+    QPainter painter(&pixmap);
+    painter.translate(SIZE/2,SIZE/2);
+    painter.setRenderHint(QPainter::Antialiasing);
+    shape->draw(&painter,mag);
+
+    action->setIcon(QIcon(pixmap));
+    action->setToolTip(shape->getName());
+    ui->shapeBar->addAction(action);
+
+    connect(action,&QAction::triggered,[this,shape]{
+        qDebug()<<"add"<<*shape;
+        if(getTestWidget()==nullptr)return;
+        getTestWidget()->groupShape.insertShape(shape->clone());
+        getTestWidget()->update();
+    });
+}
 
 void MainWindow::initAction(QDir dir)
 {
@@ -47,46 +92,7 @@ void MainWindow::initAction(QDir dir)
     QStringList files=dir.entryList();
     for(auto i:files)
     {
-        ui->statusBar->showMessage(tr("加载插件 ")+i);
-        QFile file(dir.filePath(i));
-        if(!file.open(QFile::ReadOnly|QFile::Text))continue;
-        QJsonDocument doc=QJsonDocument::fromJson(file.readAll());
-        file.close();
-        VShape *shape;
-        if(doc.isArray())
-        {
-            VGroupShape *groupshape=new VGroupShape(doc.array());
-            groupshape->getCircumscribedRectangle(true);
-            shape=groupshape;
-        }
-        else if(doc.isObject())shape=VShape::fromJsonObject(doc.object());
-        else continue;
-        if(shape==nullptr)continue;
-        QAction *action=new QAction(ui->shapeBar);
-
-        const int SIZE=30;
-        VSize size=shape->getSize();
-        VMagnification mag;
-        if(size.width>size.height)mag=SIZE/size.width;
-        else mag=SIZE/size.height;
-
-        QPixmap pixmap(SIZE,SIZE);
-        pixmap.fill(Qt::transparent);
-        QPainter painter(&pixmap);
-        painter.translate(SIZE/2,SIZE/2);
-        painter.setRenderHint(QPainter::Antialiasing);
-        shape->draw(&painter,mag);
-
-        action->setIcon(QIcon(pixmap));
-        action->setToolTip(shape->getName());
-        ui->shapeBar->addAction(action);
-
-        connect(action,&QAction::triggered,[this,shape]{
-            qDebug()<<"add"<<*shape;
-            if(getTestWidget()==nullptr)return;
-            getTestWidget()->groupShape.insertShape(shape->clone());
-            getTestWidget()->update();
-        });
+        loadPlugin(dir.filePath(i));
     }
 
 }
@@ -97,7 +103,7 @@ QDockWidget* MainWindow::newDock(QString dockname)
 
     static int id = 0;
 
-    TestWidget* newWidget=new TestWidget(this);
+    TestWidget* newWidget=new TestWidget(this,ui->actionAntialiasing->isChecked());
     connect(this, SIGNAL(cursorChange(VCursorType)), newWidget, SLOT(changeCursor(VCursorType)));
     emit cursorChange(this->cursorState);
 
@@ -198,7 +204,7 @@ void MainWindow::saveFile(QString filename)
         QImage image(getTestWidget()->canvasSize.width,getTestWidget()->canvasSize.height,QImage::Format_ARGB32);
         image.fill(0x00ffffff);
         QPainter painter(&image);
-        painter.setRenderHint(QPainter::Antialiasing);
+        if(ui->actionAntialiasing->isChecked())painter.setRenderHint(QPainter::Antialiasing);
         painter.translate(getTestWidget()->canvasSize.width/2,getTestWidget()->canvasSize.height/2);
         getTestWidget()->groupShape.draw(&painter,getTestWidget()->groupShape.getMagnification());
         image.save(filename);
@@ -396,4 +402,31 @@ void MainWindow::on_actionRedo_triggered()
     double angle = getTestWidget()->focusShape->getAngle();
     getTestWidget()->focusShape->setAngle(angle-10);
     getTestWidget()->update();
+}
+
+void MainWindow::on_actionReloadPlugon_triggered()
+{
+    for(auto &i:ui->shapeBar->actions())
+    {
+        delete i;
+    }
+    for(auto &i:plugins)delete i;
+    plugins.clear();
+    this->initAction();
+}
+
+void MainWindow::on_actionLoadExPlugin_triggered()
+{
+    QStringList filenames=
+            QFileDialog::getOpenFileNames(this,
+                                         tr("打开文件"),
+                                         tr(""),
+                                         tr("json file (*.json);;"
+                                            "all (*)"));
+    for(auto &filename:filenames)loadPlugin(filename);
+}
+
+void MainWindow::on_actionAntialiasing_toggled(bool antialiasing)
+{
+    for(auto &i:this->docks)getTestWidget(i)->setAntialiasing(antialiasing);
 }

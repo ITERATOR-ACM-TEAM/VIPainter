@@ -31,6 +31,7 @@
     <addaction name="actionOpen"/>
     <addaction name="actionSave"/>
     <addaction name="actionSaveAs"/>
+    <addaction name="separator"/>
     <addaction name="actionClose"/>
    </widget>
    <widget class="QMenu" name="menu_2">
@@ -39,9 +40,19 @@
     </property>
     <addaction name="actionCanvasSize"/>
     <addaction name="actionShapeSize"/>
+    <addaction name="separator"/>
+    <addaction name="actionAntialiasing"/>
+   </widget>
+   <widget class="QMenu" name="menu_3">
+    <property name="title">
+     <string>插件</string>
+    </property>
+    <addaction name="actionReloadPlugon"/>
+    <addaction name="actionLoadExPlugin"/>
    </widget>
    <addaction name="menu"/>
    <addaction name="menu_2"/>
+   <addaction name="menu_3"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <property name="windowTitle">
@@ -270,6 +281,12 @@
    </property>
   </action>
   <action name="actionCanvasSize">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>画布大小</string>
    </property>
@@ -291,6 +308,27 @@
    </property>
    <property name="toolTip">
     <string>取消组合</string>
+   </property>
+  </action>
+  <action name="actionReloadPlugon">
+   <property name="text">
+    <string>重新加载插件</string>
+   </property>
+  </action>
+  <action name="actionLoadExPlugin">
+   <property name="text">
+    <string>加载外部插件</string>
+   </property>
+  </action>
+  <action name="actionAntialiasing">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>反走样</string>
    </property>
   </action>
  </widget>

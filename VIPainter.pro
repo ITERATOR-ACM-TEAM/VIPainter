@@ -33,7 +33,8 @@ SOURCES += main.cpp\
     vcursortype.cpp \
     vdocktitlebar.cpp \
     canvassizedialog.cpp \
-    vvector.cpp
+    vvector.cpp \
+    vbezlercurve.cpp
 
 HEADERS  += mainwindow.h \
     vpoint.h \
@@ -52,7 +53,8 @@ HEADERS  += mainwindow.h \
     vcursortype.h \
     vdocktitlebar.h \
     canvassizedialog.h \
-    vvector.h
+    vvector.h \
+    vbezlercurve.h
 
 FORMS    += mainwindow.ui \
     canvassizedialog.ui

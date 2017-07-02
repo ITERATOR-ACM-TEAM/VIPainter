@@ -63,6 +63,12 @@ private slots:
 
     void focusDock(bool checked);
 
+    void on_actionReloadPlugon_triggered();
+
+    void on_actionLoadExPlugin_triggered();
+
+    void on_actionAntialiasing_toggled(bool antialiasing);
+
 private:
     QVector<VShape*>plugins;
     Ui::MainWindow *ui;
@@ -73,6 +79,8 @@ private:
 
     QActionGroup  *group;
     VCursorType cursorState;
+
+    void loadPlugin(QString filename);
 
     QDockWidget * newDock(QString dockname="");
     void saveFile(QString filename);
