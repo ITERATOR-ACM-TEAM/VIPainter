@@ -207,7 +207,7 @@ void VShape::drawCR(QPainter * painter)
 int VShape::atCrPoints(const VPoint & point)
 {
     QVector<VPoint> points = this->getRect();
-    VSize siz = VSize(crDis*2,crDis*2);
+    VSize siz(crDis,crDis);
     VPoint pos;
     VPoint p = point * magnification;
     int cnt = 0;
