@@ -141,7 +141,7 @@ void TestWidget::paintEvent(QPaintEvent *)
         double angle = focusShape->getAngle();
         VPoint loc = focusShape->getLocation();
         VMagnification magnification = focusShape->getMagnification();
-        painter.translate(loc.x*magnification.horizontal, loc.y*magnification.vertical);
+        painter.translate(loc.x, loc.y);
         painter.rotate(angle);
         focusShape->drawCR(&painter,magnification*(groupShape.getMagnification()));
         //qDebug() << *it;
