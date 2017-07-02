@@ -59,10 +59,13 @@ private slots:
 
     void on_actionRedo_triggered();
 
+    void initAction(QDir dir=QDir("plugin"));
+
+    void focusDock(bool checked);
+
 private:
     QVector<VShape*>plugins;
     Ui::MainWindow *ui;
-    void initAction(QDir dir);
 
     VShape *chooseShape;
     QDockWidget *focus;

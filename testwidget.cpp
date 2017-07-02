@@ -13,6 +13,7 @@
 #include <QStatusBar>
 #include <QDebug>
 #include <QVector>
+#include <QAction>
 
 TestWidget::TestWidget(QMainWindow *parent) :
     QWidget(parent),canvasLocation(0,0),canvasSize(400,300),cursorType(VCursorType::CHOOSE)
@@ -23,7 +24,6 @@ TestWidget::TestWidget(QMainWindow *parent) :
 //    groupShape.setName("main shape");
 //    groupShape.setLocation(VPoint(0,0));
 //    groupShape.setSize(VSize(10,10));
-
     update();
 }
 

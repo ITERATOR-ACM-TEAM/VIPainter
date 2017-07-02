@@ -16,9 +16,11 @@
 #include <QDir>
 #include <QFileInfo>
 #include <QFileInfoList>
+#include <QAction>
 #include <QIcon>
 #include <QPixmap>
 #include <QMessageBox>
+#include <QTimer>
 #include "canvassizedialog.h"
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -32,8 +34,8 @@ MainWindow::MainWindow(QWidget *parent) :
     group = new QActionGroup(this);
     group->addAction(ui->actionChoose);
     group->addAction(ui->actionMove);
-    initAction(QDir("plugin"));
     connect(this, SIGNAL(cursorChange(VCursorType)), this, SLOT(changeCursor(VCursorType)));
+    QTimer::singleShot(0,this,SLOT(initAction(QDir)));
     update();
 }
 
@@ -127,9 +129,11 @@ QDockWidget* MainWindow::newDock(QString dockname)
 
     this->focusDock(dockWidget);
 
-//    connect(dockWidget->toggleViewAction(), &QAction::toggled,
+    connect(dockWidget,SIGNAL(visibilityChanged(bool)),this,SLOT(focusDock(bool)));
+//    QAction *act=dockWidget->toggleViewAction();
+//    connect(act, &QAction::toggled,
 //            [dockWidget](bool checked){
-//        qDebug()<<"triggled"<<checked;
+//        qDebug()<<"toggled"<<checked;
 //        dockWidget->raise();
 //        dockWidget->setFocus();
 //        dockWidget->activateWindow();
@@ -278,7 +282,7 @@ bool MainWindow::eventFilter(QObject * obj, QEvent * ev)
         {
             if(ev->type() == QEvent::FocusIn)
             {
-                qDebug() << "focusing";
+                qDebug() << "focusing"<<obj;
                 focus = *it;
                 return false;
             }else if(ev->type() == QEvent::Close)
@@ -301,8 +305,17 @@ bool MainWindow::eventFilter(QObject * obj, QEvent * ev)
 }
 
 
+void MainWindow::focusDock(bool checked)
+{
+    if(checked)
+    {
+        focusDock(qobject_cast<QDockWidget*>(sender()));
+    }
+}
+
 void MainWindow::focusDock(QDockWidget * target)
 {
+    if(target==nullptr)return;
     target->raise();
     target->setFocus();
     qApp->postEvent(target, new QFocusEvent(QEvent::FocusIn));
