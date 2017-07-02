@@ -141,7 +141,7 @@ QList<VPoint> VShape::getRect()
     return points;
 }
 
-VPoint VShape::transform(const VPoint & point)
+VPoint VShape::translate(const VPoint & point)
 {
     VPoint subLocation(getLocation());
     double subAngle = getAngle();

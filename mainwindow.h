@@ -60,6 +60,7 @@ private slots:
     void on_actionRedo_triggered();
 
 private:
+    QVector<VShape*>plugins;
     Ui::MainWindow *ui;
     void initAction(QDir dir);
 
@@ -70,7 +71,7 @@ private:
     QActionGroup  *group;
     VCursorType cursorState;
 
-    QDockWidget * newDock();
+    QDockWidget * newDock(QString dockname="");
     void saveFile(QString filename);
 
     void focusDock(QDockWidget * target);

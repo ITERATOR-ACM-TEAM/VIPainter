@@ -231,7 +231,7 @@ void VGroupShape::getCircumscribedRectangle(bool force){
     VPoint point;
     VShape * first = shapes[0];
     VPoint loc = first->getLocation();
-    VSize siz = first->getSize();
+    VSize siz = first->getSize()*first->getMagnification();
     double a = first->getAngle();
 
     for(int i=0; i<4; i++)
@@ -248,7 +248,7 @@ void VGroupShape::getCircumscribedRectangle(bool force){
     for(auto & it : this->shapes)
     {
         loc = it->getLocation();
-        siz = it->getSize();
+        siz = it->getSize()*it->getMagnification();
         a = it->getAngle();
         for(int i=0; i<4; i++)
         {
@@ -317,7 +317,7 @@ bool VGroupShape::contains(VPoint point)
     VPoint subPoint;
     for(VShape * it:this->shapes)
     {
-        subPoint = it->transform(point);
+        subPoint = it->translate(point);
         if(it->contains(subPoint))
         {
             return true;
@@ -380,6 +380,12 @@ QVector<VShape *> VGroupShape::breakUp (VGroupShape * group)
     }
 
     group->shapes.clear();
+    VGroupShape *parent=dynamic_cast<VGroupShape*>(group->getParent());
+    if(parent!=nullptr)
+    {
+        auto it=std::find(parent->shapes.begin(),parent->shapes.end(),group);
+        parent->shapes.erase(it);
+    }
     delete group;
     return tmp;
 }

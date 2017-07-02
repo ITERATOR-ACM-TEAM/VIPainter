@@ -1,5 +1,6 @@
 #include "vpolyline.h"
 #include "vtype.h"
+#include "vvector.h"
 #include <QPainter>
 #include <QJsonArray>
 #include <QDebug>
@@ -60,10 +61,17 @@ bool VPolyline::contains(VPoint point){
     double width = VShape::defaultPen.width()*20;
     double x = point.x;
     double y = point.y;
+    VVector PiPi_1, Pi_1Pi, PiP, Pi_1P;
     for(int i = 1; i < points.size(); i++){
         double A = points[i].y-points[i-1].y;
         double B = points[i].x-points[i-1].x;
-        if(std::abs(B*(y-points[i-1].y)-A*(x-points[i-1].x))<=width)
+        PiPi_1 = VVector(points[i], points[i-1]);
+        Pi_1Pi =PiPi_1 * (-1);
+        PiP = VVector(points[i], point);
+        Pi_1P = VVector(points[i-1], point);
+        if(std::abs(B*(y-points[i-1].y)-A*(x-points[i-1].x))<=width &&
+                PiPi_1 * PiP >= 0 &&
+                Pi_1Pi * Pi_1P >= 0)
             return true;
     }
     return false;

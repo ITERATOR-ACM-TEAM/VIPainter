@@ -1,10 +1,8 @@
-[
-	{
-		"magnification": {
-			"horizontal": 20,
-			"vertical": 20
-		},
-		"name": "ellipse",
-		"type": "Ellipse"
-	}
-]
+{
+	"magnification": {
+		"horizontal": 20,
+		"vertical": 20
+	},
+	"name": "ellipse",
+	"type": "Ellipse"
+}
