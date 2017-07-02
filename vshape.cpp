@@ -204,22 +204,54 @@ void VShape::drawCR(QPainter * painter)
 
 }
 
-bool VShape::atCrPoints(const VPoint & point)
+int VShape::atCrPoints(const VPoint & point)
 {
     QVector<VPoint> points = this->getRect();
-    VSize siz = VSize(2,2)*this->getMagnification();
+    VSize siz = VSize(crDis*2,crDis*2);
     VPoint pos;
     VPoint p = point * magnification;
+    int cnt = 0;
     for(auto it: points)
     {
         pos = VPoint(p.x-it.x, p.y-it.y);
+        qDebug() << pow(pos.x * siz.height, 2)+pow(pos.y*siz.width, 2) << pow(siz.width*siz.height, 2);
         if(pow(pos.x * siz.height, 2)+pow(pos.y*siz.width, 2) <= pow(siz.width*siz.height, 2))
-            return true;
+            return cnt;
+        cnt++;
     }
-    return false;
+    return -1;
 }
 
-void VShape::changeMag(int pos, const VPoint & point)
+void VShape::changeMag(int i, const VVector & vec)
 {
+    static const VMagnification mark[4] =
+    {
+      {1, 1}, {-1, 1},{-1,-1},{1,-1}
+    };
+    if(i<0 || i>=8) return;
     QVector<VPoint> points = this->getRect();
+    VPoint crp = points[i];
+    VVector pc = vec;
+    VVector co(VPoint(0,0), crp);
+    VVector mov;
+    VMagnification mag = this->getMagnification();
+    if(i % 2)
+    {
+        double dis = (pc*co) / co.norm();
+        if(i % 4 == 1)
+        {
+            mov = VVector(0, dis);
+        }
+        else
+        {
+            mov = VVector(dis, 0);
+        }
+    }
+    else
+    {
+        mov = vec * mark[i/2];
+    }
+    mov = mov*2;
+    //this->setLocation(this->reverseTransform((mov+VPoint(0,0))/mag));
+    this->setMagnification(VMagnification(std::max(mag.horizontal+mov.x/(this->getSize().width), 1e-9), std::max(mag.vertical+mov.y/(this->getSize().height), 1e-9)));
 }

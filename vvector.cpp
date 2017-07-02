@@ -47,3 +47,28 @@ VPoint VVector::operator +(const VPoint & Right)const
 {
     return VPoint(Right.x+x, Right.y+y);
 }
+
+VVector VVector::operator /(double Right)const
+{
+    return VVector(x/Right , y/Right);
+}
+
+VVector VVector::operator /(const VMagnification & Right)const
+{
+    return VVector(x/Right.horizontal, y/Right.vertical);
+}
+
+VVector VVector::operator *(const VMagnification & Right)const
+{
+    return VVector(x*Right.horizontal, y*Right.vertical);
+}
+
+VVector VVector::operator -()const
+{
+    return (*this)*(-1);
+}
+
+VVector VVector::rotate(double angle)const
+{
+    return VVector(VPoint(0,0), ((*this)+VPoint(0,0)).rotate(VPoint(0,0),angle));
+}

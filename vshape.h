@@ -11,6 +11,7 @@
 #include <QList>
 #include "vpoint.h"
 #include "vsize.h"
+#include "vvector.h"
 #include <vmagnification.h>
 
 class VShape{
@@ -46,8 +47,8 @@ public:
     void moveLoc(const VPoint & point);
 
     void drawCR(QPainter * painter);
-    void changeMag(int pos, const VPoint & point);
-    bool atCrPoints(const VPoint & point);
+    void changeMag(int pos, const VVector &vec);
+    int atCrPoints(const VPoint & point);
 
 
 /*****************setter and getter*********************/

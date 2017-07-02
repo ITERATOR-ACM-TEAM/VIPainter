@@ -5,6 +5,7 @@
 #include "vsize.h"
 #include "vcurveline.h"
 #include "vmagnification.h"
+#include "vvector.h"
 #include <QPainter>
 #include <QSize>
 #include <QPen>
@@ -16,7 +17,7 @@
 #include <QAction>
 
 TestWidget::TestWidget(QMainWindow *parent, bool antialiasing) :
-    QWidget(parent),canvasLocation(0,0),canvasSize(400,300),cursorType(VCursorType::CHOOSE),antialiasing(antialiasing)
+    QWidget(parent),canvasLocation(0,0),canvasSize(400,300),cursorType(VCursorType::CHOOSE),crPos(-1),antialiasing(antialiasing)
 {
     mainwindow=parent;
     setMouseTracking(true);
@@ -66,8 +67,14 @@ void TestWidget::mousePressEvent(QMouseEvent *event)
         this->setCursor(Qt::ClosedHandCursor);
     else if(cursorType == VCursorType::CHOOSE)
     {
-        if(focusShape == nullptr || !focusShape->atCrPoints(focusShape->translate( getLoc(point))))
-            focusShape = getShape(point);
+        if(focusShape != nullptr)
+        {
+            crPos = focusShape->atCrPoints(focusShape->translate( getLoc(point)));
+        }
+
+        if(crPos == -1)
+           focusShape = getShape(point);
+
         update();
     }
 }
@@ -77,6 +84,7 @@ void TestWidget::mouseReleaseEvent(QMouseEvent *event)
     Q_UNUSED(event);
     if(cursorType == VCursorType::MOVE)
         this->setCursor(Qt::OpenHandCursor);
+    crPos = -1;
 }
 
 void TestWidget::mouseMoveEvent(QMouseEvent *event)
@@ -87,7 +95,7 @@ void TestWidget::mouseMoveEvent(QMouseEvent *event)
     VPoint pos = groupShape.translate((getLoc(vpoint)));
     if(cursorType == VCursorType::CHOOSE)
     {
-        if(groupShape.contains(pos))
+        if(crPos == -1 && groupShape.contains(pos))
         {
             this->setCursor(Qt::SizeAllCursor);
         }else
@@ -105,11 +113,20 @@ void TestWidget::mouseMoveEvent(QMouseEvent *event)
             //qDebug()<<"canvasLocation: ("<<canvasLocation.x<<","<<canvasLocation.y<<")"<<endl;
             update();
         }else if(cursorType == VCursorType::CHOOSE){
-            if(focusShape == nullptr) return;
             VPoint loc = focusShape->getLocation();
             VPoint lp = groupShape.translate(getLoc(lastMove));
-            focusShape->moveLoc(loc+VPoint(pos.x-lp.x, pos.y-lp.y));
-            this->setCursor(Qt::SizeAllCursor);
+            VVector v(lp, pos);
+            if(focusShape == nullptr) return;
+            if(crPos == -1)
+            {
+                focusShape->moveLoc(v+loc);
+                this->setCursor(Qt::SizeAllCursor);
+            }
+            else
+            {
+                focusShape->changeMag(crPos, v.rotate(-(focusShape->getAngle())));
+            }
+
             update();
         }
     }

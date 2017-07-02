@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
 
 #if defined(Q_OS_WIN32)
     QDesktopWidget *deskdop = QApplication::desktop();
-    move((deskdop->width() - this->width())/2, (deskdop->height() - this->height())/2);
+    w.move((deskdop->width() - w.width())/2, (deskdop->height() - w.height())/2);
 #elif defined(Q_OS_LINUX)
     QDesktopWidget *dw = QApplication::desktop();
     QRect parentRect = dw->availableGeometry(dw->primaryScreen());

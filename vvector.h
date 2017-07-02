@@ -2,6 +2,8 @@
 #define VVECTOR_H
 
 #include "vpoint.h"
+#include "vmagnification.h"
+#include "vsize.h"
 
 class VVector
 {
@@ -16,8 +18,14 @@ public:
     VVector operator +(const VVector & Right)const;
     VPoint operator +(const VPoint & Right)const;
     VVector operator -(const VVector & Right)const;
+    VVector operator -()const;
     double operator *(const VVector & Right)const;
     VVector operator *(double Right)const;
+    VVector operator *(const VMagnification & Right)const;
+    VVector operator /(double Right)const;
+    VVector operator /(const VMagnification & Right)const;
+
+    VVector rotate(double angle)const;
 
     double norm()const;
 };

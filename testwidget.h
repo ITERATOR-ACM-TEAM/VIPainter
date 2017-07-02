@@ -44,6 +44,7 @@ private:
     VShape * getShape(const VPoint &point);
     VPoint getLoc(const VPoint & point);
     VPoint lastMove;
+    int crPos;
     bool antialiasing;
 
 public slots:
