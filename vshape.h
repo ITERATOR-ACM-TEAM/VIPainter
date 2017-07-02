@@ -20,9 +20,12 @@ private:
     VMagnification magnification;
     double angle;
     VShape *parent=nullptr;
+    QPen pen;
+    QBrush brush;
 protected:
     static const QPen defaultPen;
     static const QBrush defaultBrush;
+
 public:
     static const double PI;
     static VShape* fromJsonObject(const QJsonObject &jsonObject);

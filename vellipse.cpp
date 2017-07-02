@@ -51,7 +51,6 @@ VShape* VEllipse::clone()
 
 bool VEllipse::contains(VPoint point)
 {
-    qDebug() << point;
     return point.x*point.x*4+point.y*point.y*4 <= 1;
 }
 

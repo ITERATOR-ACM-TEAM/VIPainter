@@ -32,7 +32,8 @@ SOURCES += main.cpp\
     vmagnification.cpp \
     vcursortype.cpp \
     vdocktitlebar.cpp \
-    canvassizedialog.cpp
+    canvassizedialog.cpp \
+    vvector.cpp
 
 HEADERS  += mainwindow.h \
     vpoint.h \
@@ -50,7 +51,8 @@ HEADERS  += mainwindow.h \
     vmagnification.h \
     vcursortype.h \
     vdocktitlebar.h \
-    canvassizedialog.h
+    canvassizedialog.h \
+    vvector.h
 
 FORMS    += mainwindow.ui \
     canvassizedialog.ui
