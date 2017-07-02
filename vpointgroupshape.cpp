@@ -85,7 +85,7 @@ void VPointGroupShape::getCircumscribedRectangle(){
 
     if(points.empty())
     {
-        cr2.x=cr2.y=0;
+        cr2.x=cr2.y=1;
         return;
     }
 

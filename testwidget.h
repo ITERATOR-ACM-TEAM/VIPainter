@@ -9,6 +9,7 @@
 #include <QRect>
 #include <QDir>
 #include <QWheelEvent>
+#include <QKeyEvent>
 #include "vgroupshape.h"
 #include "vsize.h"
 #include "vpoint.h"
@@ -28,8 +29,6 @@ public:
     VShape * focusShape;
     VPoint canvasLocation;
     VSize canvasSize;
-    QPoint pressPoint;
-    bool pressing=false;
     ~TestWidget();
 
 protected:
@@ -38,6 +37,7 @@ protected:
     void mousePressEvent(QMouseEvent *event)override;
     void mouseReleaseEvent(QMouseEvent *event)override;
     void wheelEvent(QWheelEvent * event)override;
+    bool eventFilter(QObject * obj, QEvent * ev)override;
 
 private:
     VCursorType cursorType;

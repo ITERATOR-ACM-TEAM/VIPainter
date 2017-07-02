@@ -214,7 +214,7 @@ int VShape::atCrPoints(const VPoint & point)
     for(auto it: points)
     {
         pos = VPoint(p.x-it.x, p.y-it.y);
-        qDebug() << pow(pos.x * siz.height, 2)+pow(pos.y*siz.width, 2) << pow(siz.width*siz.height, 2);
+        //qDebug() << pow(pos.x * siz.height, 2)+pow(pos.y*siz.width, 2) << pow(siz.width*siz.height, 2);
         if(pow(pos.x * siz.height, 2)+pow(pos.y*siz.width, 2) <= pow(siz.width*siz.height, 2))
             return cnt;
         cnt++;
@@ -253,5 +253,6 @@ void VShape::changeMag(int i, const VVector & vec)
     }
     mov = mov*2;
     //this->setLocation(this->reverseTransform((mov+VPoint(0,0))/mag));
-    this->setMagnification(VMagnification(std::max(mag.horizontal+mov.x/(this->getSize().width), 1e-9), std::max(mag.vertical+mov.y/(this->getSize().height), 1e-9)));
+    this->setMagnification(VMagnification(std::max(mag.horizontal+mov.x/(this->getSize().width), 1/(this->getSize().width)),
+                                          std::max(mag.vertical+mov.y/(this->getSize().height), 1/(this->getSize().height))));
 }

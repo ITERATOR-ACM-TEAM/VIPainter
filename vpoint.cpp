@@ -1,6 +1,7 @@
 #include "vpoint.h"
 #include "vshape.h"
 #include <cmath>
+#include <cfloat>
 
 VPoint::VPoint():x(0), y(0){}
 
@@ -37,7 +38,23 @@ VPoint VPoint::operator*(const VMagnification &magnification)const
 
 VPoint VPoint::operator/(const VMagnification &magnification)const
 {
-    return VPoint(x/magnification.horizontal,y/magnification.vertical);
+    bool flag=true;
+    VPoint point;
+    if(std::abs(magnification.horizontal)<1e-9)
+    {
+        if(std::abs(x)<1e-9)point.x=0;
+        else point.x=DBL_MAX;
+        flag=false;
+    }
+    else point.x=x/magnification.horizontal;
+    if(std::abs(magnification.vertical)<1e-9)
+    {
+        if(std::abs(y)<1e-9)point.y=0;
+        else point.y=DBL_MAX;
+        flag=false;
+    }
+    else point.y=y/magnification.vertical;
+    return point;
 }
 
 double VPoint::operator-(const VPoint &point)const

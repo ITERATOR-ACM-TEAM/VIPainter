@@ -35,6 +35,7 @@ public:
     int insertShape(const QVector<VShape *> & other, int pos);
 
     bool eraseShape(int i);
+    bool eraseShape(VShape * other);
     bool moveShape(int i, VPoint location);
     bool contains(VPoint point);
     void clear();

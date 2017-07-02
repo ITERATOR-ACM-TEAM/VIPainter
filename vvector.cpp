@@ -1,5 +1,6 @@
 #include "vvector.h"
 #include <cmath>
+#include <cfloat>
 
 VVector::VVector(double _x,double _y):x(_x), y(_y)
 {
@@ -50,12 +51,25 @@ VPoint VVector::operator +(const VPoint & Right)const
 
 VVector VVector::operator /(double Right)const
 {
-    return VVector(x/Right , y/Right);
+    return (*this)/VMagnification(Right,Right);
 }
 
 VVector VVector::operator /(const VMagnification & Right)const
 {
-    return VVector(x/Right.horizontal, y/Right.vertical);
+    VVector vector;
+    if(std::abs(Right.horizontal)<1e-9)
+    {
+        if(std::abs(x)<1e-9)vector.x=0;
+        else vector.x=DBL_MAX;
+    }
+    else vector.x=x/Right.horizontal;
+    if(std::abs(Right.vertical)<1e-9)
+    {
+        if(std::abs(y)<1e-9)vector.y=0;
+        else vector.y=DBL_MAX;
+    }
+    else vector.y=y/Right.horizontal;
+    return vector;
 }
 
 VVector VVector::operator *(const VMagnification & Right)const

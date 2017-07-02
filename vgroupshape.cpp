@@ -204,7 +204,7 @@ void VGroupShape::getCircumscribedRectangle(bool force){
 
     if(shapes.empty())
     {
-        cr.width=cr.height=0;
+        cr.width=cr.height=1;
         return;
     }
 
@@ -295,6 +295,11 @@ void VGroupShape::getCircumscribedRectangle(bool force){
     }
 
 
+}
+
+bool VGroupShape::eraseShape(VShape * other)
+{
+    return eraseShape(std::find(shapes.begin(),shapes.end(),other)-shapes.begin());
 }
 
 bool VGroupShape::eraseShape(int i)

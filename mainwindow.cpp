@@ -3,6 +3,8 @@
 #include "vdocktitlebar.h"
 #include "vtype.h"
 #include <QJsonDocument>
+#include <QApplication>
+#include <QClipboard>
 #include <QJsonObject>
 #include <QFile>
 #include <QScrollArea>
@@ -21,6 +23,7 @@
 #include <QList>
 #include <QPixmap>
 #include <QMessageBox>
+#include <QMimeData>
 #include <QTimer>
 #include "canvassizedialog.h"
 
@@ -108,6 +111,7 @@ QDockWidget* MainWindow::newDock(QString dockname)
     emit cursorChange(this->cursorState);
 
     QDockWidget *dockWidget=new QDockWidget;
+    dockWidget->installEventFilter(newWidget);
     dockWidget->setWidget(newWidget);
     //dockWidget->setAttribute(Qt::WA_DeleteOnClose);
     this->addDockWidget(Qt::TopDockWidgetArea,dockWidget);
@@ -153,6 +157,7 @@ QDockWidget* MainWindow::newDock(QString dockname)
 
 MainWindow::~MainWindow()
 {
+    for(auto &i:plugins)delete i;
     delete ui;
 }
 
@@ -188,6 +193,7 @@ void MainWindow::on_actionSave_triggered()
 
 void MainWindow::saveFile(QString filename)
 {
+    if(filename=="")return;
     if(focus == nullptr) return;
     ui->statusBar->showMessage(tr("保存到文件 ")+filename);
     if(filename.split('.').back()==tr("json"))
@@ -198,6 +204,7 @@ void MainWindow::saveFile(QString filename)
         file.open(QFile::WriteOnly|QFile::Text);
         file.write(jsonDocument.toJson());
         file.close();
+        focus->setWindowTitle(filename.split("/").back());
     }
     else
     {
@@ -209,7 +216,6 @@ void MainWindow::saveFile(QString filename)
         getTestWidget()->groupShape.draw(&painter,getTestWidget()->groupShape.getMagnification());
         image.save(filename);
     }
-    focus->setWindowTitle(filename.split("/").back());
 }
 
 void MainWindow::on_actionSaveAs_triggered()
@@ -429,4 +435,85 @@ void MainWindow::on_actionLoadExPlugin_triggered()
 void MainWindow::on_actionAntialiasing_toggled(bool antialiasing)
 {
     for(auto &i:this->docks)getTestWidget(i)->setAntialiasing(antialiasing);
+}
+
+void MainWindow::on_actionDelete_triggered()
+{
+    TestWidget *widget=getTestWidget();
+    if(widget!=nullptr)
+    {
+        if(widget->focusShape!=nullptr)
+        {
+            widget->groupShape.eraseShape(widget->focusShape);
+            widget->focusShape=nullptr;
+            widget->update();
+        }
+    }
+}
+
+void MainWindow::on_actionClose_triggered()
+{
+    qApp->quit();
+}
+
+void MainWindow::on_actionCopy_triggered()
+{
+    TestWidget *widget=getTestWidget();
+    if(widget!=nullptr)
+    {
+        if(widget->focusShape!=nullptr)
+        {
+            //  Get clipboard
+            QClipboard *cb = QApplication::clipboard();
+
+            // Ownership of the new data is transferred to the clipboard.
+            QMimeData* newMimeData = new QMimeData();
+
+            // Copy old mimedata
+//            const QMimeData* oldMimeData = cb->mimeData();
+//            for ( const QString &f : oldMimeData->formats())
+//                newMimeData->setData(f, oldMimeData->data(f));
+
+            // Copy file (gnome)
+            QJsonDocument doc;
+            doc.setObject(widget->focusShape->toJsonObject());
+            newMimeData->setData("application/x-JavaScript", doc.toBinaryData());
+            VSize size=widget->focusShape->getSize()*widget->focusShape->getMagnification();
+            QImage image(size.width+2,size.height+2,QImage::Format_ARGB32);
+            image.fill(0x00ffffff);
+            QPainter painter(&image);
+            if(ui->actionAntialiasing->isChecked())painter.setRenderHint(QPainter::Antialiasing);
+            painter.translate(size.width/2+1,size.height/2+1);
+            widget->focusShape->draw(&painter,widget->focusShape->getMagnification());\
+            newMimeData->setImageData(image);
+            // Set the mimedata
+            cb->setMimeData(newMimeData);
+        }
+    }
+}
+
+void MainWindow::on_actionCut_triggered()
+{
+    on_actionCopy_triggered();
+    on_actionDelete_triggered();
+}
+
+void MainWindow::on_actionPaste_triggered()
+{
+    TestWidget *widget=getTestWidget();
+    if(widget!=nullptr)
+    {
+        //  Get clipboard
+        QClipboard *cb = QApplication::clipboard();
+        const QMimeData* mimeData = cb->mimeData();
+        if(mimeData->hasFormat("application/x-JavaScript"))
+        {
+            VShape *shape=VShape::fromJsonObject(
+                        QJsonDocument::fromBinaryData(mimeData->data("application/x-JavaScript")).object()
+                        );
+            widget->groupShape.insertShape(shape);
+            update();
+        }
+    }
+
 }

@@ -69,6 +69,16 @@ private slots:
 
     void on_actionAntialiasing_toggled(bool antialiasing);
 
+    void on_actionDelete_triggered();
+
+    void on_actionClose_triggered();
+
+    void on_actionCopy_triggered();
+
+    void on_actionCut_triggered();
+
+    void on_actionPaste_triggered();
+
 private:
     QVector<VShape*>plugins;
     Ui::MainWindow *ui;
