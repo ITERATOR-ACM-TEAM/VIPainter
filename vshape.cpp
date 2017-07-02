@@ -131,19 +131,20 @@ VShape * VShape::getParent()const
     return parent;
 }
 
-QList<VPoint> VShape::getRect()
+QVector<VPoint> VShape::getRect()
 {
-    QList<VPoint> points;
-    VSize size=getSize()/VMagnification(1.8);
+    QVector<VPoint> points;
+    VSize size=getSize()/VMagnification(2);
     VPoint center(0,0);
-    points.append(VPoint(size.width,size.height));
-    points.append(VPoint(0, size.height));
-    points.append(VPoint(-size.width,size.height));
-    points.append(VPoint(-size.width,0));
-    points.append(VPoint(-size.width,-size.height));
-    points.append(VPoint(0,-size.height));
-    points.append(VPoint(size.width,-size.height));
-    points.append(VPoint(size.width,0));
+    VMagnification mag = getMagnification();
+    points.append(VPoint(size.width,size.height)*mag+VSize(crDis,crDis));
+    points.append(VPoint(0, size.height)*mag+VSize(0,crDis));
+    points.append(VPoint(-size.width,size.height)*mag+VSize(-crDis,crDis));
+    points.append(VPoint(-size.width,0)*mag+VSize(-crDis,0));
+    points.append(VPoint(-size.width,-size.height)*mag+VSize(-crDis,-crDis));
+    points.append(VPoint(0,-size.height)*mag+VSize(0,-crDis));
+    points.append(VPoint(size.width,-size.height)*mag+VSize(crDis,-crDis));
+    points.append(VPoint(size.width,0)*mag+VSize(crDis,0));
     return points;
 }
 
@@ -171,14 +172,14 @@ void VShape::moveLoc(const VPoint & point)
     if(groupShape!=nullptr)groupShape->getCircumscribedRectangle();
 }
 
-void VShape::drawCR(QPainter * painter, const VMagnification &mag)
+void VShape::drawCR(QPainter * painter)
 {
 
-    QList<VPoint> points = this->getRect();
+    QVector<VPoint> points = this->getRect();
     QList<QPointF> qpoints;
     QPolygonF qpf;
     for(auto &i : points){
-        QPointF qpoint = (i*mag).toQPointF();
+        QPointF qpoint = i.toQPointF();
         qpoints.append(qpoint);
         qpf << qpoint;
     }
@@ -201,4 +202,24 @@ void VShape::drawCR(QPainter * painter, const VMagnification &mag)
         painter->drawEllipse(i, 2, 2);
     }
 
+}
+
+bool VShape::atCrPoints(const VPoint & point)
+{
+    QVector<VPoint> points = this->getRect();
+    VSize siz = VSize(2,2)*this->getMagnification();
+    VPoint pos;
+    VPoint p = point * magnification;
+    for(auto it: points)
+    {
+        pos = VPoint(p.x-it.x, p.y-it.y);
+        if(pow(pos.x * siz.height, 2)+pow(pos.y*siz.width, 2) <= pow(siz.width*siz.height, 2))
+            return true;
+    }
+    return false;
+}
+
+void VShape::changeMag(int pos, const VPoint & point)
+{
+    QVector<VPoint> points = this->getRect();
 }

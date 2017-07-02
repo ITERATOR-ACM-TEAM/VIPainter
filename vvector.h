@@ -14,6 +14,7 @@ public:
 
     const VVector& operator=(const VVector &Right);
     VVector operator +(const VVector & Right)const;
+    VPoint operator +(const VPoint & Right)const;
     VVector operator -(const VVector & Right)const;
     double operator *(const VVector & Right)const;
     VVector operator *(double Right)const;

@@ -42,3 +42,8 @@ double VVector::norm()const
 {
     return sqrt(x*x+ y*y);
 }
+
+VPoint VVector::operator +(const VPoint & Right)const
+{
+    return VPoint(Right.x+x, Right.y+y);
+}

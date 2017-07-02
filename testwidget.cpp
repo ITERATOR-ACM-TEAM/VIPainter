@@ -66,7 +66,8 @@ void TestWidget::mousePressEvent(QMouseEvent *event)
         this->setCursor(Qt::ClosedHandCursor);
     else if(cursorType == VCursorType::CHOOSE)
     {
-        focusShape = getShape(point);
+        if(focusShape == nullptr || !focusShape->atCrPoints(focusShape->translate( getLoc(point))))
+            focusShape = getShape(point);
         update();
     }
 }
@@ -140,10 +141,9 @@ void TestWidget::paintEvent(QPaintEvent *)
         painter.save();
         double angle = focusShape->getAngle();
         VPoint loc = focusShape->getLocation();
-        VMagnification magnification = focusShape->getMagnification();
         painter.translate(loc.x, loc.y);
         painter.rotate(angle);
-        focusShape->drawCR(&painter,magnification*(groupShape.getMagnification()));
+        focusShape->drawCR(&painter);
         //qDebug() << *it;
         painter.restore();
     }
