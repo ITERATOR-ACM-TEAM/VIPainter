@@ -20,11 +20,11 @@ private:
     VMagnification magnification;
     double angle;
     VShape *parent=nullptr;
-    QPen pen;
-    QBrush brush;
 protected:
     static const QPen defaultPen;
     static const QBrush defaultBrush;
+    QPen pen = defaultPen;
+    QBrush brush = defaultBrush;
 
 public:
     static const double PI;
@@ -42,6 +42,7 @@ public:
     virtual ~VShape();
 
     void moveLoc(const VPoint & point);
+    void drawCR(QPainter * painter, const VMagnification & mag);
 
 /*****************setter and getter*********************/
     void zoomin(VMagnification magnification);

@@ -132,12 +132,16 @@ VShape * VShape::getParent()const
 QList<VPoint> VShape::getRect()
 {
     QList<VPoint> points;
-    VSize size=getSize()/VMagnification(2);
+    VSize size=getSize()/VMagnification(1.8);
     VPoint center(0,0);
-    points.append(location+VPoint(size.width,size.height).rotate(center,angle)*magnification);
-    points.append(location+VPoint(-size.width,size.height).rotate(center,angle)*magnification);
-    points.append(location+VPoint(-size.width,-size.height).rotate(center,angle)*magnification);
-    points.append(location+VPoint(size.width,-size.height).rotate(center,angle)*magnification);
+    points.append(VPoint(size.width,size.height));
+    points.append(VPoint(0, size.height));
+    points.append(VPoint(-size.width,size.height));
+    points.append(VPoint(-size.width,0));
+    points.append(VPoint(-size.width,-size.height));
+    points.append(VPoint(0,-size.height));
+    points.append(VPoint(size.width,-size.height));
+    points.append(VPoint(size.width,0));
     return points;
 }
 
@@ -163,4 +167,36 @@ void VShape::moveLoc(const VPoint & point)
     if(parent == nullptr) return;
     VGroupShape *groupShape=dynamic_cast<VGroupShape*>(getParent());
     if(groupShape!=nullptr)groupShape->getCircumscribedRectangle();
+}
+
+void VShape::drawCR(QPainter * painter, const VMagnification &mag)
+{
+
+    QList<VPoint> points = this->getRect();
+    QList<QPointF> qpoints;
+    QPolygonF qpf;
+    for(auto &i : points){
+        QPointF qpoint = (i*mag).toQPointF();
+        qpoints.append(qpoint);
+        qpf << qpoint;
+    }
+
+    QBrush bru;
+    QPen pen;
+    pen.setWidth(1);
+    pen.setStyle(Qt::DotLine);
+    painter->setPen(pen);
+    painter->setBrush(bru);
+    painter->drawPolygon(qpf);
+
+    pen.setStyle(Qt::SolidLine);
+    pen.setColor(Qt::black);
+    bru.setStyle(Qt::SolidPattern);
+    bru.setColor(Qt::white);
+    painter->setPen(pen);
+    painter->setBrush(bru);
+    for(auto &i : qpoints){
+        painter->drawEllipse(i, 2, 2);
+    }
+
 }
