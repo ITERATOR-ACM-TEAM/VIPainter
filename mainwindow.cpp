@@ -78,7 +78,7 @@ void MainWindow::loadPlugin(QString filename)
     ui->shapeBar->addAction(action);
 
     connect(action,&QAction::triggered,[this,shape]{
-        qDebug()<<"add"<<*shape;
+        //qDebug()<<"add"<<*shape;
         if(getTestWidget()==nullptr)return;
         getTestWidget()->groupShape.insertShape(shape->clone());
         getTestWidget()->update();
