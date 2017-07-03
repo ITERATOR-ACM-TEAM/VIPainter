@@ -71,7 +71,7 @@ public:
 
     virtual VSize getSize()=0;
     VPoint translate(const VPoint & point);
-    VPoint reverseTransform(const VPoint &point);
+    VPoint reverseTranslate(const VPoint &point);
 
 };
 

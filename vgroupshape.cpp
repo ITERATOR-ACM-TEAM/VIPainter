@@ -119,7 +119,7 @@ int VGroupShape::insertShape(VShape * other, int pos)
     other->setParent(this);
     this->shapes.insert(this->shapes.begin()+pos, other);
     VPoint orign = other->getLocation();
-    other->setLocation(VPoint(orign.x-getLocation().x, orign.y-getLocation().y));
+    //other->setLocation(VPoint(orign.x-getLocation().x, orign.y-getLocation().y));
     getCircumscribedRectangle();
     return pos;
 }
@@ -132,7 +132,7 @@ int VGroupShape::insertShape(const QVector<VShape *> & other)
         it->setParent(this);
         this->shapes.push_back(it);
         orign = it->getLocation();
-        it->setLocation(VPoint(orign.x-getLocation().x, orign.y-getLocation().y));
+        //it->setLocation(VPoint(orign.x-getLocation().x, orign.y-getLocation().y));
     }
 
     getCircumscribedRectangle();
@@ -148,7 +148,7 @@ int VGroupShape::insertShape(const QVector<VShape *> & other, int pos)
         it->setParent(this);
         this->shapes.insert(this->shapes.begin()+(pos++), it);
         orign = it->getLocation();
-        it->setLocation(VPoint(orign.x-getLocation().x, orign.y-getLocation().y));
+        //it->setLocation(VPoint(orign.x-getLocation().x, orign.y-getLocation().y));
     }
 
     getCircumscribedRectangle();
@@ -279,16 +279,15 @@ void VGroupShape::getCircumscribedRectangle(bool force){
         if(groupShape==nullptr&&!force) return;
 
 
-        //标准化，使外接矩形的左上点移到坐标原点
+        //标准化，使外接矩形的中点移到坐标原点
         for(int i = 0; i < shapes.size(); i++){
             shapes[i]->setLocation(VPoint(shapes[i]->getLocation().x-midx,shapes[i]->getLocation().y-midy));
         }
 
         if(groupShape==nullptr)return;
-        VPoint location=getLocation()+VSize(midx,midy);
-        location=(location*getMagnification()).rotate(location,getAngle());
+        VPoint location=this->translate(getLocation())+VSize(midx,midy);
+        location=this->reverseTranslate(location);
         setLocation(location);
-        qDebug() << location;
         groupShape->getCircumscribedRectangle();
 
 
@@ -376,7 +375,7 @@ QVector<VShape *> VGroupShape::breakUp (VGroupShape * group)
     VMagnification mag = group->getMagnification();
     for(VShape* it:tmp)
     {
-        subLoc = group->reverseTransform(it->reverseTransform(VPoint(0,0)));
+        subLoc = group->reverseTranslate(it->reverseTranslate(VPoint(0,0)));
         subMag = it->getMagnification() * mag;
         subAngle = it->getAngle() + angle;
         it->setLocation(subLoc);

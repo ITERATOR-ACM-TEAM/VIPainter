@@ -156,7 +156,7 @@ VPoint VShape::translate(const VPoint & point)
     return VPoint(point.x - subLocation.x, point.y - subLocation.y).rotate(VPoint(0,0),-subAngle)/subMag;
 }
 
-VPoint VShape::reverseTransform(const VPoint &point)
+VPoint VShape::reverseTranslate(const VPoint &point)
 {
     VPoint subLocation(getLocation());
     double subAngle = getAngle();

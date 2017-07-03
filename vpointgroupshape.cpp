@@ -2,6 +2,7 @@
 #include "vgroupshape.h"
 #include "vtype.h"
 #include <QPainter>
+#include <QDebug>
 #include <QJsonArray>
 #include <cmath>
 
@@ -110,8 +111,8 @@ void VPointGroupShape::getCircumscribedRectangle(){
         points[i].y -= midy;
     }
 
-    VPoint location=getLocation()+VSize(midx,midy);
-    location=(location*getMagnification()).rotate(location,getAngle());
+    VPoint location=this->translate(getLocation())+VSize(midx,midy);
+    location=this->reverseTranslate(location);
     setLocation(location);
     VGroupShape *groupShape=dynamic_cast<VGroupShape*>(getParent());
     if(groupShape!=nullptr)groupShape->getCircumscribedRectangle();
