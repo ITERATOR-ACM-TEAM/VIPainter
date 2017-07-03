@@ -5,8 +5,9 @@
 #include "vcurveline.h"
 #include "vgroupshape.h"
 #include "vbezlercurve.h"
-#include <vtype.h>
-#include <vpoint.h>
+#include "vtext.h"
+#include "vtype.h"
+#include "vpoint.h"
 #include <cmath>
 #include <QDebug>
 
@@ -37,6 +38,7 @@ VShape* VShape::fromJsonObject(const QJsonObject &jsonObject)
     else if(type==VType::GroupShape)return new VGroupShape(jsonObject);
     else if(type==VType::Curveline)return new VCurveline(jsonObject);
     else if(type==VType::BezlerCurve)return new VBezlerCurve(jsonObject);
+    else if(type==VType::Text)return new VText(jsonObject);
     else return nullptr;
 }
 
