@@ -198,6 +198,7 @@ void TestWidget::paintEvent(QPaintEvent *)
     if(antialiasing)painter.setRenderHint(QPainter::Antialiasing);
     painter.translate(this->width()/2+canvasLocation.x,this->height()/2+canvasLocation.y);
 
+    painter.save();
     painter.scale(scale,scale);
     painter.save();
     painter.setBrush(QBrush(Qt::white));
@@ -205,6 +206,7 @@ void TestWidget::paintEvent(QPaintEvent *)
     painter.drawRect(-canvasSize.width/2, -canvasSize.height/2, canvasSize.width, canvasSize.height);
     painter.restore();
     groupShape.draw(&painter,groupShape.getMagnification());
+    painter.restore();
 
     if(focusShape != nullptr)
     {
@@ -213,7 +215,7 @@ void TestWidget::paintEvent(QPaintEvent *)
         VPoint loc = focusShape->getLocation();
         painter.translate(loc.x, loc.y);
         painter.rotate(angle);
-        focusShape->drawCR(&painter);
+        focusShape->drawCR(&painter,VMagnification(scale));
         //qDebug() << *it;
         painter.restore();
     }
@@ -300,6 +302,20 @@ VShape * TestWidget::getShape(const VPoint &point)
     VPoint loc = getLoc(point);
 //    qDebug() << loc;
     VMagnification subMag;
+    if(focusShape!=nullptr)
+    {
+        subLocation = focusShape->getLocation();
+        subAngle = focusShape->getAngle();
+        subMag = focusShape->getMagnification();
+        subPoint = VPoint(loc.x - subLocation.x, loc.y - subLocation.y).rotate(VPoint(0,0),-subAngle)/subMag;
+//        qDebug() << subPoint;
+//        qDebug() << subMag;
+        if(focusShape->contains(subPoint))
+        {
+//            qDebug() << it->type();
+            return focusShape;
+        }
+    }
     for(VShape * it:this->groupShape.getShapeVector())
     {
         subLocation = it->getLocation();

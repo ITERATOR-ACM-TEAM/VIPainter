@@ -12,7 +12,7 @@
 #include "vpoint.h"
 #include "vsize.h"
 #include "vvector.h"
-#include <vmagnification.h>
+#include "vmagnification.h"
 
 class VShape{
 private:
@@ -46,7 +46,7 @@ public:
 
     void moveLoc(const VPoint & point);
 
-    virtual void drawCR(QPainter * painter);
+    virtual void drawCR(QPainter * painter,const VMagnification &magnification);
     void changeMag(int pos, const VVector &vec);
     int atCrPoints(const VPoint & point);
 

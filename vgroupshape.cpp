@@ -28,7 +28,7 @@ VGroupShape::VGroupShape(const VGroupShape &shape):VShape(shape),cr(0,0)
         sp->setParent(this);
         this->shapes.push_back(sp);
     }
-    getCircumscribedRectangle();
+    getCircumscribedRectangle(true);
 }
 
 
@@ -39,9 +39,12 @@ VGroupShape::VGroupShape(const QJsonArray &jsonArray)
     {
         tmp = VShape::fromJsonObject(it.toObject());
         if(tmp != nullptr)
+        {
             shapes.push_back(tmp);
+            tmp->setParent(this);
+        }
     }
-    getCircumscribedRectangle();
+    getCircumscribedRectangle(true);
 }
 
 QJsonArray VGroupShape::toJsonArray()const
@@ -65,7 +68,7 @@ const VGroupShape & VGroupShape:: operator=(const VGroupShape &shape)
         sp->setParent(this);
         this->shapes.push_back(sp);
     }
-    getCircumscribedRectangle();
+    getCircumscribedRectangle(true);
     return *this;
 }
 
@@ -84,7 +87,7 @@ const VGroupShape & VGroupShape:: operator=(const QJsonObject &jsonObject)
             shapes.push_back(tmp);
         }
     }
-    getCircumscribedRectangle();
+    getCircumscribedRectangle(true);
     return *this;
 }
 
@@ -104,7 +107,7 @@ const VGroupShape & VGroupShape:: operator=(const QJsonArray &jsonArray)
             shapes.push_back(tmp);
         }
     }
-    getCircumscribedRectangle();
+    getCircumscribedRectangle(true);
     return *this;
 }
 
@@ -359,7 +362,7 @@ VGroupShape::VGroupShape(const QJsonObject &jsonObject):VShape(jsonObject)
         if(tmp != nullptr)
             shapes.push_back(tmp);
     }
-    getCircumscribedRectangle();
+    getCircumscribedRectangle(true);
 }
 
 QVector<VShape *> VGroupShape::breakUp (VGroupShape * group)

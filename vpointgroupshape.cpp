@@ -155,7 +155,7 @@ int VPointGroupShape::atPoints(const VPoint & point)const
     return -1;
 }
 
-void VPointGroupShape::drawCR(QPainter *painter)
+void VPointGroupShape::drawCR(QPainter *painter,const VMagnification &magnification)
 {
     QBrush bru;
     QPen pen;
@@ -172,7 +172,7 @@ void VPointGroupShape::drawCR(QPainter *painter)
     {
         painter->drawEllipse((it*this->getMagnification()).toQPointF(), crDis/2, crDis/2);
     }
-    VShape::drawCR(painter);
+    VShape::drawCR(painter,magnification);
 }
 
 

@@ -1,6 +1,7 @@
 #include "vtext.h"
 #include "vtype.h"
 #include <QJsonObject>
+#include <cmath>
 
 VText::VText()
 {
@@ -99,7 +100,7 @@ void VText::draw(QPainter *painter,const VMagnification &magnification){
 }
 
 bool VText::contains(VPoint point){
-    if(abs(point.x-center.x)*2<=size.width && abs(point.y-center.y)*2<=size.height)
+    if(std::abs(point.x-center.x)*2<=size.width && std::abs(point.y-center.y)*2<=size.height)
         return true;
     else
         return false;

@@ -10,6 +10,7 @@
 #include "vpoint.h"
 #include <cmath>
 #include <QDebug>
+#include <QTransform>
 
 const double VShape::PI=atan(1)*4.0;
 const QPen VShape::defaultPen(QBrush(Qt::black),1);
@@ -179,14 +180,13 @@ void VShape::moveLoc(const VPoint & point)
     if(groupShape!=nullptr)groupShape->getCircumscribedRectangle();
 }
 
-void VShape::drawCR(QPainter * painter)
+void VShape::drawCR(QPainter * painter,const VMagnification &magnification)
 {
-
     QVector<VPoint> points = this->getRect();
     QList<QPointF> qpoints;
     QPolygonF qpf;
     for(auto &i : points){
-        QPointF qpoint = i.toQPointF();
+        QPointF qpoint = (i*magnification).toQPointF();
         qpoints.append(qpoint);
         qpf << qpoint;
     }
@@ -206,7 +206,7 @@ void VShape::drawCR(QPainter * painter)
     painter->setPen(pen);
     painter->setBrush(bru);
     for(auto &i : qpoints){
-        painter->drawEllipse(i, 2, 2);
+        painter->drawEllipse(i, 3, 3);
     }
 
 }

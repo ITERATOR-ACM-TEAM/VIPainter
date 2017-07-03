@@ -19,6 +19,7 @@ public:
     VMagnification operator /(const VMagnification &magnification)const;
     VMagnification operator +(const VMagnification &magnification)const;
     VMagnification operator -(const VMagnification &magnification)const;
+    VMagnification rotate(double a);
     operator QJsonValue()const;
     QJsonObject toJsonObject()const;
 };

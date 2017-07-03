@@ -34,7 +34,7 @@ public:
 
     int atPoints(const VPoint & point)const;
     bool changePoint(int i, const VPoint & point);
-    void drawCR(QPainter *painter);
+    void drawCR(QPainter *painter, const VMagnification &magnification);
 
 };
 

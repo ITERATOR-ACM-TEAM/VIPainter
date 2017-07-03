@@ -20,7 +20,7 @@
      <x>0</x>
      <y>0</y>
      <width>881</width>
-     <height>26</height>
+     <height>29</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">
@@ -75,9 +75,8 @@
    </attribute>
    <addaction name="actionChoose"/>
    <addaction name="actionMove"/>
-   <addaction name="actionPen"/>
    <addaction name="actionUndo"/>
-   <addaction name="actionRedo"/>
+   <addaction name="actionPen"/>
    <addaction name="actionZoomIn"/>
    <addaction name="actionZoomOut"/>
    <addaction name="actionResume"/>
@@ -117,7 +116,7 @@
     <string>画笔</string>
    </property>
    <property name="shortcut">
-    <string>3</string>
+    <string>4</string>
    </property>
   </action>
   <action name="actionOpen">
@@ -208,7 +207,7 @@
     <string>撤销</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+Z</string>
+    <string>3</string>
    </property>
   </action>
   <action name="actionRedo">
@@ -275,6 +274,9 @@
    </property>
    <property name="toolTip">
     <string>还原</string>
+   </property>
+   <property name="shortcut">
+    <string>0</string>
    </property>
   </action>
   <action name="actionTestShape1">

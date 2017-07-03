@@ -1,4 +1,6 @@
 #include "vmagnification.h"
+#include <cmath>
+#include "vshape.h"
 
 VMagnification::VMagnification():horizontal(1), vertical (1){}
 
@@ -65,4 +67,13 @@ QJsonObject VMagnification::toJsonObject()const
 VMagnification::VMagnification(const QJsonObject &jsonObject)
 {
     *this=jsonObject;
+}
+
+VMagnification VMagnification::rotate(double a)
+{
+    VMagnification mag(*this);
+    a = a / 180 * VShape::PI;
+    mag.horizontal = horizontal*cos(a) - vertical*sin(a);
+    mag.vertical = horizontal*sin(a) + vertical*cos(a);
+    return mag;
 }
