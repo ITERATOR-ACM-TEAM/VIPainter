@@ -58,7 +58,7 @@ QString VPolyline::type() const{
 }
 
 bool VPolyline::contains(VPoint point){
-    double width = VShape::defaultPen.width();
+    double width = (pen.width()+2.0)/(VVector(1,1)*getMagnification()).norm();
     double x = point.x;
     double y = point.y;
     VVector PiPi_1, Pi_1Pi, PiP, Pi_1P;
@@ -72,7 +72,7 @@ bool VPolyline::contains(VPoint point){
         Pi_1P = VVector(points[i-1], point);
 
         if(
-                std::abs(B*(y-points[i-1].y)-A*(x-points[i-1].x))<=width &&
+                std::abs(B*(y-points[i-1].y)-A*(x-points[i-1].x))<=width*sqrt(A*A+B*B) &&
                 PiPi_1 * PiP >= 0 &&
                 Pi_1Pi * Pi_1P >= 0
            )
