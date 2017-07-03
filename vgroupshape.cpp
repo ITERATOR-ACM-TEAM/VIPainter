@@ -118,7 +118,7 @@ int VGroupShape::insertShape(VShape * other, int pos)
     if(pos<0 || pos>this->shapes.size() || other == nullptr) return -1;
     other->setParent(this);
     this->shapes.insert(this->shapes.begin()+pos, other);
-    VPoint orign = other->getLocation();
+    //VPoint orign = other->getLocation();
     //other->setLocation(VPoint(orign.x-getLocation().x, orign.y-getLocation().y));
     getCircumscribedRectangle();
     return pos;
