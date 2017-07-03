@@ -72,8 +72,13 @@ void TestWidget::mousePressEvent(QMouseEvent *event)
             crPos = focusShape->atCrPoints(focusShape->translate( getLoc(point)));
             if(crPos == -1)
             {
-                int tmp = dynamic_cast<VPointGroupShape *>(focusShape)->atPoints(focusShape->translate( getLoc(point)));
-                if(tmp != -1) crPos = tmp+8;
+                VPointGroupShape * pgs = dynamic_cast<VPointGroupShape *>(focusShape);
+                if (pgs != nullptr)
+                {
+                    int tmp = pgs->atPoints(focusShape->translate( getLoc(point)));
+                    if(tmp != -1) crPos = tmp+8;
+                }
+
             }
         }
 
@@ -103,7 +108,13 @@ void TestWidget::mouseMoveEvent(QMouseEvent *event)
         if(crPos == -1 && groupShape.contains(pos))
         {
             this->setCursor(Qt::SizeAllCursor);
-        }else
+        }
+        else if(crPos>=0 && crPos < 8 || focusShape!=nullptr && focusShape->atCrPoints(focusShape->translate(pos)) != -1)
+        {
+            static QPixmap pixmap("://icon/mover.png");
+            this->setCursor(QCursor(pixmap.scaled(30, 30), 15, 15));
+        }
+        else
         {
             this->setCursor(Qt::ArrowCursor);
         }
