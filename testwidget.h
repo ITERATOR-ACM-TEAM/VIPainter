@@ -45,6 +45,7 @@ private:
     VPoint getLoc(const VPoint & point);
     VPoint lastMove;
     VPoint lastPress;
+    double lastAngle;
     int crPos;
     bool antialiasing;
 

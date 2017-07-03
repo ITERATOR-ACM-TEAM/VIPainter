@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include "vdocktitlebar.h"
 #include "vtype.h"
+#include "canvassizedialog.h"
 #include <QJsonDocument>
 #include <QApplication>
 #include <QClipboard>
@@ -25,7 +26,6 @@
 #include <QMessageBox>
 #include <QMimeData>
 #include <QTimer>
-#include "canvassizedialog.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),

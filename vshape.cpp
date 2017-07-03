@@ -61,7 +61,12 @@ VPoint VShape::getLocation()const
 
 void VShape::setAngle(double angle)
 {
-    this->angle=angle;
+    while(angle >= 360 || angle < 0)
+    {
+        if(angle >= 360) angle -= 360;
+        else if(angle < 0) angle += 360;
+    }
+    this->angle = angle;
 }
 
 void VShape::setName(const QString &name)

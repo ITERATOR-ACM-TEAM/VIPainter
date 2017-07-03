@@ -87,6 +87,12 @@ void TestWidget::mousePressEvent(QMouseEvent *event)
 
         update();
     }
+    else if(cursorType == VCursorType::ROTATE)
+    {
+        if(focusShape != nullptr)
+            lastAngle = focusShape->getAngle();
+        qDebug() << "lastAngle" << lastAngle;
+    }
     lastPress=VPoint(pressPoint.x(),pressPoint.y());
 }
 
@@ -95,6 +101,17 @@ void TestWidget::mouseReleaseEvent(QMouseEvent *event)
     Q_UNUSED(event);
     if(cursorType == VCursorType::MOVE)
         this->setCursor(Qt::OpenHandCursor);
+//    else if(cursorType == VCursorType::ROTATE)
+//    {
+//        if(focusShape != nullptr)
+//        {
+//            VVector vlp(focusShape->getLocation(), getLoc(lastPress)),
+//                    vnow(focusShape->getLocation(), getLoc(VPoint(event->pos().x(), event->pos().y())));
+//            qDebug() << VVector::rotationAngle(vlp, vnow);
+//            focusShape->setAngle(-VVector::rotationAngle(vlp, vnow));
+//            update();
+//        }
+//    }
     crPos = -1;
 }
 
@@ -152,6 +169,19 @@ void TestWidget::mouseMoveEvent(QMouseEvent *event)
             }
 
             update();
+        }
+        else if(cursorType == VCursorType::ROTATE)
+        {
+            if(focusShape != nullptr)
+            {
+                VVector vlp(focusShape->getLocation(), getLoc(lastPress)),
+//                        vlm(focusShape->getLocation(), getLoc(lastMove)),
+                        vnow(focusShape->getLocation(), pos);
+//                qDebug() << VVector::rotationAngle(vlp, vnow)
+//                         << vnow+VPoint(0,0) << vlm+VPoint(0,0);
+                focusShape->setAngle(lastAngle + VVector::rotationAngle(vlp, vnow));
+                update();
+            }
         }
     }
     else

@@ -1,4 +1,5 @@
 #include "vvector.h"
+#include "vshape.h"
 #include <cmath>
 #include <cfloat>
 
@@ -85,4 +86,24 @@ VVector VVector::operator -()const
 VVector VVector::rotate(double angle)const
 {
     return VVector(VPoint(0,0), ((*this)+VPoint(0,0)).rotate(VPoint(0,0),angle));
+}
+
+double VVector::includedAngle(const VVector & from, const VVector & to)
+{
+    double normFrom = from.norm(), normTo = to.norm();
+    if(normFrom * normTo < 1e-9) return 0;
+    return acos(from*to/(normFrom*normTo)) * 180.0 / VShape::PI;
+}
+
+double VVector::rotationAngle(const VVector & from, const VVector & to)
+{
+    VVector reference = from.rotate(90);
+    double angle = includedAngle(from, to);
+    if(to*reference >= 0)
+    {
+        return angle;
+    }else
+    {
+        return 360-angle;
+    }
 }
