@@ -5,11 +5,14 @@
 #include <cstring>
 #include <QJsonObject>
 #include "vshape.h"
+#include "vsize.h"
 
 class VText : public VShape
 {
 private:
     QString text;
+    VSize size;
+    VPoint center;
 public:
     VText();
     VText(QString str);
@@ -20,6 +23,13 @@ public:
 
     QString getText() const;
     void setText(QString str);
+
+    VSize getSize() const;
+    void setSize(VSize s);
+
+    VPoint getCenter() const;
+    void setCenter(VPoint point);
+
     QJsonObject toJsonObject()const;
 
     void draw(QPainter *painter,const VMagnification &magnification);
