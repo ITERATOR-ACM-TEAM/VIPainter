@@ -38,6 +38,7 @@ MainWindow::MainWindow(QWidget *parent) :
     group = new QActionGroup(this);
     group->addAction(ui->actionChoose);
     group->addAction(ui->actionMove);
+    group->addAction(ui->actionUndo);
     connect(this, SIGNAL(cursorChange(VCursorType)), this, SLOT(changeCursor(VCursorType)));
     QTimer::singleShot(0,this,SLOT(initAction(QDir)));
 
@@ -394,20 +395,22 @@ void MainWindow::on_actionBreakUp_triggered()
 
 void MainWindow::on_actionUndo_triggered()
 {
-    if(focus == nullptr) return;
-    if(getTestWidget()->focusShape == nullptr) return;
-    double angle = getTestWidget()->focusShape->getAngle();
-    getTestWidget()->focusShape->setAngle(angle+10);
-    getTestWidget()->update();
+
+    if(ui->actionUndo->isChecked())
+        emit cursorChange(VCursorType::ROTATE);
+    else
+        emit cursorChange(VCursorType::DEFAULT);
+
 }
 
 void MainWindow::on_actionRedo_triggered()
 {
-    if(focus == nullptr) return;
-    if(getTestWidget()->focusShape == nullptr) return;
-    double angle = getTestWidget()->focusShape->getAngle();
-    getTestWidget()->focusShape->setAngle(angle-10);
-    getTestWidget()->update();
+//    if(focus == nullptr) return;
+//    if(getTestWidget()->focusShape == nullptr) return;
+//    double angle = getTestWidget()->focusShape->getAngle();
+//    getTestWidget()->focusShape->setAngle(angle-10);
+//    getTestWidget()->update();
+//    emit cursorChange(VCursorType::ROTSATE);
 }
 
 void MainWindow::on_actionReloadPlugon_triggered()

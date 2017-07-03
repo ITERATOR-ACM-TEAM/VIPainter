@@ -7,6 +7,7 @@ enum class VCursorType
     CHOOSE,
     DEFAULT,
     SHAPE,
+    ROTATE,
 };
 
 #endif // VCURSORTYPE_H

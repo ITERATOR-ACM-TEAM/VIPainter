@@ -87,7 +87,7 @@ void TestWidget::mousePressEvent(QMouseEvent *event)
 
         update();
     }
-    lastMove=VPoint(pressPoint.x(),pressPoint.y());
+    lastPress=VPoint(pressPoint.x(),pressPoint.y());
 }
 
 void TestWidget::mouseReleaseEvent(QMouseEvent *event)
@@ -242,14 +242,23 @@ void TestWidget::changeCursor(VCursorType type)
     case VCursorType::CHOOSE:
     {
         this->setCursor(Qt::ArrowCursor);
+        crPos = -1;
     }break;
     case VCursorType::MOVE:
     {
         this->setCursor(Qt::OpenHandCursor);
+        crPos = -1;
+    }break;
+    case VCursorType::ROTATE:
+    {
+        static QPixmap img("://icon/undo.png");
+        this->setCursor(QCursor(img.scaled(20,20), 10, 10));
+        crPos = -1;
     }break;
     default:
     {
         this->setCursor(Qt::ArrowCursor);
+        crPos = -1;
     }
     }
 }

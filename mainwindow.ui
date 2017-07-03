@@ -20,7 +20,7 @@
      <x>0</x>
      <y>0</y>
      <width>881</width>
-     <height>29</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">
@@ -194,6 +194,9 @@
    </property>
   </action>
   <action name="actionUndo">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="icon.qrc">
      <normaloff>:/icon/undo.png</normaloff>:/icon/undo.png</iconset>
