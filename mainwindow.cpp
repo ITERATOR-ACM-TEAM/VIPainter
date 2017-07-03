@@ -508,7 +508,7 @@ void MainWindow::on_actionPaste_triggered()
         const QMimeData* mimeData = cb->mimeData();
         if(mimeData->hasFormat("application/x-JavaScript"))
         {
-            qDebug()<<QJsonDocument::fromBinaryData(mimeData->data("application/x-JavaScript"));
+//            qDebug()<<QJsonDocument::fromBinaryData(mimeData->data("application/x-JavaScript"));
             VShape *shape=VShape::fromJsonObject(
                         QJsonDocument::fromBinaryData(mimeData->data("application/x-JavaScript")).object()
                         );
