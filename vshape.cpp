@@ -142,13 +142,13 @@ void VShape::moveLoc(const VPoint & point)
     if(groupShape!=nullptr)groupShape->getCircumscribedRectangle();
 }
 
-void VShape::drawCR(QPainter * painter,const VMagnification &magnification)
+void VShape::drawCR(QPainter * painter,const VTransform &trans)
 {
     QVector<VPoint> points = this->getRect();
     QList<QPointF> qpoints;
     QPolygonF qpf;
     for(auto &i : points){
-        i=i*magnification;
+        i=i*trans;
         QPointF qpoint =i.toQPointF();
         qpoints.append(qpoint);
         qpf << qpoint;

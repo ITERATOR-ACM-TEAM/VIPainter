@@ -44,7 +44,7 @@ public:
 
     void moveLoc(const VPoint & point);
 
-    virtual void drawCR(QPainter * painter,const VMagnification &magnification);
+    virtual void drawCR(QPainter * painter, const VTransform &trans);
     void changeMag(int pos, const VVector &vec);
     int atCrPoints(const VPoint & point);
 
