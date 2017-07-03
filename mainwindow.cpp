@@ -528,7 +528,7 @@ void MainWindow::on_actionPaste_triggered()
             VShape *shape=VShape::fromJsonObject(
                         QJsonDocument::fromBinaryData(mimeData->data("application/x-JavaScript")).object()
                         );
-            qDebug()<<*shape;
+            //qDebug()<<*shape;
             widget->groupShape.insertShape(shape);
             widget->focusShape=shape;
             widget->update();
