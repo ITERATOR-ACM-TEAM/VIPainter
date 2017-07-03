@@ -18,7 +18,7 @@ public:
     bool contains(VPoint point) override;
     QString type()const;
     //QImage toImage() override;
-    void draw(QPainter *painter,const VMagnification & magnification)override;
+    void draw(QPainter *painter,const VTransform &transform)override;
     VShape* clone()override;
 };
 

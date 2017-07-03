@@ -25,6 +25,10 @@ VPoint::VPoint(const QJsonObject &jsonObject)
     *this=jsonObject;
 }
 
+VPoint::VPoint(const QPointF &pointf):x(pointf.x()),y(pointf.y())
+{
+}
+
 QPointF VPoint::toQPointF()
 {
     return QPointF(x,y);

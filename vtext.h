@@ -32,7 +32,7 @@ public:
 
     QJsonObject toJsonObject()const;
 
-    void draw(QPainter *painter,const VMagnification &magnification);
+    void draw(QPainter *painter,const VTransform &transform);
     bool contains(VPoint point);
     QString type()const;
     VSize getSize();

@@ -111,8 +111,8 @@ void VPointGroupShape::getCircumscribedRectangle(){
         points[i].y -= midy;
     }
 
-    VPoint location=this->translate(getLocation())+VSize(midx,midy);
-    location=this->reverseTranslate(location);
+    VPoint location=this->transformPoint(getLocation())+VSize(midx,midy);
+    location=this->reverseTransformPoint(location);
     setLocation(location);
     VGroupShape *groupShape=dynamic_cast<VGroupShape*>(getParent());
     if(groupShape!=nullptr)groupShape->getCircumscribedRectangle();

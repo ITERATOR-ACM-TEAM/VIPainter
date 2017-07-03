@@ -30,13 +30,13 @@ const VPolyline& VPolyline::operator=(const QJsonObject &jsonObject){
     return *this;
 }
 
-void VPolyline::draw(QPainter *painter,const VMagnification &magnification)
+void VPolyline::draw(QPainter *painter, const VTransform &transform)
 {
     painter->setPen(QPen(QBrush(Qt::black),1,Qt::SolidLine,Qt::SquareCap,Qt::MiterJoin));
     painter->setBrush(defaultBrush);
     QPolygonF qpf;
     for(auto &i : this->points){
-        qpf << (i*magnification).toQPointF();
+        qpf << (i*transform).toQPointF();
     }
     painter->drawPolyline(qpf);
 }

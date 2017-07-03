@@ -129,12 +129,11 @@ int VGroupShape::insertShape(VShape * other, int pos)
 
 int VGroupShape::insertShape(const QVector<VShape *> & other)
 {
-    VPoint  orign;
     for(auto &it:other)
     {
         it->setParent(this);
+        it->getTransform()=it->getTransform()*this->getTransform();
         this->shapes.push_back(it);
-        orign = it->getLocation();
         //it->setLocation(VPoint(orign.x-getLocation().x, orign.y-getLocation().y));
     }
 
@@ -149,6 +148,7 @@ int VGroupShape::insertShape(const QVector<VShape *> & other, int pos)
     for(auto &it:other)
     {
         it->setParent(this);
+        it->getTransform()=it->getTransform()*this->getTransform();
         this->shapes.insert(this->shapes.begin()+(pos++), it);
         orign = it->getLocation();
         //it->setLocation(VPoint(orign.x-getLocation().x, orign.y-getLocation().y));
@@ -161,10 +161,7 @@ int VGroupShape::insertShape(const QVector<VShape *> & other, int pos)
 bool VGroupShape::moveShape(int i,  VPoint  location)
 {
     if(i<0 || i>=shapes.size()) return false;
-
-    this->shapes[i]->setLocation(location);
-
-
+    this->shapes[i]->getTransform().translate(this->shapes[i]->getTransform().map(location));
     getCircumscribedRectangle();
     return true;
 }
@@ -180,22 +177,12 @@ VShape* VGroupShape::clone()
 }
 
 
-void VGroupShape::draw(QPainter *painter,const VMagnification &magnification)
+void VGroupShape::draw(QPainter *painter,const VTransform &trans)
 {
-//    qDebug()<<"size"<<getSize();
-//    qDebug()<<"logic"<<getSize();
-//    qDebug()<<"trans"<<trans;
-    double angle;
-    VPoint loc;
-
     for(auto &it: shapes)
     {
         painter->save();
-        angle = it->getAngle();
-        loc = it->getLocation();
-        painter->translate(loc.x*magnification.horizontal, loc.y*magnification.vertical);
-        painter->rotate(angle);
-        it->draw(painter,magnification*(it->getMagnification()));
+        it->draw(painter,trans*it->getTransform());
         //qDebug() << *it;
         painter->restore();
     }
@@ -233,14 +220,12 @@ void VGroupShape::getCircumscribedRectangle(bool force){
     //init max&min
     VPoint point;
     VShape * first = shapes[0];
-    VPoint loc = first->getLocation();
-    VSize siz = first->getSize()*first->getMagnification();
-    double a = first->getAngle();
+    VPoint loc = first->getTransform().inverted().map(VPoint(0,0));
+    VSize siz = first->getSize()*first->getTransform();
 
     for(int i=0; i<4; i++)
     {
         point = VPoint(loc.x + der[i][0]*siz.width/2, loc.y + der[i][1]*siz.height/2);
-        point=point.rotate(loc, a);
         maxX = point.x;
         maxY = point.y;
         minX = point.x;
@@ -250,14 +235,11 @@ void VGroupShape::getCircumscribedRectangle(bool force){
     // loop
     for(auto & it : this->shapes)
     {
-        loc = it->getLocation();
-        siz = it->getSize()*it->getMagnification();
-        a = it->getAngle();
+        loc = it->getTransform().inverted().map(VPoint(0,0));
+        siz = it->getSize()*it->getTransform();
         for(int i=0; i<4; i++)
         {
             point = VPoint(loc.x + der[i][0]*siz.width/2, loc.y + der[i][1]*siz.height/2);
-            point=point.rotate( loc, a);
-//            qDebug()<<"point "<<point;
             maxX = std::max(maxX, point.x);
             maxY = std::max(maxY, point.y);
             minX = std::min(minX, point.x);
@@ -284,13 +266,12 @@ void VGroupShape::getCircumscribedRectangle(bool force){
 
         //标准化，使外接矩形的中点移到坐标原点
         for(int i = 0; i < shapes.size(); i++){
-            shapes[i]->setLocation(VPoint(shapes[i]->getLocation().x-midx,shapes[i]->getLocation().y-midy));
+            VPoint loc=shapes[i]->getLocation();
+            shapes[i]->getTransform().translate(shapes[i]->transformPoint(VPoint(loc.x-midx,loc.y-midy)));
         }
 
         if(groupShape==nullptr)return;
-        VPoint location=this->translate(getLocation())+VSize(midx,midy);
-        location=this->reverseTranslate(location);
-        setLocation(location);
+        getTransform().translate(midx,midy);
         groupShape->getCircumscribedRectangle();
 
 
@@ -324,7 +305,7 @@ bool VGroupShape::contains(VPoint point)
     VPoint subPoint;
     for(VShape * it:this->shapes)
     {
-        subPoint = it->translate(point);
+        subPoint = it->transformPoint(point);
         if(it->contains(subPoint))
         {
             return true;
@@ -371,19 +352,9 @@ QVector<VShape *> VGroupShape::breakUp (VGroupShape * group)
     if(group == nullptr) return tmp;
     tmp = group->getShapeVector();
 
-    double angle = group->getAngle();
-    double subAngle;
-    VPoint subLoc;
-    VMagnification subMag;
-    VMagnification mag = group->getMagnification();
     for(VShape* it:tmp)
     {
-        subLoc = group->reverseTranslate(it->reverseTranslate(VPoint(0,0)));
-        subMag = it->getMagnification() * mag;
-        subAngle = it->getAngle() + angle;
-        it->setLocation(subLoc);
-        it->setMagnification(subMag);
-        it->setAngle(subAngle);
+        it->getTransform()=it->getTransform()*this->getTransform();
     }
 
     group->shapes.clear();

@@ -45,7 +45,7 @@ public:
     int getVectorSize()const;
     VSize getSize()override;
 
-    void draw(QPainter *painter,const VMagnification &magnification)override;
+    void draw(QPainter *painter,const VTransform &transform)override;
     QString type()const override;
 
     const VGroupShape& operator=(const VGroupShape &shape);

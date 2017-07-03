@@ -20,11 +20,6 @@ VShape::~VShape()
 {
 }
 
-VShape::VShape(const QString &name, const VPoint &location, const VMagnification &magnification, double angle,VShape *parent):
-    name(name),location(location),magnification(magnification),angle(angle),parent(parent)
-{
-}
-
 VShape* VShape::clone()
 {
     return fromJsonObject(toJsonObject());
@@ -43,39 +38,12 @@ VShape* VShape::fromJsonObject(const QJsonObject &jsonObject)
     else return nullptr;
 }
 
-
-void VShape::zoomin(VMagnification magnification)
-{
-    this->magnification=this->magnification*magnification;
-}
-
-void VShape::setLocation(const VPoint &location)
-{
-    this->location=location;
-}
-
-
-VPoint VShape::getLocation()const
-{
-    return location;
-}
-
-void VShape::setAngle(double angle)
-{
-    while(angle >= 360 || angle < 0)
-    {
-        if(angle >= 360) angle -= 360;
-        else if(angle < 0) angle += 360;
-    }
-    this->angle = angle;
-}
-
 void VShape::setName(const QString &name)
 {
     this->name=name;
 }
 
-QString VShape::getName()const
+const QString &VShape::getName()const
 {
     return name;
 }
@@ -85,21 +53,39 @@ VShape::operator QJsonValue()const
     return toJsonObject();
 }
 
-VShape::VShape(const QJsonObject jsonObject)
+
+void VShape::setTransform(const VTransform& transform)
 {
-    name=jsonObject.value("name").toString();
-    magnification=jsonObject.value("magnification").toObject();
-    angle=jsonObject.value("angle").toDouble();
-    location=jsonObject.value("location").toObject();
+    this->transform=transform;
+}
+
+VTransform &VShape::getTransform()
+{
+    return transform;
+}
+
+void VShape::zoomin(const VMagnification &mag)
+{
+    transform.scale(mag);
+}
+
+
+VPoint VShape::getLocation()const
+{
+    return transform.inverted().map(VPoint(0,0));
+}
+
+VShape::VShape(const QJsonObject jsonObject)
+    :name(jsonObject.value("name").toString())
+    ,transform(jsonObject.value("transform").toArray())
+{
 }
 
 
 const VShape& VShape::operator=(const QJsonObject &jsonObject)
 {
     name=jsonObject.value("name").toString();
-    magnification=jsonObject.value("magnification").toObject();
-    angle=jsonObject.value("angle").toDouble();
-    location=jsonObject.value("location").toObject();
+    transform=jsonObject.value("transform").toArray();
     return *this;
 }
 
@@ -108,25 +94,8 @@ QJsonObject VShape::toJsonObject()const
     QJsonObject jsonObject;
     jsonObject.insert("type",this->type());
     jsonObject.insert("name",this->getName());
-    jsonObject.insert("magnification",this->getMagnification());
-    jsonObject.insert("angle",this->getAngle());
-    jsonObject.insert("location",this->getLocation());
+    jsonObject.insert("transform",this->transform.toJsonArray());
     return jsonObject;
-}
-
-double VShape::getAngle()const
-{
-    return angle;
-}
-
-void VShape::setMagnification(const VMagnification &magnification)
-{
-    this->magnification=magnification;
-}
-
-VMagnification VShape::getMagnification()const
-{
-    return magnification;
 }
 
 void VShape::setParent(VShape *parent)
@@ -143,38 +112,31 @@ QVector<VPoint> VShape::getRect()
 {
     QVector<VPoint> points;
     VSize size=getSize()/VMagnification(2);
-    VPoint center(0,0);
-    VMagnification mag = getMagnification();
-    points.append(VPoint(size.width,size.height)*mag+VSize(crDis,crDis));
-    points.append(VPoint(0, size.height)*mag+VSize(0,crDis));
-    points.append(VPoint(-size.width,size.height)*mag+VSize(-crDis,crDis));
-    points.append(VPoint(-size.width,0)*mag+VSize(-crDis,0));
-    points.append(VPoint(-size.width,-size.height)*mag+VSize(-crDis,-crDis));
-    points.append(VPoint(0,-size.height)*mag+VSize(0,-crDis));
-    points.append(VPoint(size.width,-size.height)*mag+VSize(crDis,-crDis));
-    points.append(VPoint(size.width,0)*mag+VSize(crDis,0));
+    VTransform trans = getTransform().inverted();
+    points.append(VPoint(size.width,size.height)*trans);
+    points.append(VPoint(0, size.height)*trans);
+    points.append(VPoint(-size.width,size.height)*trans);
+    points.append(VPoint(-size.width,0)*trans);
+    points.append(VPoint(-size.width,-size.height)*trans);
+    points.append(VPoint(0,-size.height)*trans);
+    points.append(VPoint(size.width,-size.height)*trans);
+    points.append(VPoint(size.width,0)*trans);
     return points;
 }
 
-VPoint VShape::translate(const VPoint & point)
+VPoint VShape::transformPoint(const VPoint & point)
 {
-    VPoint subLocation(getLocation());
-    double subAngle = getAngle();
-    VMagnification subMag = getMagnification();
-    return VPoint(point.x - subLocation.x, point.y - subLocation.y).rotate(VPoint(0,0),-subAngle)/subMag;
+    return transform.map(point);
 }
 
-VPoint VShape::reverseTranslate(const VPoint &point)
+VPoint VShape::reverseTransformPoint(const VPoint &point)
 {
-    VPoint subLocation(getLocation());
-    double subAngle = getAngle();
-    VMagnification subMag = getMagnification();
-    return (point*subMag).rotate(VPoint(0, 0), subAngle)+subLocation;
+    return transform.inverted().map(point);
 }
 
 void VShape::moveLoc(const VPoint & point)
 {
-    setLocation(point);
+    transform.translate(point);
     if(parent == nullptr) return;
     VGroupShape *groupShape=dynamic_cast<VGroupShape*>(getParent());
     if(groupShape!=nullptr)groupShape->getCircumscribedRectangle();
@@ -186,7 +148,8 @@ void VShape::drawCR(QPainter * painter,const VMagnification &magnification)
     QList<QPointF> qpoints;
     QPolygonF qpf;
     for(auto &i : points){
-        QPointF qpoint = (i*magnification).toQPointF();
+        i=i*magnification;
+        QPointF qpoint =i.toQPointF();
         qpoints.append(qpoint);
         qpf << qpoint;
     }
@@ -216,7 +179,7 @@ int VShape::atCrPoints(const VPoint & point)
     QVector<VPoint> points = this->getRect();
     VSize siz(crDis,crDis);
     VPoint pos;
-    VPoint p = point * magnification;
+    VPoint p = point * transform;
     int cnt = 0;
     for(auto it: points)
     {
@@ -241,7 +204,7 @@ void VShape::changeMag(int i, const VVector & vec)
     VVector pc = vec;
     VVector co(VPoint(0,0), crp);
     VVector mov;
-    VMagnification mag = this->getMagnification();
+    VTransform trans = this->getTransform();
     if(i % 2)
     {
         double dis = (pc*co) / co.norm();
@@ -260,6 +223,6 @@ void VShape::changeMag(int i, const VVector & vec)
     }
     mov = mov*2;
     //this->setLocation(this->reverseTransform((mov+VPoint(0,0))/mag));
-    this->setMagnification(VMagnification(std::max(mag.horizontal+mov.x/(this->getSize().width), 1/(this->getSize().width)),
-                                          std::max(mag.vertical+mov.y/(this->getSize().height), 1/(this->getSize().height))));
+    this->setMagnification(VMagnification(std::max(trans.horizontal+mov.x/(this->getSize().width), 1/(this->getSize().width)),
+                                          std::max(trans.vertical+mov.y/(this->getSize().height), 1/(this->getSize().height))));
 }

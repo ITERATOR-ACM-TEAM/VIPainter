@@ -3,6 +3,7 @@
 #include "vdocktitlebar.h"
 #include "vtype.h"
 #include "canvassizedialog.h"
+#include "vtransform.h"
 #include <QJsonDocument>
 #include <QApplication>
 #include <QClipboard>
@@ -79,7 +80,9 @@ void MainWindow::loadPlugin(QString filename)
     QPainter painter(&pixmap);
     painter.translate(SIZE/2,SIZE/2);
     painter.setRenderHint(QPainter::Antialiasing);
-    shape->draw(&painter,mag);
+    VTransform transform;
+    transform.scale(mag);
+    shape->draw(&painter,transform);
 
     action->setIcon(QIcon(pixmap));
     action->setToolTip(shape->getName());
@@ -222,7 +225,7 @@ void MainWindow::saveFile(QString filename)
         QPainter painter(&image);
         if(ui->actionAntialiasing->isChecked())painter.setRenderHint(QPainter::Antialiasing);
         painter.translate(getTestWidget()->canvasSize.width/2,getTestWidget()->canvasSize.height/2);
-        getTestWidget()->groupShape.draw(&painter,getTestWidget()->groupShape.getMagnification());
+        getTestWidget()->groupShape.draw(&painter,getTestWidget()->groupShape.getTransform());
         image.save(filename);
     }
 }
@@ -365,13 +368,12 @@ void MainWindow::on_actionShapeSize_triggered()
     if(widget==nullptr)return;
     VSize size=
             widget->groupShape.getSize()*
-            widget->groupShape.getMagnification();
+            widget->groupShape.getTransform();
     VSize toSize=CanvasSizeDialog::showDialog(tr("图像大小"),size);
     VMagnification mag=toSize/size;
     for(auto &i:widget->groupShape.getShapeVector())
     {
         i->zoomin(mag);
-        i->setLocation(i->getLocation()*mag);
     }
 }
 
@@ -497,13 +499,13 @@ void MainWindow::on_actionCopy_triggered()
             QJsonDocument doc;
             doc.setObject(widget->focusShape->toJsonObject());
             newMimeData->setData("application/x-JavaScript", doc.toBinaryData());
-            VSize size=widget->focusShape->getSize()*widget->focusShape->getMagnification();
+            VSize size=widget->focusShape->getSize()*widget->focusShape->getTransform();
             QImage image(size.width+2,size.height+2,QImage::Format_ARGB32);
             image.fill(0x00ffffff);
             QPainter painter(&image);
             if(ui->actionAntialiasing->isChecked())painter.setRenderHint(QPainter::Antialiasing);
             painter.translate(size.width/2+1,size.height/2+1);
-            widget->focusShape->draw(&painter,widget->focusShape->getMagnification());\
+            widget->focusShape->draw(&painter,widget->focusShape->getTransform());\
             newMimeData->setImageData(image);
             // Set the mimedata
             cb->setMimeData(newMimeData);

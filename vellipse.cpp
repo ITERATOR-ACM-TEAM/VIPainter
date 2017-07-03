@@ -3,10 +3,7 @@
 #include <QPainter>
 #include <QDebug>
 #include <vtype.h>
-
-VEllipse::VEllipse(const QString &name, const VPoint &location, const VMagnification &magnification, double angle):VShape(name,location,magnification,angle)
-{
-}
+#include <QTransform>
 
 VEllipse::~VEllipse()
 {
@@ -30,11 +27,15 @@ const VEllipse& VEllipse::operator=(const VEllipse &shape)
     return *this;
 }
 
-void VEllipse::draw(QPainter *painter, const VMagnification &magnification)
+void VEllipse::draw(QPainter *painter, const VTransform &transform)
 {
     painter->setPen(defaultPen);
     painter->setBrush(defaultBrush);
-    painter->drawEllipse(-magnification.horizontal/2.0,-magnification.vertical/2.0,magnification.horizontal,magnification.vertical);
+    QTransform qtrans(1,transform.m12(),transform.m13()
+                         ,transform.m21(),1,transform.m23()
+                         ,transform.m31(),transform.m32(),transform.m33());
+    painter->setTransform(qtrans);
+    painter->drawEllipse(-transform.m11()/2.0,-transform.m22()/2.0,transform.m11(),transform.m22());
 }
 
 

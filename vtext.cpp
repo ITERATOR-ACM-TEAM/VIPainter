@@ -84,7 +84,7 @@ QJsonObject VText::toJsonObject()const{
     return jsonObject;
 }
 
-void VText::draw(QPainter *painter,const VMagnification &magnification){
+void VText::draw(QPainter *painter, const VTransform &transform){
     painter->setPen(defaultPen);
     painter->setBrush(defaultBrush);
 
@@ -95,7 +95,7 @@ void VText::draw(QPainter *painter,const VMagnification &magnification){
 //    QString strElidedText = fm.elidedText(this->text, Qt::ElideRight, this->size.width, Qt::TextShowMnemonic);
 
     VPoint ct(center.x-size.width, center.y-size.height);
-    ct = ct*magnification;
+    ct = ct*transform;
     painter->drawText(ct.x, ct.y, this->text);
 }
 

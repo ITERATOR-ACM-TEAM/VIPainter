@@ -53,13 +53,13 @@ VShape* VPolygon::clone()
     return new VPolygon(*this);
 }
 
-void VPolygon::draw(QPainter *painter, const VMagnification &magnification)
+void VPolygon::draw(QPainter *painter, const VTransform &transform)
 {
     painter->setPen(QPen(QBrush(Qt::black),1,Qt::SolidLine,Qt::SquareCap,Qt::MiterJoin));
     painter->setBrush(defaultBrush);
     QPolygonF qpf;
     for(auto &i : points){
-        qpf << (i*magnification).toQPointF();
+        qpf << (i*transform).toQPointF();
     }
     painter->drawPolygon(qpf);
 }

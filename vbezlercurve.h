@@ -15,7 +15,7 @@ public:
     const VBezlerCurve& operator=(const QJsonObject &jsonObject);
     bool contains(VPoint point) override;
     //QImage toImage()override;
-    void draw(QPainter *painter,const VMagnification & magnification)override;
+    void draw(QPainter *painter,const VTransform &transform)override;
     VShape* clone()override;
     QString type()const override;
     void drawCR(QPainter * painter, const VMagnification &magnification);

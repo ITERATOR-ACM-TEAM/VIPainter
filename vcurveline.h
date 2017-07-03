@@ -18,7 +18,7 @@ public:
     void addPoint(VPoint point);
 
     QJsonObject toJsonObject()const override;
-    void draw(QPainter *painter,const VMagnification &magnification)override;
+    void draw(QPainter *painter,const VTransform &transform)override;
     QString type()const override;
     bool contains(VPoint point)override;
     VShape* clone()override;

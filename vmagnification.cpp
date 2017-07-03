@@ -69,7 +69,7 @@ VMagnification::VMagnification(const QJsonObject &jsonObject)
     *this=jsonObject;
 }
 
-VMagnification VMagnification::rotate(double a)
+VMagnification VMagnification::rotate(double a)const
 {
     VMagnification mag(*this);
     a = a / 180 * VShape::PI;
