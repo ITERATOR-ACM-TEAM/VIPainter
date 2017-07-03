@@ -53,6 +53,10 @@ void MainWindow::loadPlugin(QString filename)
     QJsonDocument doc=QJsonDocument::fromJson(file.readAll());
     file.close();
     VShape *shape;
+    if(doc.isObject()&&doc.object().value("type")==QString("canvas"))
+    {
+        doc.setArray(doc.object().value("shapes").toArray());
+    }
     if(doc.isArray())
     {
         VGroupShape *groupshape=new VGroupShape(doc.array());
@@ -200,7 +204,11 @@ void MainWindow::saveFile(QString filename)
     if(filename.split('.').back()==tr("json"))
     {
         QJsonDocument jsonDocument;
-        jsonDocument.setArray(getTestWidget()->groupShape.toJsonArray());
+        QJsonObject obj;
+        obj.insert("type",QString("canvas"));
+        obj.insert("size",getTestWidget()->canvasSize);
+        obj.insert("shapes",getTestWidget()->groupShape.toJsonArray());
+        jsonDocument.setObject(obj);
         QFile file(filename);
         file.open(QFile::WriteOnly|QFile::Text);
         file.write(jsonDocument.toJson());
@@ -255,8 +263,16 @@ void MainWindow::on_actionOpen_triggered()
             continue;
         }
         QDockWidget * newWidget = newDock(filename.split("/").back());
+        if(doc.isObject()&&doc.object().value("type")==QString("canvas"))
+        {
+            getTestWidget(newWidget)->canvasSize=doc.object().value("size").toObject();
+            doc.setArray(doc.object().value("shapes").toArray());
+        }
         if(doc.isArray())getTestWidget(newWidget)->groupShape=doc.array();
-        else if(doc.isObject())getTestWidget(newWidget)->groupShape.insertShape(VShape::fromJsonObject(doc.object()));
+        else if(doc.isObject())
+        {
+            getTestWidget(newWidget)->groupShape.insertShape(VShape::fromJsonObject(doc.object()));
+        }
         newWidget->update();
     }
 }
@@ -515,7 +531,7 @@ void MainWindow::on_actionPaste_triggered()
             VShape *shape=VShape::fromJsonObject(
                         QJsonDocument::fromBinaryData(mimeData->data("application/x-JavaScript")).object()
                         );
-            qDebug()<<*shape;
+            //qDebug()<<*shape;
             widget->groupShape.insertShape(shape);
             widget->focusShape=shape;
             widget->update();

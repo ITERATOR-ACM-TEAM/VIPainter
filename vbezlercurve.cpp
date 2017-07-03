@@ -54,7 +54,7 @@ VShape* VBezlerCurve::clone()
 
 void VBezlerCurve::draw(QPainter *painter, const VMagnification &magnification)
 {
-    painter->setPen(QPen(QBrush(Qt::black),1,Qt::SolidLine,Qt::SquareCap,Qt::MiterJoin));
+    painter->setPen(QPen(QBrush(Qt::black),1,Qt::SolidLine,Qt::RoundCap,Qt::RoundJoin));
     painter->setBrush(defaultBrush);
     QPainterPath path;
     auto i=points.begin();
