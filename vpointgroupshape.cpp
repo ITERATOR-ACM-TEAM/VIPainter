@@ -140,3 +140,46 @@ QJsonObject VPointGroupShape::toJsonObject()const
     jsonObject.insert("points",qja);
     return jsonObject;
 }
+
+int VPointGroupShape::atPoints(const VPoint & point)const
+{
+    int cnt = 0;
+    for(auto it: points)
+    {
+        if(it-point <= crDis/2)
+        {
+            return cnt;
+        }
+        cnt++;
+    }
+    return -1;
+}
+
+void VPointGroupShape::drawCR(QPainter *painter)
+{
+    QBrush bru;
+    QPen pen;
+    bru.setColor(Qt::black);
+    pen.setColor(Qt::black);
+    pen.setWidth(0);
+    bru.setStyle(Qt::SolidPattern);
+    pen.setStyle(Qt::SolidLine);
+
+    painter->setPen(pen);
+    painter->setBrush(bru);
+
+    for(auto it: points)
+    {
+        painter->drawEllipse((it*this->getMagnification()).toQPointF(), crDis/2, crDis/2);
+    }
+    VShape::drawCR(painter);
+}
+
+
+bool VPointGroupShape::changePoint(int i, const VPoint & point)
+{
+    if(i < 0 || i >= points.size()) return false;
+    points[i] = point;
+    this->getCircumscribedRectangle();
+    return true;
+}

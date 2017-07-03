@@ -18,6 +18,7 @@ public:
     void draw(QPainter *painter,const VMagnification & magnification)override;
     VShape* clone()override;
     QString type()const override;
+    void drawCR(QPainter * painter);
 };
 
 #endif // VBEZLERSHAPE_H

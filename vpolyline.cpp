@@ -58,7 +58,7 @@ QString VPolyline::type() const{
 }
 
 bool VPolyline::contains(VPoint point){
-    double width = VShape::defaultPen.width()*20;
+    double width = VShape::defaultPen.width();
     double x = point.x;
     double y = point.y;
     VVector PiPi_1, Pi_1Pi, PiP, Pi_1P;

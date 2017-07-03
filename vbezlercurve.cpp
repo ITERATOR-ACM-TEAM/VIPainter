@@ -89,3 +89,21 @@ void VBezlerCurve::draw(QPainter *painter, const VMagnification &magnification)
 QString VBezlerCurve::type() const{
     return VType::BezlerCurve;
 }
+
+void VBezlerCurve::drawCR(QPainter * painter)
+{
+    VPointGroupShape::drawCR(painter);
+    QBrush bru;
+    QPen pen;
+    pen.setColor(Qt::gray);
+    pen.setWidth(1);
+    pen.setStyle(Qt::DashDotDotLine);
+    VMagnification magnification = this->getMagnification();
+    painter->setPen(pen);
+    for(int i=1; i<points.size()-1; i+=2)
+    {
+        painter->drawLine((points[i-1]*magnification).toQPointF(), (points[i]*magnification).toQPointF());
+        if(i+1<points.size())
+            painter->drawLine((points[i+1]*magnification).toQPointF(), (points[i]*magnification).toQPointF());
+    }
+}
