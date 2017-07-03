@@ -24,7 +24,7 @@ public:
     QString getText() const;
     void setText(QString str);
 
-    VSize getSize() const;
+    VSize getSize();
     void setSize(VSize s);
 
     VPoint getCenter() const;
@@ -35,7 +35,7 @@ public:
     void draw(QPainter *painter,const VMagnification &magnification);
     bool contains(VPoint point);
     QString type()const;
-    VSize getSize();
+    void calSize();
 };
 
 #endif // VTEXT_H
