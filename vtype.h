@@ -13,6 +13,7 @@ public:
     static QString Curveline;
     static QString GroupShape;
     static QString BezlerCurve;
+    static QString Text;
     VType()=delete;
 };
 
