@@ -70,6 +70,11 @@ void TestWidget::mousePressEvent(QMouseEvent *event)
         if(focusShape != nullptr)
         {
             crPos = focusShape->atCrPoints(focusShape->translate( getLoc(point)));
+            if(crPos == -1)
+            {
+                int tmp = dynamic_cast<VPointGroupShape *>(focusShape)->atPoints(focusShape->translate( getLoc(point)));
+                if(tmp != -1) crPos = tmp+8;
+            }
         }
 
         if(crPos == -1)
@@ -122,10 +127,14 @@ void TestWidget::mouseMoveEvent(QMouseEvent *event)
                     focusShape->moveLoc(v+loc);
                     this->setCursor(Qt::SizeAllCursor);
                 }
-                else
+                else if(crPos < 8)
                 {
                     //qDebug()<<"move"<<crPos;
                     focusShape->changeMag(crPos, v.rotate(-(focusShape->getAngle())));
+                }
+                else if(crPos >= 8)
+                {
+                    dynamic_cast<VPointGroupShape *>(focusShape)->changePoint(crPos - 8, focusShape->translate(lp));
                 }
             }
 

@@ -21,13 +21,13 @@ private:
     VMagnification magnification;
     double angle;
     VShape *parent=nullptr;
-    double crDis = 3;
 
 protected:
     static const QPen defaultPen;
     static const QBrush defaultBrush;
     QPen pen = defaultPen;
     QBrush brush = defaultBrush;
+    double crDis = 3;
 
 public:
     static const double PI;
@@ -46,7 +46,7 @@ public:
 
     void moveLoc(const VPoint & point);
 
-    void drawCR(QPainter * painter);
+    virtual void drawCR(QPainter * painter);
     void changeMag(int pos, const VVector &vec);
     int atCrPoints(const VPoint & point);
 
