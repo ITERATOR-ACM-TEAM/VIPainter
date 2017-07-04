@@ -88,7 +88,9 @@ VTransform &VShape::getTransform()
 
 void VShape::zoomin(const VMagnification &mag)
 {
-    transform.scale(mag);
+    VTransform trans;
+    trans.scale(mag);
+    transform = transform * trans;
 }
 
 
@@ -135,7 +137,7 @@ QVector<VPoint> VShape::getRect()
     QVector<VPoint> points;
     VSize size=getSize()/VMagnification(2);
     VTransform trans = getTransform();
-    size=VSize(size.width+crDis/trans.m11(),size.height+crDis/trans.m22());
+    size=VSize(size.width+crDis,size.height+crDis);
 
     points.append(VPoint(size.width,size.height));
     points.append(VPoint(0, size.height));
@@ -160,6 +162,7 @@ VPoint VShape::reverseTransformPoint(const VPoint &point)
 
 void VShape::moveLoc(const VPoint & point)
 {
+    //qDebug() << point;
     transform.translate(point);
     if(parent == nullptr) return;
     VGroupShape *groupShape=dynamic_cast<VGroupShape*>(getParent());
@@ -228,23 +231,23 @@ void VShape::changeMag(int i, const VVector & vec)
     VVector mov;
     if(i % 2)
     {
-        double dis = (vec*co) / co.norm();
+        double dis = (VVector(vec.x-crDis, vec.y-crDis)*co) / co.norm();
         if(i % 4 == 1)
         {
-            mov = VVector(0, dis);
+            mov = VVector((this->getSize().width)/2, dis);
         }
         else
         {
-            mov = VVector(dis, 0);
+            mov = VVector(dis, (this->getSize().height)/2);
         }
     }
     else
     {
-        mov = vec * mark[i/2];
+        mov = VVector(vec.x, vec.y) * mark[i/2] - VVector(crDis, crDis);
     }
     mov = mov*2;
     //this->setLocation(this->reverseTransform((mov+VPoint(0,0))/mag));
-    this->transform.scale(VMagnification(std::max(mov.x, 1.0)/(this->getSize().width)
+    this->zoomin(VMagnification(std::max(mov.x, 1.0)/(this->getSize().width)
                                         ,std::max(mov.y, 1.0)/(this->getSize().height)
                                         )
                           );

@@ -87,6 +87,7 @@ void TestWidget::mousePressEvent(QMouseEvent *event)
     {
         if(focusShape != nullptr)
         {
+            qDebug() << focusShape->transformPoint(getLoc(point));
             crPos = focusShape->atCrPoints(focusShape->transformPoint( getLoc(point)),scale);
             if(crPos == -1)
             {
@@ -168,6 +169,8 @@ void TestWidget::mouseMoveEvent(QMouseEvent *event)
             {
                 VPoint loc = focusShape->getLocation();
                 VPoint lp = groupShape.transformPoint(getLoc(lastMove));
+                //qDebug() << pos << lp;
+                //qDebug() << loc;
                 VPoint v(pos.x-lp.x, pos.y-lp.y);
                 if(crPos == -1)
                 {
@@ -177,7 +180,7 @@ void TestWidget::mouseMoveEvent(QMouseEvent *event)
                 else if(crPos < 8)
                 {
                     //qDebug()<<"move"<<crPos;
-                    focusShape->changeMag(crPos, focusShape->transformPoint(v));
+                    focusShape->changeMag(crPos, focusShape->transformPoint(pos));
                 }
                 else if(crPos >= 8)
                 {
@@ -237,7 +240,6 @@ void TestWidget::paintEvent(QPaintEvent *)
     {
         painter.save();
         VTransform trans;
-        //focusShape->drawCR(&painter,focusShape->getTransform(),scale);
         trans.scale(VMagnification(scale));
         trans=focusShape->getTransform()*trans;
         focusShape->drawCR(&painter,trans,scale);
