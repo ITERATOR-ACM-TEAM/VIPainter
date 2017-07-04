@@ -40,6 +40,8 @@ class TestWidget : public QWidget
     Q_OBJECT
 
 public:
+    QPixmap VSizeAll = QPixmap("://icon/mover.png").scaled(30,30);
+    QPixmap VRotate = QPixmap("://icon/undo.png").scaled(30,30);
     explicit TestWidget(QMainWindow *mainwindow,bool antialiasing);
     double scale=1;
     QMainWindow *mainwindow;

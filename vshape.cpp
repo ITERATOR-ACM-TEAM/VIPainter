@@ -136,8 +136,9 @@ QVector<VPoint> VShape::getRect()
 {
     QVector<VPoint> points;
     VSize size=getSize()/VMagnification(2);
-    VTransform trans = getTransform();
-    size=VSize(size.width+crDis,size.height+crDis);
+    double x=size.width*crDis/(transform.map(VPoint(size.width,0))-transform.map(VPoint(0,0)));
+    double y=size.height*crDis/(transform.map(VPoint(0,size.height))-transform.map(VPoint(0,0)));
+    size = VSize(size.width+x, size.height+y);
 
     points.append(VPoint(size.width,size.height));
     points.append(VPoint(0, size.height));
@@ -229,25 +230,29 @@ void VShape::changeMag(int i, const VVector & vec)
     VPoint crp = points[i];
     VVector co(VPoint(0,0), crp);
     VVector mov;
+
+    VSize size=getSize()/VMagnification(2);
+    double x=size.width*crDis/(transform.map(VPoint(size.width,0))-transform.map(VPoint(0,0)));
+    double y=size.height*crDis/(transform.map(VPoint(0,size.height))-transform.map(VPoint(0,0)));
     if(i % 2)
     {
-        double dis = (VVector(vec.x-crDis, vec.y-crDis)*co) / co.norm();
+        double dis = (VVector(vec.x, vec.y)*co) / co.norm();
         if(i % 4 == 1)
         {
-            mov = VVector((this->getSize().width)/2, dis);
+            mov = VVector((this->getSize().width)/2, dis - y);
         }
         else
         {
-            mov = VVector(dis, (this->getSize().height)/2);
+            mov = VVector(dis - x, (this->getSize().height)/2);
         }
     }
     else
     {
-        mov = VVector(vec.x, vec.y) * mark[i/2] - VVector(crDis, crDis);
+        mov = VVector(vec.x, vec.y) * mark[i/2] - VVector(x, y);
     }
     mov = mov*2;
     //this->setLocation(this->reverseTransform((mov+VPoint(0,0))/mag));
-    this->zoomin(VMagnification(std::max(mov.x, 1.0)/(this->getSize().width)
+    this->transform.scale(VMagnification(std::max(mov.x, 1.0)/(this->getSize().width)
                                         ,std::max(mov.y, 1.0)/(this->getSize().height)
                                         )
                           );

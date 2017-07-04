@@ -148,8 +148,7 @@ void TestWidget::mouseMoveEvent(QMouseEvent *event)
         }
         else if(crPos < 8 && (crPos >= 0 || (focusShape!=nullptr && focusShape->atCrPoints(focusShape->transformPoint(pos),scale) != -1)))
         {
-            static QPixmap pixmap("://icon/mover.png");
-            this->setCursor(QCursor(pixmap.scaled(30, 30), 15, 15));
+            this->setCursor(QCursor(VSizeAll, 15, 15));
         }
         else
         {
@@ -310,8 +309,7 @@ void TestWidget::changeCursor(VCursorType type)
     }break;
     case VCursorType::ROTATE:
     {
-        static QPixmap img("://icon/undo.png");
-        this->setCursor(QCursor(img.scaled(20,20), 10, 10));
+        this->setCursor(QCursor(VRotate, 15, 15));
         crPos = -1;
     }break;
     default:
