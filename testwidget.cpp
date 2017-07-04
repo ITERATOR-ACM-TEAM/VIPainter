@@ -237,8 +237,9 @@ void TestWidget::paintEvent(QPaintEvent *)
     {
         painter.save();
         VTransform trans;
+        //focusShape->drawCR(&painter,focusShape->getTransform(),scale);
         trans.scale(VMagnification(scale));
-        trans=trans*focusShape->getTransform();
+        trans=focusShape->getTransform()*trans;
         focusShape->drawCR(&painter,trans,scale);
         //qDebug() << *it;
         painter.restore();

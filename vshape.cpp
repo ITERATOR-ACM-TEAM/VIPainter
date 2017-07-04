@@ -168,6 +168,7 @@ void VShape::moveLoc(const VPoint & point)
 
 void VShape::drawCR(QPainter * painter, const VTransform &trans, double scale)
 {
+    Q_UNUSED(scale);
     QVector<VPoint> points = this->getRect();
     QList<QPointF> qpoints;
     QPolygonF qpf;
