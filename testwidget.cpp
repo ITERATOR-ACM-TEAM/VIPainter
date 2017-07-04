@@ -180,7 +180,7 @@ void TestWidget::mouseMoveEvent(QMouseEvent *event)
                 else if(crPos < 8)
                 {
                     //qDebug()<<"move"<<crPos;
-                    focusShape->changeMag(crPos, focusShape->transformPoint(v));
+                    focusShape->changeMag(crPos, focusShape->transformPoint(pos));
                 }
                 else if(crPos >= 8)
                 {
@@ -240,9 +240,8 @@ void TestWidget::paintEvent(QPaintEvent *)
     {
         painter.save();
         VTransform trans;
-        trans=trans*focusShape->getTransform();
         trans.scale(VMagnification(scale));
-        qDebug() << scale;
+        trans=focusShape->getTransform()*trans;
         focusShape->drawCR(&painter,trans,scale);
         //qDebug() << *it;
         painter.restore();

@@ -64,7 +64,7 @@ public:
     void moveLoc(const VPoint & point);
 
     virtual void drawCR(QPainter * painter, const VTransform &trans,double scale);
-    void changeMag(int pos, const VVector &vec);
+    void changeMag(int pos, const VVector & vec);
     int atCrPoints(const VPoint & point, double scale=1.0);
 
 
