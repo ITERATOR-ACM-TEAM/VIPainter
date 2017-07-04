@@ -200,7 +200,7 @@ void VGroupShape::draw(QPainter *painter,const VTransform &trans)
     for(auto &it: shapes)
     {
         painter->save();
-        it->draw(painter,trans*it->getTransform());
+        it->draw(painter,it->getTransform()*trans);
         //qDebug() << *it;
         painter->restore();
     }
@@ -229,21 +229,15 @@ void VGroupShape::getCircumscribedRectangle(bool force){
 //    cr2.x = x2;
 //    cr2.y = y2;
 
-    double minX, minY;
-    double maxX, maxY;
-    int der[4][2] = {1,1,-1,1,-1,-1,1,-1};
+    double minX=0, minY=0;
+    double maxX=0, maxY=0;
 
     // if no subShape, return (0,0)
 
     //init max&min
-    VPoint point;
-    VShape * first = shapes[0];
-    VPoint loc = first->getTransform().inverted().map(VPoint(0,0));
-    VSize siz = first->getSize()*first->getTransform();
-
-    for(int i=0; i<4; i++)
+    for(auto &p:shapes[0]->getRect())
     {
-        point = VPoint(loc.x + der[i][0]*siz.width/2, loc.y + der[i][1]*siz.height/2);
+        VPoint point=shapes[0]->reverseTransformPoint(p);
         maxX = point.x;
         maxY = point.y;
         minX = point.x;
@@ -253,11 +247,9 @@ void VGroupShape::getCircumscribedRectangle(bool force){
     // loop
     for(auto & it : this->shapes)
     {
-        loc = it->getTransform().inverted().map(VPoint(0,0));
-        siz = it->getSize()*it->getTransform();
-        for(int i=0; i<4; i++)
+        for(auto &p:it->getRect())
         {
-            point = VPoint(loc.x + der[i][0]*siz.width/2, loc.y + der[i][1]*siz.height/2);
+            VPoint point=shapes[0]->reverseTransformPoint(p);
             maxX = std::max(maxX, point.x);
             maxY = std::max(maxY, point.y);
             minX = std::min(minX, point.x);
