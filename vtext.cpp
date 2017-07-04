@@ -1,6 +1,7 @@
 #include "vtext.h"
 #include "vtype.h"
 #include <QJsonObject>
+#include <QDebug>
 
 VText::VText()
 {
@@ -10,15 +11,15 @@ VText::VText()
 
 VText::VText(QString str):text(str){
     calSize();
-    center.x = size.width/2;
-    center.y = size.height/2;
+    center.x = 0;
+    center.y = 0;
 }
 
 VText::VText(const QJsonObject jsonObject):VShape(jsonObject){
     this->text = jsonObject.value("text").toString();
     calSize();
-    center.x = size.width/2;
-    center.y = size.height/2;
+    center.x = 0;
+    center.y = 0;
 }
 
 
@@ -85,11 +86,14 @@ void VText::draw(QPainter *painter,const VMagnification &magnification){
 //    QFontMetrics fm = painter->fontMetrics();
 //    QString strElidedText = fm.elidedText(this->text, Qt::ElideRight, this->size.width, Qt::TextShowMnemonic);
 
-    painter->drawText(center.x, center.y, this->text);
+    QRectF rec(-size.width*magnification.horizontal/2, -size.height*magnification.vertical/2, size.width*magnification.horizontal, size.height*magnification.vertical);
+    painter->drawRect(rec);
+    painter->drawText(rec, Qt::AlignHCenter, this->text);
+    qDebug()<<center.x<<" "<<center.y<<endl;
 }
 
 bool VText::contains(VPoint point){
-    if((point.x-center.x)<=size.width && (point.x-center.x)>=0 && (point.y-center.y)<=size.height && (point.y-center.y)>=0)
+    if(std::abs(point.x-center.x)*2<=size.width && std::abs(point.y-center.y)*2<=size.height)
         return true;
     else
         return false;
@@ -100,6 +104,6 @@ QString VText::type()const{
 }
 
 void VText::calSize(){
-    size.width = text.length();
-    size.height = 2;
+    size.width = text.length()*7;
+    size.height = 1*14;
 }
