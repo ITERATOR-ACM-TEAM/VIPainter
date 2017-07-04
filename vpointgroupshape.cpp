@@ -129,7 +129,7 @@ void VPointGroupShape::getCircumscribedRectangle(){
         points[i].y -= midy;
     }
 
-    this->getTransform().translate(this->transformPoint(VPoint(midx,midy)));
+    this->getTransform().translate(VPoint(midx,midy));
     VGroupShape *groupShape=dynamic_cast<VGroupShape*>(getParent());
     if(groupShape!=nullptr)groupShape->getCircumscribedRectangle();
 

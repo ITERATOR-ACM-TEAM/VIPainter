@@ -136,7 +136,7 @@ QVector<VPoint> VShape::getRect()
 {
     QVector<VPoint> points;
     VSize size=getSize()/VMagnification(2);
-    VTransform trans = getTransform();
+//    VTransform trans = getTransform();
     size=VSize(size.width+crDis,size.height+crDis);
 
     points.append(VPoint(size.width,size.height));

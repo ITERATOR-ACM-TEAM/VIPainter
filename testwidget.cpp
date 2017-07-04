@@ -87,7 +87,7 @@ void TestWidget::mousePressEvent(QMouseEvent *event)
     {
         if(focusShape != nullptr)
         {
-            qDebug() << focusShape->transformPoint(getLoc(point));
+            //qDebug() << focusShape->transformPoint(getLoc(point));
             crPos = focusShape->atCrPoints(focusShape->transformPoint( getLoc(point)),scale);
             if(crPos == -1)
             {
@@ -203,7 +203,9 @@ void TestWidget::mouseMoveEvent(QMouseEvent *event)
                         vnow(focusShape->getLocation(), pos);
 //                qDebug() << VVector::rotationAngle(vlp, vnow)
 //                         << vnow+VPoint(0,0) << vlm+VPoint(0,0);
-                focusShape->getTransform().rotate(VVector::rotationAngle(vlp, vnow));
+                VTransform trans;
+                trans.rotate(VVector::rotationAngle(vlp, vnow));
+                focusShape->getTransform()*=trans;
                 update();
             }
         }
