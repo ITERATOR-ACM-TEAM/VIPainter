@@ -1,4 +1,8 @@
 # VIPainter
 
-Vectorgraph & Image Painter
+Vectorgraph Image Painter
+
+## LICENSE
+
+VIPainter is licensed under *GPLv3*
 
