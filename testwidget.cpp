@@ -240,8 +240,9 @@ void TestWidget::paintEvent(QPaintEvent *)
     {
         painter.save();
         VTransform trans;
-        trans.scale(VMagnification(scale));
         trans=trans*focusShape->getTransform();
+        trans.scale(VMagnification(scale));
+        qDebug() << scale;
         focusShape->drawCR(&painter,trans,scale);
         //qDebug() << *it;
         painter.restore();
