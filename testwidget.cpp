@@ -202,9 +202,16 @@ void TestWidget::mouseMoveEvent(QMouseEvent *event)
                         vnow(focusShape->getLocation(), pos);
 //                qDebug() << VVector::rotationAngle(vlp, vnow)
 //                         << vnow+VPoint(0,0) << vlm+VPoint(0,0);
+                VPoint loc=focusShape->getLocation();
+                focusShape->getTransform().translate(
+                            focusShape->getTransform().inverted().map(VPoint(0,0))
+                            );
                 VTransform trans;
                 trans.rotate(VVector::rotationAngle(vlp, vnow));
                 focusShape->getTransform()*=trans;
+                focusShape->getTransform().translate(
+                            focusShape->getTransform().inverted().map(loc)
+                            );
                 update();
             }
         }
