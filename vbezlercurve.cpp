@@ -114,7 +114,7 @@ void VBezlerCurve::drawCR(QPainter * painter, const VTransform &transform, doubl
     QBrush bru;
     QPen pen;
     pen.setColor(Qt::gray);
-    pen.setWidth(1);
+    pen.setWidth(2);
     pen.setStyle(Qt::DashDotDotLine);
     painter->setPen(pen);
     for(int i=1; i<points.size()-1; i+=2)

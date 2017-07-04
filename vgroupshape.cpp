@@ -249,7 +249,7 @@ void VGroupShape::getCircumscribedRectangle(bool force){
     {
         for(auto &p:it->getRect())
         {
-            VPoint point=shapes[0]->reverseTransformPoint(p);
+            VPoint point=it->reverseTransformPoint(p);
             maxX = std::max(maxX, point.x);
             maxY = std::max(maxY, point.y);
             minX = std::min(minX, point.x);
