@@ -22,6 +22,7 @@
 #include "vtype.h"
 #include "canvassizedialog.h"
 #include "vtransform.h"
+#include "vtext.h"
 #include <QJsonDocument>
 #include <QApplication>
 #include <QClipboard>
@@ -520,21 +521,38 @@ void MainWindow::on_actionCopy_triggered()
 //                newMimeData->setData(f, oldMimeData->data(f));
 
             // Copy file (gnome)
+            ////////////////////////////////////////////////////////////////////////////////////////////////START
+            ////////////////////////////////////JSON
             QJsonDocument doc;
             doc.setObject(widget->focusShape->toJsonObject());
             newMimeData->setData("application/x-JavaScript", doc.toBinaryData());
 
-            VGroupShape group;
-            group.insertShape(widget->focusShape->clone());group.getCircumscribedRectangle(true);
-            VSize size=group.getSize()*group.getTransform();
-            QImage image(size.width+2,size.height+2,QImage::Format_ARGB32_Premultiplied);
-            image.fill(0x00ffffff);
-            QPainter painter(&image);
-            if(ui->actionAntialiasing->isChecked())painter.setRenderHint(QPainter::Antialiasing);
-            painter.translate(size.width/2+1,size.height/2+1);
-            //qDebug()<<*(group.getShapeVector().back());
-            group.draw(&painter,group.getTransform());
-            newMimeData->setImageData(image);
+            // Copy file (gnome)
+            ////////////////////////////////////TEXT
+
+            VText *text=dynamic_cast<VText*>(widget->focusShape);
+            if(text!=nullptr)
+            {
+                newMimeData->setText(text->getText());
+            }
+            else
+            {
+
+                ////////////////////////////////////IMAGE
+                VGroupShape group;
+                group.insertShape(widget->focusShape->clone());group.getCircumscribedRectangle(true);
+                VSize size=group.getSize()*group.getTransform();
+                QImage image(size.width+4,size.height+4,QImage::Format_ARGB32_Premultiplied);
+                image.fill(0x00ffffff);
+                QPainter painter(&image);
+                if(ui->actionAntialiasing->isChecked())painter.setRenderHint(QPainter::Antialiasing);
+                painter.translate(size.width/2+2,size.height/2+2);
+                //qDebug()<<*(group.getShapeVector().back());
+                group.draw(&painter,group.getTransform());
+                newMimeData->setImageData(image);
+            }
+
+            //////////////////////////////////////////////////////////////////////////////////////////////////FI
             // Set the mimedata
             cb->setMimeData(newMimeData);
         }
@@ -564,6 +582,11 @@ void MainWindow::on_actionPaste_triggered()
             //qDebug()<<*shape;
             widget->groupShape.insertShape(shape);
             widget->focusShape=shape;
+            widget->update();
+        }
+        else if(mimeData->hasText())
+        {
+            widget->groupShape.insertShape(new VText(mimeData->text()));
             widget->update();
         }
     }
