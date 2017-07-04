@@ -531,7 +531,7 @@ void MainWindow::on_actionCopy_triggered()
             image.fill(0x00ffffff);
             QPainter painter(&image);
             if(ui->actionAntialiasing->isChecked())painter.setRenderHint(QPainter::Antialiasing);
-            painter.translate(size.height/2+1,size.width/2+1);
+            painter.translate(size.width/2+1,size.height/2+1);
             //qDebug()<<*(group.getShapeVector().back());
             group.draw(&painter,group.getTransform());
             newMimeData->setImageData(image);
