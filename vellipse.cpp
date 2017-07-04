@@ -49,12 +49,11 @@ void VEllipse::draw(QPainter *painter, const VTransform &transform)
 {
     painter->setPen(defaultPen);
     painter->setBrush(defaultBrush);
-//    painter->setTransform(painter->worldTransform()*transform);
-//    QTransform ptrans=painter->worldTransform();
-//    painter->scale(1/ptrans.m11(),1/ptrans.m22());
-//    qDebug()<<painter->worldTransform();
-//    qDebug()<<ptrans.m11()<<ptrans.m22();
-    QTransform ptrans=transform;
+    painter->setTransform(painter->worldTransform()*transform);
+    QTransform ptrans=painter->worldTransform();
+    painter->scale(1/ptrans.m11(),1/ptrans.m22());
+    qDebug()<<painter->worldTransform();
+    qDebug()<<ptrans.m11()<<ptrans.m22();
     painter->drawEllipse(-ptrans.m11()/2.0,-ptrans.m22()/2.0,ptrans.m11(),ptrans.m22());
 }
 

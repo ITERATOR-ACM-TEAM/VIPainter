@@ -252,8 +252,8 @@ void VShape::changeMag(int i, const VVector & vec)
     }
     mov = mov*2;
     //this->setLocation(this->reverseTransform((mov+VPoint(0,0))/mag));
-    this->transform.scale(VMagnification(std::max(mov.x, 1.0)/(this->getSize().width)
-                                        ,std::max(mov.y, 1.0)/(this->getSize().height)
+    this->transform.scale(VMagnification(mov.x/(this->getSize().width)
+                                        ,mov.y/(this->getSize().height)
                                         )
                           );
 }
