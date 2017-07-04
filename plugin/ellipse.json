@@ -1,5 +1,5 @@
 {
-	"translate": [10, 0,0,
+	"transform": [10, 0,0,
 		       0,10,0],
 	"name": "ellipse",
 	"type": "Ellipse"

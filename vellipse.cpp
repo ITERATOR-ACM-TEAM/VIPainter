@@ -49,13 +49,13 @@ void VEllipse::draw(QPainter *painter, const VTransform &transform)
 {
     painter->setPen(defaultPen);
     painter->setBrush(defaultBrush);
-    QTransform qtrans(1,transform.m12(),transform.m13()
-                         ,transform.m21(),1,transform.m23()
-                         ,transform.m31(),transform.m32(),transform.m33());
-    painter->setTransform(qtrans);
-    painter->drawEllipse(-transform.m11()/2.0,-transform.m22()/2.0,transform.m11(),transform.m22());
+    qDebug()<<painter->worldTransform();
+    QTransform ptrans=painter->worldTransform();
+    painter->setTransform(ptrans*transform);
+    painter->scale(1/ptrans.m11(),1/ptrans.m22());
+    qDebug()<<painter->worldTransform();
+    painter->drawEllipse(-ptrans.m11()/2.0,-ptrans.m22()/2.0,ptrans.m11(),ptrans.m22());
 }
-
 
 QJsonObject VEllipse::toJsonObject()const
 {
