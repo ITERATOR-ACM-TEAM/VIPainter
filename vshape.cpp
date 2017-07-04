@@ -26,6 +26,7 @@
 #include "vtext.h"
 #include "vtype.h"
 #include "vpoint.h"
+#include "vroundedrectangle.h"
 #include <cmath>
 #include <QDebug>
 #include <QTransform>
@@ -57,6 +58,7 @@ VShape* VShape::fromJsonObject(const QJsonObject &jsonObject)
     else if(type==VType::Curveline)return new VCurveline(jsonObject);
     else if(type==VType::BezlerCurve)return new VBezlerCurve(jsonObject);
     else if(type==VType::Text)return new VText(jsonObject);
+    else if(type==VType::RoundedRectangle)return new VRoundedRectangle(jsonObject);
     else return nullptr;
 }
 

@@ -20,28 +20,27 @@
 #include "vtype.h"
 #include <QJsonObject>
 #include <cmath>
+#include <QDebug>
 
 VText::VText()
 {
+    text = "";
     center.x = 0;
     center.y = 0;
-    size.width = 100;
-    size.height = 100;
 }
 
 VText::VText(QString str):text(str){
+    calSize();
     center.x = 0;
     center.y = 0;
-    size.width = 100;
-    size.height = 100;
+//    qDebug()<<"gouzao() "<<text<<";"<<endl;
 }
 
 VText::VText(const QJsonObject jsonObject):VShape(jsonObject){
     this->text = jsonObject.value("text").toString();
-    VPoint p(jsonObject.value("center").toObject());
-    this->center = p;
-    VSize s(jsonObject.value("size").toObject());
-    this->size = s;
+    calSize();
+    center.x = 0;
+    center.y = 0;
 }
 
 
@@ -50,17 +49,12 @@ const VText& VText::operator=(const VText &vText){
     VShape::operator=(vText);
     this->text = vText.getText();
     this->center = vText.getCenter();
-    this->size = vText.getSize();
     return *this;
 }
 
 const VText& VText::operator=(const QJsonObject &jsonObject){
     VShape::operator=(jsonObject);
     this->text = jsonObject.value("text").toString();
-    VPoint p(jsonObject.value("center").toObject());
-    this->center = p;
-    VSize s(jsonObject.value("size").toObject());
-    this->size = s;
     return *this;
 }
 
@@ -76,7 +70,7 @@ void VText::setText(QString str){
     this->text = str;
 }
 
-VSize VText::getSize() const{
+VSize VText::getSize(){
     return this->size;
 }
 
@@ -97,8 +91,6 @@ void VText::setCenter(VPoint point){
 QJsonObject VText::toJsonObject()const{
     QJsonObject jsonObject(VShape::toJsonObject());
     jsonObject.insert("text", this->text);
-    jsonObject.insert("center", this->center);
-    jsonObject.insert("size", this->size);
     return jsonObject;
 }
 
@@ -108,13 +100,18 @@ void VText::draw(QPainter *painter, const VTransform &transform){
 
     QTextOption option(Qt::AlignLeft | Qt::AlignVCenter);
     option.setWrapMode(QTextOption::WordWrap);
+//    QFontMetrics fm = painter->fontMetrics();
+//    this->size.width = fm.width(this->text);
+//    this->size.height = fm.ascent()+fm.descent();
 
 //    QFontMetrics fm = painter->fontMetrics();
 //    QString strElidedText = fm.elidedText(this->text, Qt::ElideRight, this->size.width, Qt::TextShowMnemonic);
 
-    VPoint ct(center.x-size.width, center.y-size.height);
-    ct = ct*transform;
-    painter->drawText(ct.x, ct.y, this->text);
+    QRectF rec(-size.width/2, -size.height/2, size.width, size.height);
+    rec=transform.mapRect(rec);
+//    painter->drawRect(rec);
+    painter->drawText(rec, Qt::AlignCenter, this->text);
+//    qDebug()<<"draw()"<<text<<endl;
 }
 
 bool VText::contains(VPoint point){
@@ -128,6 +125,17 @@ QString VText::type()const{
     return VType::Text;
 }
 
-VSize VText::getSize(){
-    return this->size;
+void VText::calSize(){
+    int cnt = 1, wid = 0, tmp = 0;
+    for(int i = 0; i < text.length(); i++){
+        tmp++;
+        if(text[i] == '\n'){
+            cnt++;
+            wid = wid > tmp ? wid : tmp;
+            tmp = 0;
+        }
+    }
+    wid = wid > tmp ? wid : tmp;
+    size.width = wid*8;
+    size.height = cnt*16;
 }
