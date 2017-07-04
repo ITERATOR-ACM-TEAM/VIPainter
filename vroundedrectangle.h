@@ -20,6 +20,7 @@ public:
     QString type()const;
     //QImage toImage() override;
     void draw(QPainter *painter,const VMagnification & magnification)override;
+    void drawCR(QPainter *painter) override;
     VShape* clone()override;
 };
 
