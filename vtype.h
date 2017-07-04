@@ -14,6 +14,7 @@ public:
     static QString GroupShape;
     static QString BezlerCurve;
     static QString Text;
+    static QString RoundedRectangle;
     VType()=delete;
 };
 

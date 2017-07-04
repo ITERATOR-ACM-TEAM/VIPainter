@@ -89,7 +89,7 @@ void VText::draw(QPainter *painter,const VMagnification &magnification){
     QRectF rec(-size.width*magnification.horizontal/2, -size.height*magnification.vertical/2, size.width*magnification.horizontal, size.height*magnification.vertical);
     painter->drawRect(rec);
     painter->drawText(rec, Qt::AlignHCenter, this->text);
-    qDebug()<<center.x<<" "<<center.y<<endl;
+//    qDebug()<<center.x<<" "<<center.y<<endl;
 }
 
 bool VText::contains(VPoint point){
@@ -104,6 +104,16 @@ QString VText::type()const{
 }
 
 void VText::calSize(){
-    size.width = text.length()*7;
-    size.height = 1*14;
+    int cnt = 1, wid = 0, tmp = 0;
+    for(int i = 0; i < text.length(); i++){
+        tmp++;
+        if(text[i] == '\n'){
+            cnt++;
+            wid = wid > tmp ? wid : tmp;
+            tmp = 0;
+        }
+    }
+    wid = wid > tmp ? wid : tmp;
+    size.width = wid*8;
+    size.height = cnt*16;
 }

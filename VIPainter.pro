@@ -35,7 +35,9 @@ SOURCES += main.cpp\
     canvassizedialog.cpp \
     vvector.cpp \
     vbezlercurve.cpp \
-    vtext.cpp
+    vtext.cpp \
+    changetextdialog.cpp \
+    vroundedrectangle.cpp
 
 HEADERS  += mainwindow.h \
     vpoint.h \
@@ -56,10 +58,13 @@ HEADERS  += mainwindow.h \
     canvassizedialog.h \
     vvector.h \
     vbezlercurve.h \
-    vtext.h
+    vtext.h \
+    changetextdialog.h \
+    vroundedrectangle.h
 
 FORMS    += mainwindow.ui \
-    canvassizedialog.ui
+    canvassizedialog.ui \
+    changetextdialog.ui
 
 RESOURCES += \
     icon.qrc

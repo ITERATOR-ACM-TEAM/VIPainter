@@ -6,6 +6,8 @@
 #include "vcurveline.h"
 #include "vmagnification.h"
 #include "vvector.h"
+#include "vtext.h"
+#include "changetextdialog.h"
 #include <QPainter>
 #include <QSize>
 #include <QPen>
@@ -88,6 +90,18 @@ void TestWidget::mousePressEvent(QMouseEvent *event)
         update();
     }
     lastMove=VPoint(pressPoint.x(),pressPoint.y());
+}
+
+void TestWidget::mouseDoubleClickEvent(QMouseEvent* event)
+{
+    QPoint pressPoint=event->pos();
+    VPoint point(pressPoint.x(), pressPoint.y());
+    qDebug()<<point.x<<" "<<point.y<<endl;
+    VText * vt = dynamic_cast<VText *>(focusShape);
+    if (vt != nullptr)
+    {
+        ChangeTextDialog::showDialog(vt);
+    }
 }
 
 void TestWidget::mouseReleaseEvent(QMouseEvent *event)
