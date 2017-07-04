@@ -90,9 +90,9 @@ QString VBezlerCurve::type() const{
     return VType::BezlerCurve;
 }
 
-void VBezlerCurve::drawCR(QPainter * painter,const VTransform &transform)
+void VBezlerCurve::drawCR(QPainter * painter, const VTransform &transform, double scale)
 {
-    VPointGroupShape::drawCR(painter,transform);
+    VPointGroupShape::drawCR(painter,transform,scale);
     QBrush bru;
     QPen pen;
     pen.setColor(Qt::gray);

@@ -148,7 +148,7 @@ void VShape::moveLoc(const VPoint & point)
     if(groupShape!=nullptr)groupShape->getCircumscribedRectangle();
 }
 
-void VShape::drawCR(QPainter * painter,const VTransform &trans)
+void VShape::drawCR(QPainter * painter, const VTransform &trans, double scale)
 {
     QVector<VPoint> points = this->getRect();
     QList<QPointF> qpoints;
@@ -175,7 +175,7 @@ void VShape::drawCR(QPainter * painter,const VTransform &trans)
     painter->setPen(pen);
     painter->setBrush(bru);
     for(auto &i : qpoints){
-        painter->drawEllipse(i, 3, 3);
+        painter->drawEllipse(i, crDis, crDis);
     }
 
 }

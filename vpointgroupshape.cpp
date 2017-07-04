@@ -153,7 +153,7 @@ int VPointGroupShape::atPoints(const VPoint & point)const
     return -1;
 }
 
-void VPointGroupShape::drawCR(QPainter *painter, const VTransform &trans)
+void VPointGroupShape::drawCR(QPainter *painter, const VTransform &trans, double scale)
 {
     QBrush bru;
     QPen pen;
@@ -168,9 +168,9 @@ void VPointGroupShape::drawCR(QPainter *painter, const VTransform &trans)
 
     for(auto it: points)
     {
-        painter->drawEllipse((it*trans).toQPointF(), crDis/2, crDis/2);
+        painter->drawEllipse((it*trans).toQPointF(), scale*crDis/2, scale*crDis/2);
     }
-    VShape::drawCR(painter,trans);
+    VShape::drawCR(painter,trans,scale);
 }
 
 

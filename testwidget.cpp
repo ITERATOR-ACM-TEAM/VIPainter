@@ -118,7 +118,7 @@ void TestWidget::mouseMoveEvent(QMouseEvent *event)
 {
     QPoint qpoint=event->pos();
     VPoint vpoint(qpoint.x(), qpoint.y());
-    VPoint pos = groupShape.transformPoint((getLoc(vpoint)));
+    VPoint pos = getLoc(vpoint);
     if(cursorType == VCursorType::CHOOSE)
     {
         VPointGroupShape * pgs = dynamic_cast<VPointGroupShape *>(focusShape);
@@ -218,9 +218,10 @@ void TestWidget::paintEvent(QPaintEvent *)
     if(focusShape != nullptr)
     {
         painter.save();
-        VTransform trans=focusShape->getTransform();
+        VTransform trans;
         trans.scale(VMagnification(scale));
-        focusShape->drawCR(&painter,trans);
+        trans=trans*focusShape->getTransform();
+        focusShape->drawCR(&painter,trans,scale);
         //qDebug() << *it;
         painter.restore();
     }
