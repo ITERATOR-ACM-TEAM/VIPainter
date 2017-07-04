@@ -206,7 +206,11 @@ void VShape::drawCR(QPainter * painter, const VTransform &trans, double scale)
 int VShape::atCrPoints(const VPoint & point,double scale)
 {
     QVector<VPoint> points = this->getRect();
-    VSize siz(crDis/scale,crDis/scale);
+    VSize size=getSize()/VMagnification(2);
+    double x=size.width*crDis/(transform.map(VPoint(size.width,0))-transform.map(VPoint(0,0)));
+    double y=size.height*crDis/(transform.map(VPoint(0,size.height))-transform.map(VPoint(0,0)));
+
+    VSize siz(x/scale,y/scale);
     int cnt = 0;
     for(auto it: points)
     {
@@ -252,6 +256,14 @@ void VShape::changeMag(int i, const VVector & vec)
     }
     mov = mov*2;
     //this->setLocation(this->reverseTransform((mov+VPoint(0,0))/mag));
+    if(std::abs(mov.x/(this->getSize().width)) < 1e-9)
+    {
+        mov.x = (this->getSize().width) * (points[i].x / std::abs(points[i].x)) *1e-9;
+    }
+    if(std::abs(mov.y/(this->getSize().height)) < 1e-9)
+    {
+        mov.y = (this->getSize().height) * (points[i].y / std::abs(points[i].y)) *1e-9;
+    }
     this->transform.scale(VMagnification(mov.x/(this->getSize().width)
                                         ,mov.y/(this->getSize().height)
                                         )
