@@ -191,7 +191,7 @@ void MainWindow::on_actionZoomIn_triggered()
 {
     if(getTestWidget()==nullptr)return ;
     getTestWidget()->scale*=1.1;
-    qDebug()<<"scale:"<<getTestWidget()->scale<<endl;
+    //qDebug()<<"scale:"<<getTestWidget()->scale<<endl;
     getTestWidget()->update();
 }
 
@@ -199,7 +199,7 @@ void MainWindow::on_actionZoomOut_triggered()
 {
     if(getTestWidget()==nullptr)return ;
     getTestWidget()->scale/=1.1;
-    qDebug()<<"scale:"<<getTestWidget()->scale<<endl;
+    //qDebug()<<"scale:"<<getTestWidget()->scale<<endl;
     getTestWidget()->update();
 }
 
@@ -208,7 +208,7 @@ void MainWindow::on_actionResume_triggered()
     if(getTestWidget()==nullptr)return ;
     getTestWidget()->scale=1.0;
     getTestWidget()->canvasLocation=VPoint(0,0);
-    qDebug()<<"scale:"<<getTestWidget()->scale<<endl;
+    //qDebug()<<"scale:"<<getTestWidget()->scale<<endl;
     getTestWidget()->update();
 }
 
@@ -222,7 +222,8 @@ void MainWindow::saveFile(QString filename)
     if(filename=="")return;
     if(focus == nullptr) return;
     ui->statusBar->showMessage(tr("保存到文件 ")+filename);
-    if(filename.split('.').back()==tr("json"))
+    QString format=filename.split('.').back().toUpper();
+    if(format==tr("json"))
     {
         QJsonDocument jsonDocument;
         QJsonObject obj;
@@ -231,21 +232,26 @@ void MainWindow::saveFile(QString filename)
         obj.insert("shapes",getTestWidget()->groupShape.toJsonArray());
         jsonDocument.setObject(obj);
         QFile file(filename);
-        file.open(QFile::WriteOnly|QFile::Text);
-        file.write(jsonDocument.toJson());
-        file.close();
-        focus->setWindowTitle(filename.split("/").back());
+        if(file.open(QFile::WriteOnly|QFile::Text))
+        {
+            file.write(jsonDocument.toJson());
+            file.close();
+            focus->setWindowTitle(filename.split("/").back());
+        }
+        else QMessageBox::warning(this,tr("错误"),tr("保存文件")+filename+tr("失败"));
     }
-    else
+    else if(format=="JPG"||format=="PNG"||format=="")
     {
-        QImage image(getTestWidget()->canvasSize.width,getTestWidget()->canvasSize.height,QImage::Format_ARGB32);
+        QImage image(getTestWidget()->canvasSize.width,getTestWidget()->canvasSize.height,QImage::Format_ARGB32_Premultiplied);
         image.fill(0x00ffffff);
         QPainter painter(&image);
         if(ui->actionAntialiasing->isChecked())painter.setRenderHint(QPainter::Antialiasing);
         painter.translate(getTestWidget()->canvasSize.width/2,getTestWidget()->canvasSize.height/2);
         getTestWidget()->groupShape.draw(&painter,getTestWidget()->groupShape.getTransform());
-        image.save(filename);
+        //image.scaled(getTestWidget()->canvasSize.width,getTestWidget()->canvasSize.height).save(filename);
+        if(!image.save(filename,format.toStdString().c_str(),100))QMessageBox::warning(this,tr("错误"),tr("保存文件")+filename+tr("失败"));
     }
+    else QMessageBox::warning(this,tr("错误"),format+tr("不能识别的文件格式"));
 }
 
 void MainWindow::on_actionSaveAs_triggered()
@@ -332,12 +338,12 @@ bool MainWindow::eventFilter(QObject * obj, QEvent * ev)
         {
             if(ev->type() == QEvent::FocusIn)
             {
-                qDebug() << "focusing"<<obj;
+                //qDebug() << "focusing"<<obj;
                 focus = *it;
                 return false;
             }else if(ev->type() == QEvent::Close)
             {
-                qDebug() << "closing";
+                //qDebug() << "closing";
                 delete *it;
                 docks.erase(it);
                 focus = nullptr;
@@ -345,7 +351,7 @@ bool MainWindow::eventFilter(QObject * obj, QEvent * ev)
                 {
                     this->focusDock(docks.back());
                 }
-                qDebug() << docks.size();
+                //qDebug() << docks.size();
                 return true;
             }
         }
@@ -517,13 +523,17 @@ void MainWindow::on_actionCopy_triggered()
             QJsonDocument doc;
             doc.setObject(widget->focusShape->toJsonObject());
             newMimeData->setData("application/x-JavaScript", doc.toBinaryData());
-            VSize size=widget->focusShape->getSize()*widget->focusShape->getTransform();
-            QImage image(size.width+2,size.height+2,QImage::Format_ARGB32);
+
+            VGroupShape group;
+            group.insertShape(widget->focusShape->clone());group.getCircumscribedRectangle(true);
+            VSize size=group.getSize()*group.getTransform();
+            QImage image(size.height+2,size.width+2,QImage::Format_ARGB32_Premultiplied);
             image.fill(0x00ffffff);
             QPainter painter(&image);
             if(ui->actionAntialiasing->isChecked())painter.setRenderHint(QPainter::Antialiasing);
-            painter.translate(size.width/2+1,size.height/2+1);
-            widget->focusShape->draw(&painter,widget->focusShape->getTransform());\
+            painter.translate(size.height/2+1,size.width/2+1);
+            //qDebug()<<*(group.getShapeVector().back());
+            group.draw(&painter,group.getTransform());
             newMimeData->setImageData(image);
             // Set the mimedata
             cb->setMimeData(newMimeData);

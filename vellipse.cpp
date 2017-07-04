@@ -62,7 +62,7 @@ void VEllipse::draw(QPainter *painter, const VTransform &transform)
 //    painter->scale(1/ptrans.m11(),1/ptrans.m22());
 //    qDebug()<<painter->worldTransform();
 //    qDebug()<<ptrans.m11()<<ptrans.m22();
-    qDebug()<<width<<height;
+    //qDebug()<<width<<height;
     painter->drawEllipse(-width/2.0,-height/2.0,width,height);
 }
 

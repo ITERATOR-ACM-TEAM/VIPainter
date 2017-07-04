@@ -27,6 +27,7 @@
 #include <QPen>
 #include <QBrush>
 #include <QList>
+#include <QByteArray>
 #include "vpoint.h"
 #include "vsize.h"
 #include "vvector.h"
