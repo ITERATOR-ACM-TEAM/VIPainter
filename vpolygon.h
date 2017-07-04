@@ -4,8 +4,11 @@
 #include "vshape.h"
 #include "vpoint.h"
 #include "vpolyline.h"
+#include "vtext.h"
 
 class VPolygon : public VPointGroupShape{
+protected:
+    VText *text;
 public:
     VPolygon();
     VPolygon(const VPolygon &shape);
@@ -18,6 +21,7 @@ public:
     void draw(QPainter *painter,const VMagnification & magnification)override;
     VShape* clone()override;
     QString type()const override;
+    VText* getText();
 };
 
 #endif //#ifndef VPOLYGON

@@ -5,6 +5,7 @@
 
 VText::VText()
 {
+    text = "";
     center.x = 0;
     center.y = 0;
 }
@@ -13,6 +14,7 @@ VText::VText(QString str):text(str){
     calSize();
     center.x = 0;
     center.y = 0;
+//    qDebug()<<"gouzao() "<<text<<";"<<endl;
 }
 
 VText::VText(const QJsonObject jsonObject):VShape(jsonObject){
@@ -87,9 +89,9 @@ void VText::draw(QPainter *painter,const VMagnification &magnification){
 //    QString strElidedText = fm.elidedText(this->text, Qt::ElideRight, this->size.width, Qt::TextShowMnemonic);
 
     QRectF rec(-size.width*magnification.horizontal/2, -size.height*magnification.vertical/2, size.width*magnification.horizontal, size.height*magnification.vertical);
-    painter->drawRect(rec);
-    painter->drawText(rec, Qt::AlignHCenter, this->text);
-//    qDebug()<<center.x<<" "<<center.y<<endl;
+//    painter->drawRect(rec);
+    painter->drawText(rec, Qt::AlignCenter, this->text);
+//    qDebug()<<"draw()"<<text<<endl;
 }
 
 bool VText::contains(VPoint point){

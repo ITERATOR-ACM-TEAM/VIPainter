@@ -8,16 +8,24 @@
 
 VRoundedRectangle::VRoundedRectangle()
 {
+    text = new VText("");
+    this->text->setSize(getSize());
 }
 
-VRoundedRectangle::VRoundedRectangle(const VRoundedRectangle &roundedRectangle):VPointGroupShape(roundedRectangle){
+VRoundedRectangle::VRoundedRectangle(const VRoundedRectangle &roundedRectangle):VPolygon(roundedRectangle){
+    text = new VText("");
+    this->text->setSize(getSize());
 }
 
-VRoundedRectangle::VRoundedRectangle(const QJsonObject &jsonObject):VPointGroupShape(jsonObject){
+VRoundedRectangle::VRoundedRectangle(const QJsonObject &jsonObject):VPolygon(jsonObject){
     //qDebug()<<"ok gz"<<endl;
+    text = new VText("");
+    this->text->setSize(getSize());
 }
 
-VRoundedRectangle::VRoundedRectangle(QVector<VPoint> vec):VPointGroupShape(vec){
+VRoundedRectangle::VRoundedRectangle(QVector<VPoint> vec){
+    text = new VText("");
+    this->text->setSize(getSize());
 }
 
 const VRoundedRectangle& VRoundedRectangle::operator=(const VRoundedRectangle &roundedRectangle){
@@ -48,6 +56,7 @@ void VRoundedRectangle::draw(QPainter *painter,const VMagnification &magnificati
 //    }
 //    painter->drawPolyline(qpf);
     painter->drawRoundRect(rec, 25, 25);
+    text->draw(painter, magnification);
 //    painter->drawRoundRect(20,20,210,160,50,50);
 }
 //QImage VRoundedRectangle::toImage(){

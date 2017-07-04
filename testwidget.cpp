@@ -8,6 +8,7 @@
 #include "vvector.h"
 #include "vtext.h"
 #include "changetextdialog.h"
+#include "vroundedrectangle.h"
 #include <QPainter>
 #include <QSize>
 #include <QPen>
@@ -98,7 +99,12 @@ void TestWidget::mouseDoubleClickEvent(QMouseEvent* event)
     VPoint point(pressPoint.x(), pressPoint.y());
     qDebug()<<point.x<<" "<<point.y<<endl;
     VText * vt = dynamic_cast<VText *>(focusShape);
-    if (vt != nullptr)
+    VPolygon *vpg = dynamic_cast<VPolygon *>(focusShape);
+    if (vpg != nullptr)
+    {
+        ChangeTextDialog::showDialog(vpg->getText());
+    }
+    if(vt != nullptr)
     {
         ChangeTextDialog::showDialog(vt);
     }

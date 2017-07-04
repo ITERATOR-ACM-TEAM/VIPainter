@@ -5,15 +5,24 @@
 #include "vtype.h"
 
 VPolygon::VPolygon():VPointGroupShape(){
+    text = new VText("");
 }
 
 VPolygon::~VPolygon(){
 }
 
 VPolygon::VPolygon(const VPolygon &shape):VPointGroupShape(shape){
+    text = new VText("");
+    this->text->setSize(getSize());
 }
 
 VPolygon::VPolygon(const QJsonObject &jsonObject):VPointGroupShape(jsonObject){
+    text = new VText("");
+    this->text->setSize(getSize());
+}
+
+VText* VPolygon::getText(){
+    return this->text;
 }
 
 bool VPolygon::contains(VPoint point)
@@ -62,6 +71,7 @@ void VPolygon::draw(QPainter *painter, const VMagnification &magnification)
         qpf << (i*magnification).toQPointF();
     }
     painter->drawPolygon(qpf);
+    text->draw(painter, magnification);
 }
 
 //QImage VPolygon::toImage(){

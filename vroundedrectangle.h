@@ -1,11 +1,12 @@
 #ifndef VROUNDEDRECTANGLE_H
 #define VROUNDEDRECTANGLE_H
 
-#include "vpointgroupshape.h"
+#include "vpolygon.h"
 #include "QVector"
 #include "vpoint.h"
+#include "vtext.h"
 
-class VRoundedRectangle : public VPointGroupShape
+class VRoundedRectangle : public VPolygon
 {
 public:
     VRoundedRectangle();
