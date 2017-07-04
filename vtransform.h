@@ -9,11 +9,11 @@
 
 class VTransform : public QTransform
 {
-    Q_OBJECT
 public:
     VTransform();
     VTransform(QJsonArray arr);
-    template<class T>VTransform(T&& trans);
+    VTransform(const VTransform &trans);
+    VTransform(const QTransform& trans);
     QJsonArray toJsonArray()const;
     VPoint map(const VPoint &point) const;
     VTransform inverted()const;

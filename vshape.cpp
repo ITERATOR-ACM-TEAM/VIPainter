@@ -116,17 +116,17 @@ QVector<VPoint> VShape::getRect()
 {
     QVector<VPoint> points;
     VSize size=getSize()/VMagnification(2);
-    VTransform retrans = getTransform().inverted();
     VTransform trans = getTransform();
+    size=VSize(size.width+crDis/trans.m11(),size.height+crDis/trans.m22());
 
-    points.append(VPoint(size.width,size.height)*retrans+VSize(crDis,crDis)*trans);
-    points.append(VPoint(0, size.height)*retrans+VSize(0,crDis)*trans);
-    points.append(VPoint(-size.width,size.height)*retrans+VSize(-crDis,crDis)*trans);
-    points.append(VPoint(-size.width,0)*retrans+VSize(-crDis,0)*trans);
-    points.append(VPoint(-size.width,-size.height)*retrans+VSize(-crDis,-crDis)*trans);
-    points.append(VPoint(0,-size.height)*retrans+VSize(0,-crDis)*trans);
-    points.append(VPoint(size.width,-size.height)*retrans+VSize(crDis,-crDis)*trans);
-    points.append(VPoint(size.width,0)*retrans+VSize(crDis,0)*trans);
+    points.append(VPoint(size.width,size.height));
+    points.append(VPoint(0, size.height));
+    points.append(VPoint(-size.width,size.height));
+    points.append(VPoint(-size.width,0));
+    points.append(VPoint(-size.width,-size.height));
+    points.append(VPoint(0,-size.height));
+    points.append(VPoint(size.width,-size.height));
+    points.append(VPoint(size.width,0));
     return points;
 }
 
@@ -180,10 +180,10 @@ void VShape::drawCR(QPainter * painter,const VTransform &trans)
 
 }
 
-int VShape::atCrPoints(const VPoint & point)
+int VShape::atCrPoints(const VPoint & point,double scale)
 {
     QVector<VPoint> points = this->getRect();
-    VSize siz(VSize(crDis,crDis)*this->getTransform().inverted());
+    VSize siz(crDis/scale,crDis/scale);
     int cnt = 0;
     for(auto it: points)
     {

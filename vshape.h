@@ -47,7 +47,7 @@ public:
 
     virtual void drawCR(QPainter * painter, const VTransform &trans);
     void changeMag(int pos, const VVector &vec);
-    int atCrPoints(const VPoint & point);
+    int atCrPoints(const VPoint & point, double scale=1.0);
 
 
 /*****************setter and getter*********************/

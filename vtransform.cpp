@@ -5,6 +5,11 @@ VTransform::VTransform():QTransform()
 {
 }
 
+VTransform::VTransform(const VTransform &trans):QTransform(trans)
+{
+
+}
+
 VTransform::VTransform(QJsonArray arr)
 {
     if(arr.size()==6)arr.append(0.0);
@@ -26,7 +31,7 @@ VTransform::VTransform(QJsonArray arr)
     }
 }
 
-template<class T> VTransform::VTransform(T &&trans):QTransform(std::forward<T>(trans))
+VTransform::VTransform(const QTransform &trans):QTransform(trans)
 {
 
 }
