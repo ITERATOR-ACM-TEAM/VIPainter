@@ -527,7 +527,7 @@ void MainWindow::on_actionCopy_triggered()
             VGroupShape group;
             group.insertShape(widget->focusShape->clone());group.getCircumscribedRectangle(true);
             VSize size=group.getSize()*group.getTransform();
-            QImage image(size.height+2,size.width+2,QImage::Format_ARGB32_Premultiplied);
+            QImage image(size.width+2,size.height+2,QImage::Format_ARGB32_Premultiplied);
             image.fill(0x00ffffff);
             QPainter painter(&image);
             if(ui->actionAntialiasing->isChecked())painter.setRenderHint(QPainter::Antialiasing);

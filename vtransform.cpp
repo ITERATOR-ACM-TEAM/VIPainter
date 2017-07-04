@@ -87,7 +87,7 @@ void VTransform::scale(const VMagnification &mag)
 
 VSize operator*(const VSize &size,const VTransform &transform)
 {
-    VPoint point(transform.map(VPoint(size.height,size.width)));
+    VPoint point(transform.map(VPoint(size.width,size.height)));
     return VSize(std::abs(point.x),std::abs(point.y));
 }
 
