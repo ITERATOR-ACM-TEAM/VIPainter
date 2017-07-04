@@ -30,6 +30,7 @@ protected:
 
 public:
     static const double PI;
+    VShape(VShape *parent=nullptr);
     static VShape* fromJsonObject(const QJsonObject &jsonObject);
     VShape(const QJsonObject jsonObject);
     virtual QJsonObject toJsonObject()const;

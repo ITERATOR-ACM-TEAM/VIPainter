@@ -13,6 +13,10 @@ VVector::VVector(const VPoint & from, const VPoint & to)
     y=to.y - from.y;
 }
 
+VVector::VVector(const VPoint & p):x(p.x),y(p.y)
+{
+}
+
 const VVector& VVector::operator=(const VVector &Right)
 {
     x = Right.x;

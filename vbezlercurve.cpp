@@ -52,23 +52,23 @@ VShape* VBezlerCurve::clone()
     return new VBezlerCurve(*this);
 }
 
-void VBezlerCurve::draw(QPainter *painter, const VMagnification &magnification)
+void VBezlerCurve::draw(QPainter *painter,const VTransform &transform)
 {
     painter->setPen(QPen(QBrush(Qt::black),1,Qt::SolidLine,Qt::RoundCap,Qt::RoundJoin));
     painter->setBrush(defaultBrush);
     QPainterPath path;
     auto i=points.begin();
     VPoint p1=*i;
-    path.moveTo((p1*magnification).toQPointF());
+    path.moveTo((p1*transform).toQPointF());
     for(++i;i!=points.end();++i)
     {
         p1=*i;
         if((++i)==points.end())
         {
-            path.lineTo((p1*magnification).toQPointF());
+            path.lineTo((p1*transform).toQPointF());
             break;
         }
-        else path.quadTo((p1*magnification).toQPointF(),((*i)*magnification).toQPointF());
+        else path.quadTo((p1*transform).toQPointF(),((*i)*transform).toQPointF());
     }
     painter->drawPath(path);
 }
@@ -90,20 +90,19 @@ QString VBezlerCurve::type() const{
     return VType::BezlerCurve;
 }
 
-void VBezlerCurve::drawCR(QPainter * painter,const VMagnification &mag)
+void VBezlerCurve::drawCR(QPainter * painter,const VTransform &transform)
 {
-    VPointGroupShape::drawCR(painter,mag);
+    VPointGroupShape::drawCR(painter,transform);
     QBrush bru;
     QPen pen;
     pen.setColor(Qt::gray);
     pen.setWidth(1);
     pen.setStyle(Qt::DashDotDotLine);
-    VMagnification magnification = this->getMagnification();
     painter->setPen(pen);
     for(int i=1; i<points.size()-1; i+=2)
     {
-        painter->drawLine((points[i-1]*magnification).toQPointF(), (points[i]*magnification).toQPointF());
+        painter->drawLine((points[i-1]*transform).toQPointF(), (points[i]*transform).toQPointF());
         if(i+1<points.size())
-            painter->drawLine((points[i+1]*magnification).toQPointF(), (points[i]*magnification).toQPointF());
+            painter->drawLine((points[i+1]*transform).toQPointF(), (points[i]*transform).toQPointF());
     }
 }

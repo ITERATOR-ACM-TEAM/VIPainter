@@ -29,7 +29,7 @@ VPoint::VPoint(const QPointF &pointf):x(pointf.x()),y(pointf.y())
 {
 }
 
-QPointF VPoint::toQPointF()
+QPointF VPoint::toQPointF()const
 {
     return QPointF(x,y);
 }

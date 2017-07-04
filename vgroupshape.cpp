@@ -59,6 +59,7 @@ QJsonArray VGroupShape::toJsonArray()const
 
 const VGroupShape & VGroupShape:: operator=(const VGroupShape &shape)
 {
+    setTransform(VTransform());
     if(this==&shape)return *this;
     VShape::operator =(shape);
     this->clear();
@@ -74,6 +75,7 @@ const VGroupShape & VGroupShape:: operator=(const VGroupShape &shape)
 
 const VGroupShape & VGroupShape:: operator=(const QJsonObject &jsonObject)
 {
+    setTransform(VTransform());
     VShape::operator =(jsonObject);
     this->clear();
     QJsonArray jsonArray = jsonObject.value("shapes").toArray();
@@ -93,9 +95,7 @@ const VGroupShape & VGroupShape:: operator=(const QJsonObject &jsonObject)
 
 const VGroupShape & VGroupShape:: operator=(const QJsonArray &jsonArray)
 {
-    setLocation(VPoint(0,0));
-    setAngle(0);
-    setMagnification(VMagnification(1,1));
+    setTransform(VTransform());
     this->clear();
     VShape * tmp ;
     for(const auto &it: jsonArray)
@@ -271,7 +271,7 @@ void VGroupShape::getCircumscribedRectangle(bool force){
         }
 
         if(groupShape==nullptr)return;
-        getTransform().translate(midx,midy);
+        getTransform().translate(VPoint(midx,midy));
         groupShape->getCircumscribedRectangle();
 
 
@@ -354,7 +354,7 @@ QVector<VShape *> VGroupShape::breakUp (VGroupShape * group)
 
     for(VShape* it:tmp)
     {
-        it->getTransform()=it->getTransform()*this->getTransform();
+        it->getTransform()=it->getTransform()*group->getTransform();
     }
 
     group->shapes.clear();

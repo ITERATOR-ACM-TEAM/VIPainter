@@ -20,6 +20,10 @@ VShape::~VShape()
 {
 }
 
+VShape::VShape(VShape *parent):parent(parent)
+{
+}
+
 VShape* VShape::clone()
 {
     return fromJsonObject(toJsonObject());
@@ -112,15 +116,17 @@ QVector<VPoint> VShape::getRect()
 {
     QVector<VPoint> points;
     VSize size=getSize()/VMagnification(2);
-    VTransform trans = getTransform().inverted();
-    points.append(VPoint(size.width,size.height)*trans);
-    points.append(VPoint(0, size.height)*trans);
-    points.append(VPoint(-size.width,size.height)*trans);
-    points.append(VPoint(-size.width,0)*trans);
-    points.append(VPoint(-size.width,-size.height)*trans);
-    points.append(VPoint(0,-size.height)*trans);
-    points.append(VPoint(size.width,-size.height)*trans);
-    points.append(VPoint(size.width,0)*trans);
+    VTransform retrans = getTransform().inverted();
+    VTransform trans = getTransform();
+
+    points.append(VPoint(size.width,size.height)*retrans+VSize(crDis,crDis)*trans);
+    points.append(VPoint(0, size.height)*retrans+VSize(0,crDis)*trans);
+    points.append(VPoint(-size.width,size.height)*retrans+VSize(-crDis,crDis)*trans);
+    points.append(VPoint(-size.width,0)*retrans+VSize(-crDis,0)*trans);
+    points.append(VPoint(-size.width,-size.height)*retrans+VSize(-crDis,-crDis)*trans);
+    points.append(VPoint(0,-size.height)*retrans+VSize(0,-crDis)*trans);
+    points.append(VPoint(size.width,-size.height)*retrans+VSize(crDis,-crDis)*trans);
+    points.append(VPoint(size.width,0)*retrans+VSize(crDis,0)*trans);
     return points;
 }
 
@@ -177,13 +183,11 @@ void VShape::drawCR(QPainter * painter,const VTransform &trans)
 int VShape::atCrPoints(const VPoint & point)
 {
     QVector<VPoint> points = this->getRect();
-    VSize siz(crDis,crDis);
-    VPoint pos;
-    VPoint p = point * transform;
+    VSize siz(VSize(crDis,crDis)*this->getTransform().inverted());
     int cnt = 0;
     for(auto it: points)
     {
-        pos = VPoint(p.x-it.x, p.y-it.y);
+        VPoint pos = VPoint(point.x-it.x, point.y-it.y);
         //qDebug() << pow(pos.x * siz.height, 2)+pow(pos.y*siz.width, 2) << pow(siz.width*siz.height, 2);
         if(pow(pos.x * siz.height, 2)+pow(pos.y*siz.width, 2) <= pow(siz.width*siz.height, 2))
             return cnt;
@@ -201,13 +205,11 @@ void VShape::changeMag(int i, const VVector & vec)
     if(i<0 || i>=8) return;
     QVector<VPoint> points = this->getRect();
     VPoint crp = points[i];
-    VVector pc = vec;
     VVector co(VPoint(0,0), crp);
     VVector mov;
-    VTransform trans = this->getTransform();
     if(i % 2)
     {
-        double dis = (pc*co) / co.norm();
+        double dis = (vec*co) / co.norm();
         if(i % 4 == 1)
         {
             mov = VVector(0, dis);
@@ -223,6 +225,8 @@ void VShape::changeMag(int i, const VVector & vec)
     }
     mov = mov*2;
     //this->setLocation(this->reverseTransform((mov+VPoint(0,0))/mag));
-    this->setMagnification(VMagnification(std::max(trans.horizontal+mov.x/(this->getSize().width), 1/(this->getSize().width)),
-                                          std::max(trans.vertical+mov.y/(this->getSize().height), 1/(this->getSize().height))));
+    this->transform.scale(VMagnification(std::max(mov.x, 1.0)/(this->getSize().width)
+                                        ,std::max(mov.y, 1.0)/(this->getSize().height)
+                                        )
+                          );
 }

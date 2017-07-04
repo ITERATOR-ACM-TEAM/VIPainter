@@ -13,8 +13,9 @@ class VTransform : public QTransform
 public:
     VTransform();
     VTransform(QJsonArray arr);
+    template<class T>VTransform(T&& trans);
     QJsonArray toJsonArray()const;
-    VPoint map(const VPoint &point);
+    VPoint map(const VPoint &point) const;
     VTransform inverted()const;
     void scale(const VMagnification &mag);
     void translate(const VPoint &point);

@@ -13,6 +13,7 @@ public:
     double y;
     VVector(double _x = 0,double _y = 0);
     VVector(const VPoint & from, const VPoint & to);
+    VVector(const VPoint & p);
 
     static double includedAngle(const VVector & from, const VVector & to);
     static double rotationAngle(const VVector & from, const VVector & to);

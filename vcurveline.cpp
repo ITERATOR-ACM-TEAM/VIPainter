@@ -79,7 +79,7 @@ VShape* VCurveline::clone()
     return new VCurveline(*this);
 }
 
-void VCurveline::draw(QPainter *painter,const VMagnification &magnification)
+void VCurveline::draw(QPainter *painter,const VTransform &transform)
 {
     painter->setPen(QPen(QBrush(Qt::black),1,Qt::SolidLine,Qt::RoundCap,Qt::RoundJoin));
     painter->setBrush(defaultBrush);
@@ -110,23 +110,23 @@ void VCurveline::draw(QPainter *painter,const VMagnification &magnification)
         lag.Init(vec);
         //for(int i = 0; i < 3; i++)
         //    qDebug()<<">>> "<<x[sg*2+i]<<" "<<y[sg*2+i]<<endl;
-        double tmp=magnification.horizontal*sx;
+        double tmp=transform.m11()*sx;
         double h = 1.0/tmp;
         int len = (int)((lag.R-lag.L)*tmp);
         for(int i = 0; i <= len; i++){
             VPoint point(lag.L+i*h, lag.calLag(lag.L+i*h));
             if(lag.L+i*h>lag.R)break;
             if(std::abs(l.x-r.x) >= std::abs(l.y-r.y))
-                qpf << (point*magnification).toQPointF();
+                qpf << (point*transform).toQPointF();
             else
-                qpf << (point.centralTransformation()*magnification).toQPointF();
+                qpf << (point.centralTransformation()*transform).toQPointF();
         }
 
 //        if(abs(l.x-r.x) >= abs(l.y-r.y))
            // qpf << (vec.back()*magnification).toQPointF();
 //        else
 //            qpf << (vec.back().centralTransformation()*magnification).toQPointF();
-        qDebug() <<lag.L<<" "<<lag.R<<endl;
+        //qDebug() <<lag.L<<" "<<lag.R<<endl;
         painter->drawPolyline(qpf);
         //painter->drawPath();
     }

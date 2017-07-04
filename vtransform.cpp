@@ -26,7 +26,12 @@ VTransform::VTransform(QJsonArray arr)
     }
 }
 
-QJsonArray VTransform::toJsonObject()const
+template<class T> VTransform::VTransform(T &&trans):QTransform(std::forward<T>(trans))
+{
+
+}
+
+QJsonArray VTransform::toJsonArray()const
 {
     QJsonArray arr;
     arr.append(this->m11());
@@ -41,7 +46,7 @@ QJsonArray VTransform::toJsonObject()const
     return arr;
 }
 
-VPoint VTransform::map(const VPoint &point)
+VPoint VTransform::map(const VPoint &point)const
 {
     return QTransform::map(point.toQPointF());
 }
@@ -69,5 +74,5 @@ VPoint operator*(const VPoint &point,const VTransform &transform)
 
 void VTransform::translate(const VPoint &point)
 {
-    QTransform.translate(point.x,point.y);
+    QTransform::translate(point.x,point.y);
 }

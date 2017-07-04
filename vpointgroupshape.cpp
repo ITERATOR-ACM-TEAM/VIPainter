@@ -111,9 +111,7 @@ void VPointGroupShape::getCircumscribedRectangle(){
         points[i].y -= midy;
     }
 
-    VPoint location=this->transformPoint(getLocation())+VSize(midx,midy);
-    location=this->reverseTransformPoint(location);
-    setLocation(location);
+    this->getTransform().translate(this->transformPoint(VPoint(midx,midy)));
     VGroupShape *groupShape=dynamic_cast<VGroupShape*>(getParent());
     if(groupShape!=nullptr)groupShape->getCircumscribedRectangle();
 
@@ -170,7 +168,7 @@ void VPointGroupShape::drawCR(QPainter *painter, const VTransform &trans)
 
     for(auto it: points)
     {
-        painter->drawEllipse((it*this->getMagnification()).toQPointF(), crDis/2, crDis/2);
+        painter->drawEllipse((it*trans).toQPointF(), crDis/2, crDis/2);
     }
     VShape::drawCR(painter,trans);
 }
