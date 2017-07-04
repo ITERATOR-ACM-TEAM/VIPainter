@@ -94,7 +94,7 @@ void VShape::zoomin(const VMagnification &mag)
 
 VPoint VShape::getLocation()const
 {
-    return transform.inverted().map(VPoint(0,0));
+    return transform.map(VPoint(0,0));
 }
 
 VShape::VShape(const QJsonObject jsonObject)
@@ -150,12 +150,12 @@ QVector<VPoint> VShape::getRect()
 
 VPoint VShape::transformPoint(const VPoint & point)
 {
-    return transform.map(point);
+    return transform.inverted().map(point);
 }
 
 VPoint VShape::reverseTransformPoint(const VPoint &point)
 {
-    return transform.inverted().map(point);
+    return transform.map(point);
 }
 
 void VShape::moveLoc(const VPoint & point)
