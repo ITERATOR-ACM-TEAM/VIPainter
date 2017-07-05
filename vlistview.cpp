@@ -17,27 +17,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 
-#ifndef CHANGETEXTDIALOG_H
-#define CHANGETEXTDIALOG_H
+#include "vlistview.h"
+#include <QDebug>
 
-#include <QDialog>
-#include "vtext.h"
-
-namespace Ui {
-class ChangeTextDialog;
+VListView::VListView(QWidget *parent):QListView(parent)
+{
+    setSelectionRectVisible(true);
+    setSelectionMode(QAbstractItemView::ExtendedSelection);
 }
 
-class ChangeTextDialog : public QDialog
+void VListView::selectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
 {
-    Q_OBJECT
+    emit selectedListChanged(selectedIndexes());
+    QListView::selectionChanged(selected,deselected);
+}
 
-public:
-    explicit ChangeTextDialog(QWidget *parent = 0);
-    static void showDialog(VText *vt);
-    ~ChangeTextDialog();
-
-private:
-    Ui::ChangeTextDialog *ui;
-};
-
-#endif // CHANGETEXTDIALOG_H

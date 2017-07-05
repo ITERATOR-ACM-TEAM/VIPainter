@@ -28,6 +28,7 @@
 #include <QDir>
 #include <QWheelEvent>
 #include <QKeyEvent>
+#include <QModelIndex>
 #include <QStringListModel>
 #include "vgroupshape.h"
 #include "vsize.h"
@@ -76,6 +77,9 @@ public slots:
     void updateList();
     void changeCursor(VCursorType type);
     void setAntialiasing(bool antialiasing);
+
+signals:
+    void selected(const QModelIndex &index);
 };
 
 #endif // TESTWIDGET_H

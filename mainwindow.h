@@ -28,6 +28,7 @@
 #include "testwidget.h"
 #include "vshape.h"
 #include "vdelegate.h"
+#include "vlistview.h"
 
 namespace Ui {
 class MainWindow;
@@ -101,7 +102,9 @@ private slots:
     void focusDock(bool checked);
 
     void changeShapeName(const QModelIndex &index);
-    void changeShapeFocus(const QModelIndex &index);
+    void changeShapeFocus(QModelIndexList indexList);
+
+    void on_actionSelectAll_triggered();
 
 private:
     QVector<VShape*>plugins;
@@ -114,6 +117,7 @@ private:
     QActionGroup  *group;
     VCursorType cursorState;
     VDelegate *delegate;
+    VListView *listView;
 
     void loadPlugin(QString filename);
 

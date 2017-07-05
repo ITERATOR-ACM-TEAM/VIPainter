@@ -210,6 +210,7 @@ void TestWidget::mouseReleaseEvent(QMouseEvent *event)
                 }
                 std::sort(focusShapes.begin(),focusShapes.end());
                 std::unique(focusShapes.begin(),focusShapes.end());
+                emit selected(listModel.createIndex(1,0));
                 update();
             }
         }
@@ -476,6 +477,7 @@ void TestWidget::updateList()
     QStringList list;
     for(int i=groupShape.getShapes().size()-1;i>=0;i--)
     {
+        if(groupShape.getShapes().at(i)->getName()=="")groupShape.getShapes().at(i)->setName(tr("没有名字的图形"));
         list.append(groupShape.getShapes().at(i)->getName());
     }
     listModel.setStringList(list);

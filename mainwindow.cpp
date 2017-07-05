@@ -62,11 +62,13 @@ MainWindow::MainWindow(QWidget *parent) :
     group->addAction(ui->actionUndo);
     connect(this, SIGNAL(cursorChange(VCursorType)), this, SLOT(changeCursor(VCursorType)));
     QTimer::singleShot(0,this,SLOT(initAction(QDir)));
+
+    //List View init
+    listView=new VListView(this);
+    ui->shapesDock->setWidget(listView);
     delegate=new VDelegate(this);
-    ui->listView->setItemDelegate(delegate);
-    connect(delegate,SIGNAL(dataChanged(const QModelIndex &)),this,SLOT(changeShapeName(const QModelIndex &)));
-    connect(ui->listView,SIGNAL(clicked(const QModelIndex &)),this,SLOT(changeShapeFocus(const QModelIndex &)));
-    connect(ui->listView,SIGNAL(activated(const QModelIndex &)),this,SLOT(changeShapeFocus(const QModelIndex &)));
+    listView->setItemDelegate(delegate);
+    connect(listView,SIGNAL(selectedListChanged(QModelIndexList)),this,SLOT(changeShapeFocus(QModelIndexList)));
 
     update();
 }
@@ -92,7 +94,7 @@ void MainWindow::loadPlugin(QString filename)
     else if(doc.isObject())shape=VShape::fromJsonObject(doc.object());
     else return;
     if(shape==nullptr)return;
-    if(shape->getName()==QString(""))shape->setName(filename);
+    if(shape->getName()==QString(""))shape->setName(filename.split('/').back().split('.').first());
     QAction *action=new QAction(ui->shapeBar);
 
     const int SIZE=30;
@@ -130,12 +132,13 @@ void MainWindow::changeShapeName(const QModelIndex &index)
     widget->groupShape.getShapes().at(widget->groupShape.getVectorSize()-index.row()-1)->setName(index.data().toString());
 }
 
-void MainWindow::changeShapeFocus(const QModelIndex &index)
+void MainWindow::changeShapeFocus(QModelIndexList indexList)
 {
     TestWidget *widget=getTestWidget();
     if(widget==nullptr)return;
     widget->focusShapes.clear();
-    widget->focusShapes.append(widget->groupShape.getShapes().at(widget->groupShape.getVectorSize()-index.row()-1));
+    for(auto &index:indexList)
+        widget->focusShapes.append(widget->groupShape.getShapes().at(widget->groupShape.getVectorSize()-index.row()-1));
     widget->update();
 }
 
@@ -196,6 +199,7 @@ QDockWidget* MainWindow::newDock(QString dockname)
     connect(ui->actionPaste,SIGNAL(triggered()),widget,SLOT(updateList()));
     connect(ui->actionDelete,SIGNAL(triggered()),widget,SLOT(updateList()));
     connect(ui->actionGroup,SIGNAL(triggered()),widget,SLOT(updateList()));
+    connect(getTestWidget(dockWidget),SIGNAL(selected(const QModelIndex&)),listView,SLOT(setCurrentIndex(const QModelIndex &index)));
 
     if(dockname=="")dockWidget->setWindowTitle(QString("untitled %1").arg(id++));
     else dockWidget->setWindowTitle(dockname);
@@ -370,7 +374,8 @@ bool MainWindow::eventFilter(QObject * obj, QEvent * ev)
             {
                 //qDebug() << "focusing"<<obj;
                 focus = *it;
-                ui->listView->setModel(&getTestWidget(focus)->listModel);
+                listView->setModel(&getTestWidget(focus)->listModel);
+                getTestWidget(focus)->updateList();
                 return false;
             }else if(ev->type() == QEvent::Close)
             {
@@ -670,5 +675,14 @@ void MainWindow::on_actionGroup_triggered()
     widget->focusShapes.clear();
     group->setName(name);
     widget->focusShapes.append(group);
+    widget->update();
+}
+
+void MainWindow::on_actionSelectAll_triggered()
+{
+    TestWidget *widget=getTestWidget();
+    if(widget==nullptr)return;
+    widget->focusShapes.clear();
+    for(auto &i:widget->groupShape.getShapes())widget->focusShapes.append(i);
     widget->update();
 }
