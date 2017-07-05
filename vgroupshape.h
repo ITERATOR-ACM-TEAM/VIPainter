@@ -58,7 +58,7 @@ public:
     bool moveShape(int i, VPoint location);
     bool contains(VPoint point);
     void clear(bool force=true);
-    VShape * atPoint(const VPoint &point);
+    VShape * atShape(const VPoint &point);
 
     const QVector<VShape *>& getShapes();
     QVector<VShape *> takeShapes();
@@ -73,7 +73,7 @@ public:
     const VGroupShape& operator=(const QJsonObject &jsonObject);
     const VGroupShape& operator=(const QJsonArray &jsonArray);
     virtual void getCircumscribedRectangle(bool force=false);//获得外接矩形的左上点、右下点
-    VShape* clone()override;
+    VShape* clone()const override;
 };
 
 #endif // VGROUPSHAPE_H

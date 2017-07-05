@@ -63,7 +63,7 @@ QJsonObject VEllipse::toJsonObject()const
     return jsonObject;
 }
 
-VShape* VEllipse::clone()
+VShape* VEllipse::clone() const
 {
     return new VEllipse(*this);
 }

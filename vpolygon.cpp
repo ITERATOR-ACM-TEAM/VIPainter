@@ -75,7 +75,7 @@ const VPolygon& VPolygon::operator=(const QJsonObject &jsonObject){
     return *this;
 }
 
-VShape* VPolygon::clone()
+VShape* VPolygon::clone() const
 {
     return new VPolygon(*this);
 }

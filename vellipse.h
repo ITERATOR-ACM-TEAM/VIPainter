@@ -35,7 +35,7 @@ public:
     VSize getSize()override;
     virtual bool contains(VPoint point)override;
     virtual QString type()const override;
-    VShape* clone()override;
+    VShape* clone()const override;
     ~VEllipse()override;
 };
 

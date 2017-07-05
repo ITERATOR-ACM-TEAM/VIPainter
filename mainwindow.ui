@@ -57,6 +57,10 @@
     <addaction name="actionCopy"/>
     <addaction name="actionPaste"/>
     <addaction name="actionCut"/>
+    <addaction name="separator"/>
+    <addaction name="actionGroup"/>
+    <addaction name="actionBreakUp"/>
+    <addaction name="actionDelete"/>
    </widget>
    <addaction name="menu"/>
    <addaction name="menu_4"/>
@@ -80,6 +84,7 @@
    <addaction name="actionZoomIn"/>
    <addaction name="actionZoomOut"/>
    <addaction name="actionResume"/>
+   <addaction name="actionGroup"/>
    <addaction name="actionBreakUp"/>
    <addaction name="actionDelete"/>
   </widget>
@@ -319,10 +324,13 @@
   </action>
   <action name="actionBreakUp">
    <property name="text">
-    <string>breakUp</string>
+    <string>取消组合</string>
    </property>
    <property name="toolTip">
     <string>取消组合</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+B</string>
    </property>
   </action>
   <action name="actionReloadPlugon">
@@ -348,10 +356,10 @@
   </action>
   <action name="actionDelete">
    <property name="text">
-    <string>Delete</string>
+    <string>删除</string>
    </property>
    <property name="toolTip">
-    <string>Delete</string>
+    <string>删除</string>
    </property>
    <property name="shortcut">
     <string>Del</string>
@@ -379,6 +387,17 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+X</string>
+   </property>
+  </action>
+  <action name="actionGroup">
+   <property name="text">
+    <string>组合</string>
+   </property>
+   <property name="toolTip">
+    <string>组合</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+G</string>
    </property>
   </action>
  </widget>

@@ -39,7 +39,7 @@ public:
     void draw(QPainter *painter,const VTransform &transform)override;
     QString type()const override;
     bool contains(VPoint point)override;
-    VShape* clone()override;
+    VShape* clone()const override;
 };
 
 #endif // VCURVELINE_H

@@ -55,7 +55,7 @@ public:
     virtual QJsonObject toJsonObject()const;
     operator QJsonValue()const;
     const VShape& operator=(const QJsonObject &jsonObject);
-    virtual VShape* clone();
+    virtual VShape* clone()const;
 
     virtual void draw(QPainter *painter,const VTransform &transform)=0;
     virtual bool contains(VPoint point)=0;
@@ -83,10 +83,11 @@ public:
     void setParent(VShape *parent);
     VShape * getParent()const;
     QVector<VPoint> getRect();
+    QVector<VPoint> getSizeRect() ;
 
     virtual VSize getSize()=0;
-    VPoint transformPoint(const VPoint & point);
-    VPoint reverseTransformPoint(const VPoint &point);
+    VPoint transformPoint(const VPoint & point) const;
+    VPoint reverseTransformPoint(const VPoint &point) const;
 
 };
 

@@ -102,7 +102,7 @@ bool VPolyline::contains(VPoint point){
 //    else return false;
 }
 
-VShape* VPolyline::clone()
+VShape* VPolyline::clone() const
 {
     return new VPolyline(*this);
 }

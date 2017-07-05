@@ -92,7 +92,7 @@ QJsonObject VCurveline::toJsonObject()const
     return jsonObject;
 }
 
-VShape* VCurveline::clone()
+VShape* VCurveline::clone() const
 {
     return new VCurveline(*this);
 }

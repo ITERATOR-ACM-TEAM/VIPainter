@@ -39,7 +39,7 @@ public:
     //QImage toImage() override;
     void draw(QPainter *painter,const VTransform &transform)override;
     void drawCR(QPainter *painter,const VTransform &transform, double scale) override;
-    VShape* clone()override;
+    VShape* clone()const override;
 };
 
 #endif // VROUNDEDRECTANGLE_H

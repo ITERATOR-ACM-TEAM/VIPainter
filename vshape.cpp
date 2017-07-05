@@ -43,7 +43,7 @@ VShape::VShape(VShape *parent):parent(parent)
 {
 }
 
-VShape* VShape::clone()
+VShape* VShape::clone() const
 {
     return fromJsonObject(toJsonObject());
 }
@@ -153,12 +153,23 @@ QVector<VPoint> VShape::getRect()
     return points;
 }
 
-VPoint VShape::transformPoint(const VPoint & point)
+QVector<VPoint> VShape::getSizeRect()
+{
+    QVector<VPoint> points;
+    VSize size=getSize()/VMagnification(2);
+    points.append(VPoint(size.width,size.height));
+    points.append(VPoint(-size.width,size.height));
+    points.append(VPoint(-size.width,-size.height));
+    points.append(VPoint(size.width,-size.height));
+    return points;
+}
+
+VPoint VShape::transformPoint(const VPoint & point)const
 {
     return transform.inverted().map(point);
 }
 
-VPoint VShape::reverseTransformPoint(const VPoint &point)
+VPoint VShape::reverseTransformPoint(const VPoint &point)const
 {
     return transform.map(point);
 }

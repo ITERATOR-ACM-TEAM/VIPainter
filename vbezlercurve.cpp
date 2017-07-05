@@ -65,7 +65,7 @@ const VBezlerCurve& VBezlerCurve::operator=(const QJsonObject &jsonObject){
     return *this;
 }
 
-VShape* VBezlerCurve::clone()
+VShape* VBezlerCurve::clone() const
 {
     return new VBezlerCurve(*this);
 }

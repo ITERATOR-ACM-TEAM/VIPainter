@@ -196,7 +196,7 @@ QVector<VShape *> VGroupShape::takeShapes()
     return shapes;
 }
 
-VShape* VGroupShape::clone()
+VShape* VGroupShape::clone() const
 {
     return new VGroupShape(*this);
 }
@@ -242,7 +242,7 @@ void VGroupShape::getCircumscribedRectangle(bool force){
     // if no subShape, return (0,0)
 
     //init max&min
-    for(auto &p:shapes[0]->getRect())
+    for(auto &p:shapes[0]->getSizeRect())
     {
         VPoint point=shapes[0]->reverseTransformPoint(p);
         maxX = point.x;
@@ -254,7 +254,7 @@ void VGroupShape::getCircumscribedRectangle(bool force){
     // loop
     for(auto & it : this->shapes)
     {
-        for(auto &p:it->getRect())
+        for(auto &p:it->getSizeRect())
         {
             VPoint point=it->reverseTransformPoint(p);
             maxX = std::max(maxX, point.x);
@@ -302,7 +302,7 @@ bool VGroupShape::eraseShape(VShape * other)
     return eraseShape(std::find(shapes.begin(),shapes.end(),other)-shapes.begin());
 }
 
-VShape* VGroupShape::atPoint(const VPoint &point)
+VShape* VGroupShape::atShape(const VPoint &point)
 {
     VPoint subPoint;
     for(int i=shapes.size()-1;i>=0;i--)
@@ -316,13 +316,16 @@ VShape* VGroupShape::atPoint(const VPoint &point)
             return shapes[i];
         }
     }
+    return nullptr;
 }
 
 VShape * VGroupShape::takeShape(VShape * other)
 {
-    auto shape=std::find(shapes.begin(),shapes.end(),other);
-    if(shape==shapes.end())return nullptr;
-    return *shape;
+    auto it=std::find(shapes.begin(),shapes.end(),other);
+    if(it==shapes.end())return nullptr;
+    shapes.erase(it);
+    getCircumscribedRectangle();
+    return other;
 }
 
 bool VGroupShape::eraseShape(int i)

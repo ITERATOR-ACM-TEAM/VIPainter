@@ -24,6 +24,7 @@ VRoundedRectangle::VRoundedRectangle(const QJsonObject &jsonObject):VPolygon(jso
 }
 
 VRoundedRectangle::VRoundedRectangle(QVector<VPoint> vec){
+    Q_UNUSED(vec);
     text = new VText("");
     this->text->setSize(getSize());
 }
@@ -96,7 +97,7 @@ bool VRoundedRectangle::contains(VPoint point){
         return left&right;
 }
 
-VShape* VRoundedRectangle::clone()
+VShape* VRoundedRectangle::clone()const
 {
     return new VRoundedRectangle(*this);
 }

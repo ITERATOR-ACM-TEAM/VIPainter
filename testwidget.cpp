@@ -36,6 +36,7 @@
 #include <QDebug>
 #include <QVector>
 #include <QAction>
+#include <QApplication>
 
 TestWidget::TestWidget(QMainWindow *parent, bool antialiasing) :
     QWidget(parent),canvasLocation(0,0),canvasSize(400,300),cursorType(VCursorType::CHOOSE),crPos(-1),antialiasing(antialiasing)
@@ -95,7 +96,7 @@ void TestWidget::mousePressEvent(QMouseEvent *event)
                 crPos = shape->atCrPoints(shape->transformPoint( getLoc(point)),scale);
                 if(crPos == -1)
                 {
-                    VPointGroupShape * pgs = dynamic_cast<VPointGroupShape *>(focusShapes);
+                    VPointGroupShape * pgs = dynamic_cast<VPointGroupShape *>(shape);
                     if (pgs != nullptr)
                     {
                         int tmp = pgs->atPoints(shape->transformPoint( getLoc(point)));
@@ -108,20 +109,21 @@ void TestWidget::mousePressEvent(QMouseEvent *event)
                         }
                     }
                 }
-                else
-                {
-                    focusShapes.clear();
-                    focusShapes.append(shape);
-                    break;
-                }
             }
         }
 
         if(crPos == -1)
         {
             VShape *shape= getShape(point);
-            if(QApplication::keyboardModifiers () != Qt::ControlModifier)focusShapes.clear();
-            if(shape!=nullptr)focusShapes.append(shape);
+            if(shape!=nullptr)
+            {
+                if(std::find(focusShapes.begin(),focusShapes.end(),shape)==focusShapes.end())
+                {
+                    if(QApplication::keyboardModifiers () != Qt::ControlModifier)focusShapes.clear();
+                    focusShapes.append(shape);
+                }
+            }
+            else if(QApplication::keyboardModifiers () != Qt::ControlModifier)focusShapes.clear();
         }
 
         update();
@@ -136,26 +138,33 @@ void TestWidget::mousePressEvent(QMouseEvent *event)
             lastAngle = 0;
         }
     }
-    lastPress=VPoint(pressPoint.x(),pressPoint.y());
+    lastMove=VPoint(pressPoint.x(),pressPoint.y());
+    lastPress=getLoc(lastMove);
 }
 
 void TestWidget::mouseDoubleClickEvent(QMouseEvent* event)
 {
-    if(focusShapes.size()==1)
+    QPoint qpoint=event->pos();
+    VPoint point(qpoint.x(),qpoint.y());
+    point=getLoc(point);
+    if(event->button()==Qt::LeftButton)
     {
-        VShape *shape=focusShapes.first();
-        QPoint pressPoint=event->pos();
-        VPoint point(pressPoint.x(), pressPoint.y());
-        //qDebug()<<point.x<<" "<<point.y<<endl;
-        VText * vt = dynamic_cast<VText *>(shape);
-        VPolygon *vpg = dynamic_cast<VPolygon *>(shape);
-        if (vpg != nullptr)
+        VShape *shape=groupShape.atShape(point);
+        if(shape!=nullptr)
         {
-            ChangeTextDialog::showDialog(vpg->getText());
-        }
-        if(vt != nullptr)
-        {
-            ChangeTextDialog::showDialog(vt);
+            QPoint pressPoint=event->pos();
+            VPoint point(pressPoint.x(), pressPoint.y());
+            //qDebug()<<point.x<<" "<<point.y<<endl;
+            VText * vt = dynamic_cast<VText *>(shape);
+            VPolygon *vpg = dynamic_cast<VPolygon *>(shape);
+            if (vpg != nullptr)
+            {
+                ChangeTextDialog::showDialog(vpg->getText());
+            }
+            if(vt != nullptr)
+            {
+                ChangeTextDialog::showDialog(vt);
+            }
         }
     }
 }
@@ -189,19 +198,25 @@ void TestWidget::mouseMoveEvent(QMouseEvent *event)
         bool flag=true;
         for(int i=focusShapes.size()-1;i>=0;i--)
         {
-            VPointGroupShape * pgs = dynamic_cast<VPointGroupShape *>(focusShapes[i]);
-
-            if((crPos == -1 && groupShape.contains(pos)) && (pgs == nullptr || pgs->atPoints(focusShapes[i]->transformPoint(pos)) == -1))
-            {
-                this->setCursor(Qt::SizeAllCursor);
-                flag=false;
-                break;
-            }
-            else if(crPos < 8 && (crPos >= 0 || (focusShapes[i]!=nullptr && focusShapes[i]->atCrPoints(focusShapes[i]->transformPoint(pos),scale) != -1)))
+            if(crPos < 8 && (crPos >= 0 || (focusShapes[i]->atCrPoints(focusShapes[i]->transformPoint(pos),scale) != -1)))
             {
                 this->setCursor(QCursor(VSizeAll, 15, 15));
                 flag=false;
                 break;
+            }
+        }
+        if(flag)
+        {
+            for(int i=groupShape.getVectorSize()-1;i>=0;i--)
+            {
+                VPointGroupShape * pgs = dynamic_cast<VPointGroupShape *>(groupShape.getShapes()[i]);
+
+                if((crPos == -1 && groupShape.contains(pos)) && (pgs == nullptr || pgs->atPoints(groupShape.getShapes()[i]->transformPoint(pos)) == -1))
+                {
+                    this->setCursor(Qt::SizeAllCursor);
+                    flag=false;
+                    break;
+                }
             }
         }
         if(flag)this->setCursor(Qt::ArrowCursor);
@@ -217,7 +232,7 @@ void TestWidget::mouseMoveEvent(QMouseEvent *event)
         }else if(cursorType == VCursorType::CHOOSE){
             if(!focusShapes.empty())
             {
-                VPoint loc = focusShapes->getLocation();
+                //VPoint loc = focusShapes.first()->getLocation();
                 VPoint lp = groupShape.transformPoint(getLoc(lastMove));
                 //qDebug() << pos << lp;
                 //qDebug() << loc;
@@ -246,7 +261,7 @@ void TestWidget::mouseMoveEvent(QMouseEvent *event)
                         VPointGroupShape * shape=dynamic_cast<VPointGroupShape *>(focusShapes.first());
                         if(shape!=nullptr)
                         {
-                            shape->changePoint(crPos - 8, focusShapes->transformPoint(lp));
+                            shape->changePoint(crPos - 8, shape->transformPoint(lp));
                         }
                     }
                 }
@@ -278,11 +293,8 @@ void TestWidget::mouseMoveEvent(QMouseEvent *event)
             }
         }
     }
-    else
-    {
-        VPoint point(qpoint.x()-(this->width()/2+canvasLocation.x),qpoint.y()-(this->height()/2+canvasLocation.y));
-        mainwindow->statusBar()->showMessage(QString("%1,%2").arg(floor(point.x/scale+0.5)).arg(floor(point.y/scale+0.5)));
-    }
+    VPoint point(qpoint.x()-(this->width()/2+canvasLocation.x),qpoint.y()-(this->height()/2+canvasLocation.y));
+    mainwindow->statusBar()->showMessage(QString("%1,%2").arg(floor(point.x/scale+0.5)).arg(floor(point.y/scale+0.5)));
     lastMove = vpoint;
 }
 

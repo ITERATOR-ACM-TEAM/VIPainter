@@ -420,6 +420,7 @@ void MainWindow::on_actionBreakUp_triggered()
     if(getTestWidget()->focusShapes.size()==1)
     {
         VGroupShape *shape=dynamic_cast<VGroupShape*>(getTestWidget()->focusShapes.first());
+        getTestWidget()->focusShapes.clear();
         if(shape!=nullptr)
         {
             //qDebug()<<*(getTestWidget()->focusShape);
@@ -430,7 +431,7 @@ void MainWindow::on_actionBreakUp_triggered()
                 {
                     QVector<VShape *> shs = VGroupShape::breakUp(dynamic_cast<VGroupShape*>(it));
                     getTestWidget()->groupShape.insertShape(shs);
-                    getTestWidget()->focusShapes.clear();
+                    getTestWidget()->focusShapes.append(shs);
                     break;
                 }
                 cnt++;
@@ -551,6 +552,14 @@ void MainWindow::on_actionCopy_triggered()
 
                 ////////////////////////////////////IMAGE
                 VGroupShape group;
+                for(const VShape*shape:widget->groupShape.getShapes())
+                {
+                    if(std::find(widget->focusShapes.begin(),widget->focusShapes.end(),shape)!=widget->focusShapes.end())
+                    {
+                        group.insertShape(shape->clone());
+                    }
+                }
+                group.getCircumscribedRectangle(true);
                 VSize size=group.getSize()*group.getTransform();
                 QImage image(size.width+4,size.height+4,QImage::Format_ARGB32);
                 image.fill(0x00ffffff);
@@ -619,4 +628,21 @@ void MainWindow::on_actionPaste_triggered()
         }
     }
 
+}
+
+void MainWindow::on_actionGroup_triggered()
+{
+    TestWidget *widget=getTestWidget();
+    if(widget==nullptr)return;
+    if(widget->focusShapes.empty())return;
+    VGroupShape *group=new VGroupShape;
+    for(VShape *shape:widget->focusShapes)
+    {
+        group->insertShape(widget->groupShape.takeShape(shape));
+    }
+    widget->groupShape.insertShape(group);
+    group->getCircumscribedRectangle();
+    widget->focusShapes.clear();
+    widget->focusShapes.append(group);
+    widget->update();
 }

@@ -97,6 +97,8 @@ private slots:
 
     void on_actionPaste_triggered();
 
+    void on_actionGroup_triggered();
+
 private:
     QVector<VShape*>plugins;
     Ui::MainWindow *ui;
