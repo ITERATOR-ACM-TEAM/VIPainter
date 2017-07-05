@@ -193,6 +193,8 @@ QVector<VShape *> VGroupShape::takeShapes()
 {
     QVector<VShape *> shapes=std::move(this->shapes);
     this->shapes.clear();
+    for(auto &it:shapes)
+        it->getTransform()=it->getTransform()*this->getTransform();
     return shapes;
 }
 
@@ -393,19 +395,20 @@ QVector<VShape *> VGroupShape::breakUp (VGroupShape * group)
 {
     QVector<VShape *> tmp;
     if(group == nullptr) return tmp;
-    tmp = group->getShapes();
+    tmp=std::move(group->shapes);
+    group->shapes.clear();
 
     for(VShape* it:tmp)
     {
         it->getTransform()=it->getTransform()*group->getTransform();
     }
 
-    group->shapes.clear();
     VGroupShape *parent=dynamic_cast<VGroupShape*>(group->getParent());
     if(parent!=nullptr)
     {
         auto it=std::find(parent->shapes.begin(),parent->shapes.end(),group);
         parent->shapes.erase(it);
+        parent->getCircumscribedRectangle();
     }
     delete group;
     return tmp;

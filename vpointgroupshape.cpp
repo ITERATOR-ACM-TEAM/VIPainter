@@ -159,7 +159,7 @@ QJsonObject VPointGroupShape::toJsonObject()const
 
 int VPointGroupShape::atPoints(const VPoint & point)const
 {
-    for(int i=points.size();i>=0;i--)
+    for(int i=points.size()-1;i>=0;i--)
     {
         if(reverseTransformPoint(points[i])-reverseTransformPoint(point) <= crDis/2)
         {

@@ -209,9 +209,9 @@ void TestWidget::mouseMoveEvent(QMouseEvent *event)
         {
             for(int i=groupShape.getVectorSize()-1;i>=0;i--)
             {
-                VPointGroupShape * pgs = dynamic_cast<VPointGroupShape *>(groupShape.getShapes()[i]);
+                VPointGroupShape * pgs = dynamic_cast<VPointGroupShape *>(groupShape.getShapes().at(i));
 
-                if((crPos == -1 && groupShape.contains(pos)) && (pgs == nullptr || pgs->atPoints(groupShape.getShapes()[i]->transformPoint(pos)) == -1))
+                if((crPos == -1 && groupShape.contains(pos)) && (pgs == nullptr || pgs->atPoints(pgs->transformPoint(pos)) == -1))
                 {
                     this->setCursor(Qt::SizeAllCursor);
                     flag=false;

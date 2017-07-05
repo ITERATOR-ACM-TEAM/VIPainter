@@ -44,6 +44,7 @@ void VRoundedRectangle::draw(QPainter *painter,const VTransform &transform)
 {
     painter->setPen(QPen(QBrush(Qt::black),1,Qt::SolidLine,Qt::SquareCap,Qt::MiterJoin));
     painter->setBrush(defaultBrush);
+    painter->save();
     VPoint loc=transform.map(VPoint(0,0));
     VPoint p1 = points[1];
     VPoint p2 = points[3];
@@ -57,6 +58,7 @@ void VRoundedRectangle::draw(QPainter *painter,const VTransform &transform)
     height*=H;
     QRectF rec(-width/2, -height/2, width, height);
     painter->drawRoundRect(rec);
+    painter->restore();
     text->draw(painter, transform);
 }
 

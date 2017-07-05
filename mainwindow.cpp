@@ -416,26 +416,18 @@ TestWidget * MainWindow::getTestWidget(QDockWidget * target)
 
 void MainWindow::on_actionBreakUp_triggered()
 {
+    TestWidget *widget=getTestWidget();
     if(focus == nullptr) return;
-    if(getTestWidget()->focusShapes.size()==1)
+    if(widget->focusShapes.size()==1)
     {
-        VGroupShape *shape=dynamic_cast<VGroupShape*>(getTestWidget()->focusShapes.first());
-        getTestWidget()->focusShapes.clear();
+        VGroupShape *shape=dynamic_cast<VGroupShape*>(widget->focusShapes.first());
+        widget->focusShapes.clear();
         if(shape!=nullptr)
         {
             //qDebug()<<*(getTestWidget()->focusShape);
-            int cnt = 0;
-            for(auto it: getTestWidget()->groupShape.getShapes() )
-            {
-                if(it == shape)
-                {
-                    QVector<VShape *> shs = VGroupShape::breakUp(dynamic_cast<VGroupShape*>(it));
-                    getTestWidget()->groupShape.insertShape(shs);
-                    getTestWidget()->focusShapes.append(shs);
-                    break;
-                }
-                cnt++;
-            }
+            QVector<VShape *> shs = shape->takeShapes();
+            widget->groupShape.insertShape(shs);
+            for(auto &i:shs)widget->focusShapes.append(i);
         }
         getTestWidget()->update();
     }
