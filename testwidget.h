@@ -52,7 +52,7 @@ public:
     ~TestWidget();
 
 protected:
-    void paintEvent(QPaintEvent *)override;
+    void paintEvent(QPaintEvent *event)override;
     void mouseMoveEvent(QMouseEvent *event)override;
     void mousePressEvent(QMouseEvent *event)override;
     void mouseDoubleClickEvent(QMouseEvent* event) override;

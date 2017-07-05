@@ -37,9 +37,10 @@ public:
     bool contains(VPoint point) override;
     //QImage toImage()override;
     void draw(QPainter *painter,const VTransform &transform)override;
+    QJsonObject toJsonObject()const override;
     VShape* clone()const override;
     QString type()const override;
-    VText* getText();
+    VText* getText() const;
 };
 
 #endif //#ifndef VPOLYGON

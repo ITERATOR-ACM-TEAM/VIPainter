@@ -14,6 +14,7 @@ ChangeTextDialog::ChangeTextDialog(QWidget *parent) :
 
 void ChangeTextDialog::showDialog(VText *vt){
     ChangeTextDialog dialog;
+    dialog.ui->textEdit->setText(vt->getText());
     dialog.exec();
     QString str =dialog.ui->textEdit->toPlainText();
     //qDebug()<<"dialog text "<<str<<";"<<endl;

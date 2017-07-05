@@ -37,6 +37,8 @@
 #include <QVector>
 #include <QAction>
 #include <QApplication>
+#include <QCursor>
+#include <QColor>
 
 TestWidget::TestWidget(QMainWindow *parent, bool antialiasing) :
     QWidget(parent),canvasLocation(0,0),canvasSize(400,300),cursorType(VCursorType::CHOOSE),crPos(-1),antialiasing(antialiasing)
@@ -109,6 +111,12 @@ void TestWidget::mousePressEvent(QMouseEvent *event)
                         }
                     }
                 }
+                else
+                {
+                    focusShapes.clear();
+                    focusShapes.append(shape);
+                    break;
+                }
             }
         }
 
@@ -123,7 +131,11 @@ void TestWidget::mousePressEvent(QMouseEvent *event)
                     focusShapes.append(shape);
                 }
             }
-            else if(QApplication::keyboardModifiers () != Qt::ControlModifier)focusShapes.clear();
+            else
+            {
+                if(QApplication::keyboardModifiers () != Qt::ControlModifier)focusShapes.clear();
+                crPos=-2;
+            }
         }
 
         update();
@@ -152,8 +164,6 @@ void TestWidget::mouseDoubleClickEvent(QMouseEvent* event)
         VShape *shape=groupShape.atShape(point);
         if(shape!=nullptr)
         {
-            QPoint pressPoint=event->pos();
-            VPoint point(pressPoint.x(), pressPoint.y());
             //qDebug()<<point.x<<" "<<point.y<<endl;
             VText * vt = dynamic_cast<VText *>(shape);
             VPolygon *vpg = dynamic_cast<VPolygon *>(shape);
@@ -172,19 +182,35 @@ void TestWidget::mouseDoubleClickEvent(QMouseEvent* event)
 void TestWidget::mouseReleaseEvent(QMouseEvent *event)
 {
     Q_UNUSED(event);
+    QPoint qpoint=event->pos();
+    VPoint pos=getLoc(VPoint(qpoint.x(),qpoint.y()));
     if(cursorType == VCursorType::MOVE)
         this->setCursor(Qt::OpenHandCursor);
-//    else if(cursorType == VCursorType::ROTATE)
-//    {
-//        if(focusShape != nullptr)
-//        {
-//            VVector vlp(focusShape->getLocation(), getLoc(lastPress)),
-//                    vnow(focusShape->getLocation(), getLoc(VPoint(event->pos().x(), event->pos().y())));
-//            qDebug() << VVector::rotationAngle(vlp, vnow);
-//            focusShape->setAngle(-VVector::rotationAngle(vlp, vnow));
-//            update();
-//        }
-//    }
+    else if(cursorType==VCursorType::CHOOSE)
+    {
+        if(crPos==-2)
+        {
+            QRectF rect(lastPress.x,lastPress.y,
+                        pos.x-lastPress.x,pos.y-lastPress.y);
+            for(VShape *shape:groupShape.getShapes())
+            {
+                bool flag=true;
+                for(const VPoint &point:shape->getSizeRect())
+                {
+                    VPoint p=shape->reverseTransformPoint(point);
+                    if(!rect.contains(p.x,p.y))
+                    {
+                        flag=false;
+                        break;
+                    }
+                }
+                if(flag)focusShapes.append(shape);
+            }
+            std::sort(focusShapes.begin(),focusShapes.end());
+            std::unique(focusShapes.begin(),focusShapes.end());
+            update();
+        }
+    }
     crPos = -1;
 }
 
@@ -298,8 +324,9 @@ void TestWidget::mouseMoveEvent(QMouseEvent *event)
     lastMove = vpoint;
 }
 
-void TestWidget::paintEvent(QPaintEvent *)
+void TestWidget::paintEvent(QPaintEvent *event)
 {
+    Q_UNUSED(event);
     QPainter painter(this);
     if(antialiasing)painter.setRenderHint(QPainter::Antialiasing);
     painter.translate(this->width()/2+canvasLocation.x,this->height()/2+canvasLocation.y);
@@ -327,6 +354,15 @@ void TestWidget::paintEvent(QPaintEvent *)
         shape->drawCR(&painter,trans,scale);
         //qDebug() << *it;
         painter.restore();
+    }
+
+    if(crPos==-2)
+    {
+        VPoint point=getLoc(lastMove);
+        painter.setPen(QPen(QBrush(Qt::gray),2,Qt::DotLine,Qt::SquareCap,Qt::MiterJoin));
+        painter.setBrush(QColor(0x88,0xcc,0xff,50));
+        painter.drawRect(lastPress.x*scale,lastPress.y*scale,
+                         (point.x-lastPress.x)*scale,(point.y-lastPress.y)*scale);
     }
 
 }

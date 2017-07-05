@@ -425,7 +425,7 @@ void MainWindow::on_actionBreakUp_triggered()
         if(shape!=nullptr)
         {
             //qDebug()<<*(getTestWidget()->focusShape);
-            QVector<VShape *> shs = shape->takeShapes();
+            QVector<VShape *> shs = VGroupShape::breakUp(shape);
             widget->groupShape.insertShape(shs);
             for(auto &i:shs)widget->focusShapes.append(i);
         }

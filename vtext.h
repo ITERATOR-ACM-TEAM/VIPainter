@@ -42,7 +42,7 @@ public:
     QString getText() const;
     void setText(QString str);
 
-    VSize getSize();
+    VSize getSize()override;
     void setSize(VSize s);
 
     VPoint getCenter() const;
