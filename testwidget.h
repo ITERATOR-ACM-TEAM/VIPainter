@@ -28,7 +28,7 @@
 #include <QDir>
 #include <QWheelEvent>
 #include <QKeyEvent>
-#include <QListView>
+#include <QStringListModel>
 #include "vgroupshape.h"
 #include "vsize.h"
 #include "vpoint.h"
@@ -50,6 +50,7 @@ public:
     QVector<VShape*> focusShapes;
     VPoint canvasLocation;
     VSize canvasSize;
+    QStringListModel listModel;
     ~TestWidget();
 
 protected:
@@ -72,6 +73,7 @@ private:
     bool antialiasing;
 
 public slots:
+    void updateList();
     void changeCursor(VCursorType type);
     void setAntialiasing(bool antialiasing);
 };

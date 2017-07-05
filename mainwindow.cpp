@@ -55,12 +55,18 @@ MainWindow::MainWindow(QWidget *parent) :
     delete takeCentralWidget();
     setDockNestingEnabled(true);
     setWindowTitle("VIPainter");
+    ui->shapesDock->hide();
     group = new QActionGroup(this);
     group->addAction(ui->actionChoose);
     group->addAction(ui->actionMove);
     group->addAction(ui->actionUndo);
     connect(this, SIGNAL(cursorChange(VCursorType)), this, SLOT(changeCursor(VCursorType)));
     QTimer::singleShot(0,this,SLOT(initAction(QDir)));
+    delegate=new VDelegate(this);
+    ui->listView->setItemDelegate(delegate);
+    connect(delegate,SIGNAL(dataChanged(const QModelIndex &)),this,SLOT(changeShapeName(const QModelIndex &)));
+    connect(ui->listView,SIGNAL(clicked(const QModelIndex &)),this,SLOT(changeShapeFocus(const QModelIndex &)));
+    connect(ui->listView,SIGNAL(activated(const QModelIndex &)),this,SLOT(changeShapeFocus(const QModelIndex &)));
 
     update();
 }
@@ -112,8 +118,25 @@ void MainWindow::loadPlugin(QString filename)
         //qDebug()<<"add"<<*shape;
         if(getTestWidget()==nullptr)return;
         getTestWidget()->groupShape.insertShape(shape->clone());
+        getTestWidget()->updateList();
         getTestWidget()->update();
     });
+}
+
+void MainWindow::changeShapeName(const QModelIndex &index)
+{
+    TestWidget *widget=getTestWidget();
+    if(widget==nullptr)return;
+    widget->groupShape.getShapes().at(widget->groupShape.getVectorSize()-index.row()-1)->setName(index.data().toString());
+}
+
+void MainWindow::changeShapeFocus(const QModelIndex &index)
+{
+    TestWidget *widget=getTestWidget();
+    if(widget==nullptr)return;
+    widget->focusShapes.clear();
+    widget->focusShapes.append(widget->groupShape.getShapes().at(widget->groupShape.getVectorSize()-index.row()-1));
+    widget->update();
 }
 
 void MainWindow::initAction(QDir dir)
@@ -134,13 +157,13 @@ QDockWidget* MainWindow::newDock(QString dockname)
 
     static int id = 0;
 
-    TestWidget* newWidget=new TestWidget(this,ui->actionAntialiasing->isChecked());
-    connect(this, SIGNAL(cursorChange(VCursorType)), newWidget, SLOT(changeCursor(VCursorType)));
+    TestWidget* widget=new TestWidget(this,ui->actionAntialiasing->isChecked());
+    connect(this, SIGNAL(cursorChange(VCursorType)), widget, SLOT(changeCursor(VCursorType)));
     emit cursorChange(this->cursorState);
 
     QDockWidget *dockWidget=new QDockWidget;
-    dockWidget->installEventFilter(newWidget);
-    dockWidget->setWidget(newWidget);
+    dockWidget->installEventFilter(widget);
+    dockWidget->setWidget(widget);
     //dockWidget->setAttribute(Qt::WA_DeleteOnClose);
     this->addDockWidget(Qt::TopDockWidgetArea,dockWidget);
 
@@ -168,20 +191,22 @@ QDockWidget* MainWindow::newDock(QString dockname)
     this->focusDock(dockWidget);
 
     connect(dockWidget,SIGNAL(visibilityChanged(bool)),this,SLOT(focusDock(bool)));
-//    QAction *act=dockWidget->toggleViewAction();
-//    connect(act, &QAction::toggled,
-//            [dockWidget](bool checked){
-//        qDebug()<<"toggled"<<checked;
-//        dockWidget->raise();
-//        dockWidget->setFocus();
-//        dockWidget->activateWindow();
-//    });
+    connect(ui->actionBreakUp,SIGNAL(triggered()),widget,SLOT(updateList()));
+    connect(ui->actionCut,SIGNAL(triggered()),widget,SLOT(updateList()));
+    connect(ui->actionPaste,SIGNAL(triggered()),widget,SLOT(updateList()));
+    connect(ui->actionDelete,SIGNAL(triggered()),widget,SLOT(updateList()));
+    connect(ui->actionGroup,SIGNAL(triggered()),widget,SLOT(updateList()));
 
     if(dockname=="")dockWidget->setWindowTitle(QString("untitled %1").arg(id++));
     else dockWidget->setWindowTitle(dockname);
     docks.push_back(dockWidget);
 
     //ui->shapesDock->show();
+    if(!ui->shapesDock->isVisible())
+    {
+        ui->shapesDock->show();
+        splitDockWidget(dockWidget,ui->shapesDock,Qt::Horizontal);
+    }
 
     return dockWidget;
 }
@@ -345,18 +370,19 @@ bool MainWindow::eventFilter(QObject * obj, QEvent * ev)
             {
                 //qDebug() << "focusing"<<obj;
                 focus = *it;
+                ui->listView->setModel(&getTestWidget(focus)->listModel);
                 return false;
             }else if(ev->type() == QEvent::Close)
             {
                 //qDebug() << "closing";
-                delete *it;
+                (*it)->deleteLater();
                 docks.erase(it);
-                focus = nullptr;
                 if(!docks.empty())
                 {
                     this->focusDock(docks.back());
                 }
-                else ui->shapesDock->hide();
+                else if(ui->shapesDock->isVisible())ui->shapesDock->hide();
+                focus = nullptr;
                 //qDebug() << docks.size();
                 return true;
             }
@@ -632,13 +658,17 @@ void MainWindow::on_actionGroup_triggered()
     if(widget==nullptr)return;
     if(widget->focusShapes.empty())return;
     VGroupShape *group=new VGroupShape;
+    QString name;
     for(VShape *shape:widget->focusShapes)
     {
+        if(name!="")name.append(", ");
+        name.append(shape->getName());
         group->insertShape(widget->groupShape.takeShape(shape));
     }
     widget->groupShape.insertShape(group);
     group->getCircumscribedRectangle();
     widget->focusShapes.clear();
+    group->setName(name);
     widget->focusShapes.append(group);
     widget->update();
 }

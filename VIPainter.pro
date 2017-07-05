@@ -38,7 +38,8 @@ SOURCES += main.cpp\
     vtext.cpp \
     vtransform.cpp \
     changetextdialog.cpp \
-    vroundedrectangle.cpp
+    vroundedrectangle.cpp \
+    vdelegate.cpp
 
 HEADERS  += mainwindow.h \
     vpoint.h \
@@ -62,7 +63,8 @@ HEADERS  += mainwindow.h \
     vtext.h \
     vtransform.h \
     changetextdialog.h \
-    vroundedrectangle.h
+    vroundedrectangle.h \
+    vdelegate.h
 
 FORMS    += mainwindow.ui \
     canvassizedialog.ui \

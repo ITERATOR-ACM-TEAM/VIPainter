@@ -38,10 +38,11 @@
 #include <QAction>
 #include <QApplication>
 #include <QCursor>
+#include <QStringList>
 #include <QColor>
 
 TestWidget::TestWidget(QMainWindow *parent, bool antialiasing) :
-    QWidget(parent),canvasLocation(0,0),canvasSize(400,300),cursorType(VCursorType::CHOOSE),crPos(-1),antialiasing(antialiasing)
+    QWidget(parent),canvasLocation(0,0),canvasSize(800,600),cursorType(VCursorType::CHOOSE),crPos(-1),antialiasing(antialiasing)
 {
     mainwindow=parent;
     setMouseTracking(true);
@@ -362,7 +363,7 @@ void TestWidget::paintEvent(QPaintEvent *event)
     {
         VPoint point=getLoc(lastMove);
         painter.setPen(QPen(QBrush(Qt::gray),2,Qt::DotLine,Qt::SquareCap,Qt::MiterJoin));
-        painter.setBrush(QColor(0x88,0xcc,0xff,50));
+        painter.setBrush(QColor(0xaa,0xaa,0xaa,9));
         painter.drawRect(lastPress.x*scale,lastPress.y*scale,
                          (point.x-lastPress.x)*scale,(point.y-lastPress.y)*scale);
     }
@@ -468,4 +469,14 @@ VShape * TestWidget::getShape(const VPoint &point)
 VPoint TestWidget::getLoc(const VPoint & point)
 {
     return VPoint((point.x-(this->width()/2+canvasLocation.x))/scale,(point.y-(this->height()/2+canvasLocation.y))/scale);
+}
+
+void TestWidget::updateList()
+{
+    QStringList list;
+    for(int i=groupShape.getShapes().size()-1;i>=0;i--)
+    {
+        list.append(groupShape.getShapes().at(i)->getName());
+    }
+    listModel.setStringList(list);
 }

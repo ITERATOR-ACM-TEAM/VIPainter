@@ -27,6 +27,7 @@
 #include <vcursortype.h>
 #include "testwidget.h"
 #include "vshape.h"
+#include "vdelegate.h"
 
 namespace Ui {
 class MainWindow;
@@ -77,10 +78,6 @@ private slots:
 
     void on_actionRedo_triggered();
 
-    void initAction(QDir dir=QDir("plugin"));
-
-    void focusDock(bool checked);
-
     void on_actionReloadPlugon_triggered();
 
     void on_actionLoadExPlugin_triggered();
@@ -99,6 +96,13 @@ private slots:
 
     void on_actionGroup_triggered();
 
+    void initAction(QDir dir=QDir("plugin"));
+
+    void focusDock(bool checked);
+
+    void changeShapeName(const QModelIndex &index);
+    void changeShapeFocus(const QModelIndex &index);
+
 private:
     QVector<VShape*>plugins;
     Ui::MainWindow *ui;
@@ -109,6 +113,7 @@ private:
 
     QActionGroup  *group;
     VCursorType cursorState;
+    VDelegate *delegate;
 
     void loadPlugin(QString filename);
 
