@@ -43,34 +43,21 @@ void VRoundedRectangle::draw(QPainter *painter,const VTransform &transform)
 {
     painter->setPen(QPen(QBrush(Qt::black),1,Qt::SolidLine,Qt::SquareCap,Qt::MiterJoin));
     painter->setBrush(defaultBrush);
-    VPoint p1 = points[1]*transform;
-    VPoint p2 = points[3]*transform;
+    VPoint loc=transform.map(VPoint(0,0));
+    VPoint p1 = points[1];
+    VPoint p2 = points[3];
     double W = p2.x-p1.x;
     double H = p2.y-p1.y;
-    QRectF rec(p1.x, p1.y, W, H);
-//    painter->drawRect(p1.x, p1.y, p2.x, p2.y);
-//    qDebug()<<"ok"<<endl;
-//    QPolygonF qpf;
-//    for(auto &i : this->points){
-//        qpf << (i*magnification).toQPointF();
-//    }
-//    painter->drawPolyline(qpf);
-    painter->drawRoundRect(rec, 25, 25);
+    double width=transform.map(VPoint(1,0))-loc;
+    double height=transform.map(VPoint(0,1))-loc;
+    QTransform ptrans=QTransform::fromScale(1/width,1/height)*transform*painter->worldTransform();
+    painter->setTransform(ptrans);
+    width*=W;
+    height*=H;
+    QRectF rec(-width/2, -height/2, width, height);
+    painter->drawRoundRect(rec);
     text->draw(painter, transform);
-//    painter->drawRoundRect(20,20,210,160,50,50);
 }
-//QImage VRoundedRectangle::toImage(){
-//    int width = cr2.y-cr1.y, height = cr2.x-cr1.x;
-//    QImage image(width, height, QImage::Format_ARGB32);
-//    QPainter painter(&image);
-//    QPolygonF qpf;
-//    for(auto &i : vertex){
-//        qpf << i.toQPointF();
-//    }
-//    painter.drawroundedRectangle(qpf);
-
-//    return image;
-//}
 
 void VRoundedRectangle::drawCR(QPainter *painter,const VTransform &transform, double scale){
     QBrush bru;
@@ -113,18 +100,6 @@ VShape* VRoundedRectangle::clone()
 {
     return new VRoundedRectangle(*this);
 }
-
-//VRoundedRectangle* VRoundedRectangle::fromJsonObject(const QJsonObject &jsonObject)
-//{
-//    VRoundedRectangle *VRoundedRectangle=new VRoundedRectangle();
-//    VRoundedRectangle->n = jsonObject.value("n").toInt();
-//    VRoundedRectangle->vertex.clear();
-//    QJsonArray jsonVertex = jsonObject.value("vertex").toArray();
-//    for(const auto &i : jsonVertex){
-//        VRoundedRectangle->vertex.push_back(VPoint::fromJsonObject(i.toObject()));
-//    }
-//    return VRoundedRectangle;
-//}
 
 QJsonObject VRoundedRectangle::toJsonObject()const
 {

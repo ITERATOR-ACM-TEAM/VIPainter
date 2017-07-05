@@ -54,11 +54,14 @@ public:
 
     bool eraseShape(int i);
     bool eraseShape(VShape * other);
+    VShape *takeShape(VShape * other);
     bool moveShape(int i, VPoint location);
     bool contains(VPoint point);
-    void clear();
+    void clear(bool force=true);
+    VShape * atPoint(const VPoint &point);
 
-    QVector<VShape *> getShapeVector();
+    const QVector<VShape *>& getShapes();
+    QVector<VShape *> takeShapes();
 
     int getVectorSize()const;
     VSize getSize()override;

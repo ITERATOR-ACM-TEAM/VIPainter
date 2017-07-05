@@ -184,8 +184,15 @@ bool VGroupShape::moveShape(int i,  VPoint  location)
     return true;
 }
 
-QVector<VShape *> VGroupShape::getShapeVector()
+const QVector<VShape *> &VGroupShape::getShapes()
 {
+    return shapes;
+}
+
+QVector<VShape *> VGroupShape::takeShapes()
+{
+    QVector<VShape *> shapes=std::move(this->shapes);
+    this->shapes.clear();
     return shapes;
 }
 
@@ -197,10 +204,10 @@ VShape* VGroupShape::clone()
 
 void VGroupShape::draw(QPainter *painter,const VTransform &trans)
 {
-    for(auto &it: shapes)
+    for(int i=shapes.size()-1;i>=0;i--)
     {
         painter->save();
-        it->draw(painter,it->getTransform()*trans);
+        shapes[i]->draw(painter,shapes[i]->getTransform()*trans);
         //qDebug() << *it;
         painter->restore();
     }
@@ -295,6 +302,29 @@ bool VGroupShape::eraseShape(VShape * other)
     return eraseShape(std::find(shapes.begin(),shapes.end(),other)-shapes.begin());
 }
 
+VShape* VGroupShape::atPoint(const VPoint &point)
+{
+    VPoint subPoint;
+    for(int i=shapes.size()-1;i>=0;i--)
+    {
+        subPoint = shapes[i]->transformPoint(point);
+        //        qDebug() << subPoint;
+        //        qDebug() << subMag;
+        if(shapes[i]->contains(subPoint))
+        {
+            //            qDebug() << it->type();
+            return shapes[i];
+        }
+    }
+}
+
+VShape * VGroupShape::takeShape(VShape * other)
+{
+    auto shape=std::find(shapes.begin(),shapes.end(),other);
+    if(shape==shapes.end())return nullptr;
+    return *shape;
+}
+
 bool VGroupShape::eraseShape(int i)
 {
     if(i<0 || i>=shapes.size()) return false;
@@ -360,7 +390,7 @@ QVector<VShape *> VGroupShape::breakUp (VGroupShape * group)
 {
     QVector<VShape *> tmp;
     if(group == nullptr) return tmp;
-    tmp = group->getShapeVector();
+    tmp = group->getShapes();
 
     for(VShape* it:tmp)
     {
@@ -383,11 +413,14 @@ int VGroupShape::getVectorSize()const
     return this->shapes.size();
 }
 
-void VGroupShape::clear()
+void VGroupShape::clear(bool force)
 {
-    for(auto &it : this->shapes)
+    if(force)
     {
-        delete it;
+        for(auto &it : this->shapes)
+        {
+            delete it;
+        }
     }
     this->shapes.clear();
 }

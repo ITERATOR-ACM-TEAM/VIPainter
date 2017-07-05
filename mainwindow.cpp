@@ -86,6 +86,7 @@ void MainWindow::loadPlugin(QString filename)
     else if(doc.isObject())shape=VShape::fromJsonObject(doc.object());
     else return;
     if(shape==nullptr)return;
+    if(shape->getName()==QString(""))shape->setName(filename);
     QAction *action=new QAction(ui->shapeBar);
 
     const int SIZE=30;
@@ -118,7 +119,7 @@ void MainWindow::loadPlugin(QString filename)
 void MainWindow::initAction(QDir dir)
 {
     dir.setFilter(QDir::Files|QDir::Readable);
-    dir.setNameFilters(QStringList()<<"*.json");
+    dir.setNameFilters(QStringList()<<"*.json"<<"*.JSON");
     QStringList files=dir.entryList();
     for(auto i:files)
     {
@@ -224,7 +225,7 @@ void MainWindow::saveFile(QString filename)
     if(focus == nullptr) return;
     ui->statusBar->showMessage(tr("保存到文件 ")+filename);
     QString format=filename.split('.').back().toUpper();
-    if(format==tr("json"))
+    if(format==tr("JSON"))
     {
         QJsonDocument jsonDocument;
         QJsonObject obj;
@@ -241,7 +242,7 @@ void MainWindow::saveFile(QString filename)
         }
         else QMessageBox::warning(this,tr("错误"),tr("保存文件")+filename+tr("失败"));
     }
-    else if(format=="JPG"||format=="PNG"||format=="")
+    else if(format=="JPG"||format=="PNG"||format=="RGB")
     {
         QImage image(getTestWidget()->canvasSize.width,getTestWidget()->canvasSize.height,QImage::Format_ARGB32_Premultiplied);
         image.fill(0x00ffffff);
@@ -396,7 +397,7 @@ void MainWindow::on_actionShapeSize_triggered()
             widget->groupShape.getTransform();
     VSize toSize=CanvasSizeDialog::showDialog(tr("图像大小"),size);
     VMagnification mag=toSize/size;
-    for(auto &i:widget->groupShape.getShapeVector())
+    for(auto &i:widget->groupShape.getShapes())
     {
         i->zoomin(mag);
     }
@@ -416,24 +417,27 @@ TestWidget * MainWindow::getTestWidget(QDockWidget * target)
 void MainWindow::on_actionBreakUp_triggered()
 {
     if(focus == nullptr) return;
-    if(getTestWidget()->focusShape == nullptr) return;
-    if(getTestWidget()->focusShape->type() == VType::GroupShape)
+    if(getTestWidget()->focusShapes.size()==1)
     {
-        //qDebug()<<*(getTestWidget()->focusShape);
-        int cnt = 0;
-        for(auto it: getTestWidget()->groupShape.getShapeVector() )
+        VGroupShape *shape=dynamic_cast<VGroupShape*>(getTestWidget()->focusShapes.first());
+        if(shape!=nullptr)
         {
-            if(it == getTestWidget()->focusShape)
+            //qDebug()<<*(getTestWidget()->focusShape);
+            int cnt = 0;
+            for(auto it: getTestWidget()->groupShape.getShapes() )
             {
-                QVector<VShape *> shs = VGroupShape::breakUp(dynamic_cast<VGroupShape*>(it));
-                getTestWidget()->groupShape.insertShape(shs);
-                getTestWidget()->focusShape = nullptr;
-                break;
+                if(it == shape)
+                {
+                    QVector<VShape *> shs = VGroupShape::breakUp(dynamic_cast<VGroupShape*>(it));
+                    getTestWidget()->groupShape.insertShape(shs);
+                    getTestWidget()->focusShapes.clear();
+                    break;
+                }
+                cnt++;
             }
-            cnt++;
         }
+        getTestWidget()->update();
     }
-    getTestWidget()->update();
 }
 
 void MainWindow::on_actionUndo_triggered()
@@ -488,12 +492,12 @@ void MainWindow::on_actionDelete_triggered()
     TestWidget *widget=getTestWidget();
     if(widget!=nullptr)
     {
-        if(widget->focusShape!=nullptr)
+        for(VShape *shape:widget->focusShapes)
         {
-            widget->groupShape.eraseShape(widget->focusShape);
-            widget->focusShape=nullptr;
-            widget->update();
+            widget->groupShape.eraseShape(shape);
         }
+        widget->focusShapes.clear();
+        widget->update();
     }
 }
 
@@ -507,7 +511,7 @@ void MainWindow::on_actionCopy_triggered()
     TestWidget *widget=getTestWidget();
     if(widget!=nullptr)
     {
-        if(widget->focusShape!=nullptr)
+        if(widget->focusShapes.size()>0)
         {
             //  Get clipboard
             QClipboard *cb = QApplication::clipboard();
@@ -524,14 +528,21 @@ void MainWindow::on_actionCopy_triggered()
             ////////////////////////////////////////////////////////////////////////////////////////////////START
             ////////////////////////////////////JSON
             QJsonDocument doc;
-            doc.setObject(widget->focusShape->toJsonObject());
+            if(widget->focusShapes.size()>1)
+            {
+                QJsonArray arr;
+                for(VShape *shape:widget->focusShapes)
+                    arr.append(shape->toJsonObject());
+                doc.setArray(arr);
+            }
+            else doc.setObject(widget->focusShapes.first()->toJsonObject());
             newMimeData->setData("application/x-JavaScript", doc.toBinaryData());
 
             // Copy file (gnome)
             ////////////////////////////////////TEXT
 
-            VText *text=dynamic_cast<VText*>(widget->focusShape);
-            if(text!=nullptr)
+            VText *text=dynamic_cast<VText*>(widget->focusShapes.first());
+            if(widget->focusShapes.size()==1&&text!=nullptr)
             {
                 newMimeData->setText(text->getText());
             }
@@ -540,9 +551,8 @@ void MainWindow::on_actionCopy_triggered()
 
                 ////////////////////////////////////IMAGE
                 VGroupShape group;
-                group.insertShape(widget->focusShape->clone());group.getCircumscribedRectangle(true);
                 VSize size=group.getSize()*group.getTransform();
-                QImage image(size.width+4,size.height+4,QImage::Format_ARGB32_Premultiplied);
+                QImage image(size.width+4,size.height+4,QImage::Format_ARGB32);
                 image.fill(0x00ffffff);
                 QPainter painter(&image);
                 if(ui->actionAntialiasing->isChecked())painter.setRenderHint(QPainter::Antialiasing);
@@ -576,13 +586,31 @@ void MainWindow::on_actionPaste_triggered()
         if(mimeData->hasFormat("application/x-JavaScript"))
         {
 //            qDebug()<<QJsonDocument::fromBinaryData(mimeData->data("application/x-JavaScript"));
-            VShape *shape=VShape::fromJsonObject(
-                        QJsonDocument::fromBinaryData(mimeData->data("application/x-JavaScript")).object()
-                        );
-            //qDebug()<<*shape;
-            widget->groupShape.insertShape(shape);
-            widget->focusShape=shape;
-            widget->update();
+            QJsonDocument doc=QJsonDocument::fromBinaryData(mimeData->data("application/x-JavaScript"));
+            if(doc.isObject())
+            {
+                VShape *shape=VShape::fromJsonObject(
+                            doc.object()
+                            );
+                //qDebug()<<*shape;
+                widget->groupShape.insertShape(shape);
+                widget->focusShapes.clear();
+                widget->focusShapes.append(shape);
+                widget->update();
+            }
+            else if(doc.isArray())
+            {
+                widget->focusShapes.clear();
+                for(auto i:doc.array())
+                {
+                    VShape *shape=VShape::fromJsonObject(
+                                i.toObject()
+                                );
+                    widget->groupShape.insertShape(shape);
+                    widget->focusShapes.append(shape);
+                }
+                widget->update();
+            }
         }
         else if(mimeData->hasText())
         {

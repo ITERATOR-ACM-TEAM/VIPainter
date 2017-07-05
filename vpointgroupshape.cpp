@@ -160,9 +160,9 @@ QJsonObject VPointGroupShape::toJsonObject()const
 int VPointGroupShape::atPoints(const VPoint & point)const
 {
     int cnt = 0;
-    for(auto it: points)
+    for(int i=points.size();i>=0;i--)
     {
-        if(it-point <= crDis/2)
+        if(points[i]-point <= crDis/2)
         {
             return cnt;
         }

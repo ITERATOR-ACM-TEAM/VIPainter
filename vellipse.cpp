@@ -49,20 +49,11 @@ void VEllipse::draw(QPainter *painter, const VTransform &transform)
 {
     painter->setPen(defaultPen);
     painter->setBrush(defaultBrush);
-    VPoint p1(1,0);
-    VPoint p2=transform.map(p1);
     VPoint loc=transform.map(VPoint(0,0));
-    p2=VPoint(p2.x-loc.x,p2.y-loc.y);
-    double angle=VVector::rotationAngle(VVector(p1),VVector(p2));
-    painter->translate(loc.x,loc.y);
-    painter->rotate(angle);
-    double width=transform.map(VPoint(1,0))-transform.map(VPoint(0,0));
-    double height=transform.map(VPoint(0,1))-transform.map(VPoint(0,0));
-//    QTransform ptrans=painter->worldTransform();
-//    painter->scale(1/ptrans.m11(),1/ptrans.m22());
-//    qDebug()<<painter->worldTransform();
-//    qDebug()<<ptrans.m11()<<ptrans.m22();
-    //qDebug()<<width<<height;
+    double width=transform.map(VPoint(1,0))-loc;
+    double height=transform.map(VPoint(0,1))-loc;
+    QTransform ptrans=QTransform::fromScale(1/width,1/height)*transform*painter->worldTransform();
+    painter->setTransform(ptrans);
     painter->drawEllipse(-width/2.0,-height/2.0,width,height);
 }
 

@@ -46,7 +46,7 @@ public:
     double scale=1;
     QMainWindow *mainwindow;
     VGroupShape groupShape;
-    VShape * focusShape;
+    QVector<VShape*> focusShapes;
     VPoint canvasLocation;
     VSize canvasSize;
     ~TestWidget();

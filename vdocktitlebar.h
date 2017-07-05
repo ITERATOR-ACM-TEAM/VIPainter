@@ -25,7 +25,7 @@
 #include <QWidget>
 #include <QPainter>
 #include <QPaintEvent>
-#include "qdebug.h"
+#include "QDebug"
 #include <QStyle>
 
 class VDockTitleBar:public QWidget

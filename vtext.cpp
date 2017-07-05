@@ -48,6 +48,7 @@ const VText& VText::operator=(const VText &vText){
     if(this==&vText)return *this;
     VShape::operator=(vText);
     this->text = vText.getText();
+    this->size=vText.size;
     this->center = vText.getCenter();
     return *this;
 }
@@ -55,6 +56,7 @@ const VText& VText::operator=(const VText &vText){
 const VText& VText::operator=(const QJsonObject &jsonObject){
     VShape::operator=(jsonObject);
     this->text = jsonObject.value("text").toString();
+    calSize();
     return *this;
 }
 
@@ -107,8 +109,15 @@ void VText::draw(QPainter *painter, const VTransform &transform){
 //    QFontMetrics fm = painter->fontMetrics();
 //    QString strElidedText = fm.elidedText(this->text, Qt::ElideRight, this->size.width, Qt::TextShowMnemonic);
 
-    QRectF rec(-size.width/2, -size.height/2, size.width, size.height);
-    rec=transform.mapRect(rec);
+    VPoint loc=transform.map(VPoint(0,0));
+    double width=transform.map(VPoint(1,0))-loc;
+    double height=transform.map(VPoint(0,1))-loc;
+    QTransform ptrans=QTransform::fromScale(1/width,1/height)*transform*painter->worldTransform();
+    painter->setTransform(ptrans);
+    width*=size.width;
+    height*=size.height;
+    QRectF rec(-width/2, -height/2, width, height);
+    //rec=transform.mapRect(rec);
 //    painter->drawRect(rec);
     painter->drawText(rec, Qt::AlignCenter, this->text);
 //    qDebug()<<"draw()"<<text<<endl;
