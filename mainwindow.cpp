@@ -180,6 +180,9 @@ QDockWidget* MainWindow::newDock(QString dockname)
     if(dockname=="")dockWidget->setWindowTitle(QString("untitled %1").arg(id++));
     else dockWidget->setWindowTitle(dockname);
     docks.push_back(dockWidget);
+
+    //ui->shapesDock->show();
+
     return dockWidget;
 }
 
@@ -353,6 +356,7 @@ bool MainWindow::eventFilter(QObject * obj, QEvent * ev)
                 {
                     this->focusDock(docks.back());
                 }
+                else ui->shapesDock->hide();
                 //qDebug() << docks.size();
                 return true;
             }

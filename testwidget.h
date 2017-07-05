@@ -28,6 +28,7 @@
 #include <QDir>
 #include <QWheelEvent>
 #include <QKeyEvent>
+#include <QListView>
 #include "vgroupshape.h"
 #include "vsize.h"
 #include "vpoint.h"

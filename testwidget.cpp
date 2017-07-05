@@ -181,37 +181,39 @@ void TestWidget::mouseDoubleClickEvent(QMouseEvent* event)
 
 void TestWidget::mouseReleaseEvent(QMouseEvent *event)
 {
-    Q_UNUSED(event);
     QPoint qpoint=event->pos();
     VPoint pos=getLoc(VPoint(qpoint.x(),qpoint.y()));
-    if(cursorType == VCursorType::MOVE)
-        this->setCursor(Qt::OpenHandCursor);
-    else if(cursorType==VCursorType::CHOOSE)
+    if(event->button()==Qt::LeftButton)
     {
-        if(crPos==-2)
+        if(cursorType == VCursorType::MOVE)
+            this->setCursor(Qt::OpenHandCursor);
+        else if(cursorType==VCursorType::CHOOSE)
         {
-            QRectF rect(lastPress.x,lastPress.y,
-                        pos.x-lastPress.x,pos.y-lastPress.y);
-            for(VShape *shape:groupShape.getShapes())
+            if(crPos==-2)
             {
-                bool flag=true;
-                for(const VPoint &point:shape->getSizeRect())
+                QRectF rect(lastPress.x,lastPress.y,
+                            pos.x-lastPress.x,pos.y-lastPress.y);
+                for(VShape *shape:groupShape.getShapes())
                 {
-                    VPoint p=shape->reverseTransformPoint(point);
-                    if(!rect.contains(p.x,p.y))
+                    bool flag=true;
+                    for(const VPoint &point:shape->getSizeRect())
                     {
-                        flag=false;
-                        break;
+                        VPoint p=shape->reverseTransformPoint(point);
+                        if(!rect.contains(p.x,p.y))
+                        {
+                            flag=false;
+                            break;
+                        }
                     }
+                    if(flag)focusShapes.append(shape);
                 }
-                if(flag)focusShapes.append(shape);
+                std::sort(focusShapes.begin(),focusShapes.end());
+                std::unique(focusShapes.begin(),focusShapes.end());
+                update();
             }
-            std::sort(focusShapes.begin(),focusShapes.end());
-            std::unique(focusShapes.begin(),focusShapes.end());
-            update();
         }
+        crPos = -1;
     }
-    crPos = -1;
 }
 
 void TestWidget::mouseMoveEvent(QMouseEvent *event)
