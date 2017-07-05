@@ -396,23 +396,23 @@ VShape * TestWidget::getShape(const VPoint &point)
     VPoint subPoint;
     VPoint loc = getLoc(point);
 //    qDebug() << loc;
-    if(focusShapes!=nullptr)
+    for(VShape *shape:focusShapes)
     {
 //        subLocation = focusShape->getLocation();
 //        subAngle = focusShape->getAngle();
 //        subMag = focusShape->getMagnification();
 //        subPoint = VPoint(loc.x - subLocation.x, loc.y - subLocation.y).rotate(VPoint(0,0),-subAngle)/subMag;
-        subPoint=focusShapes->transformPoint(loc);
+        subPoint=shape->transformPoint(loc);
 //        qDebug() << subPoint;
 //        qDebug() << subMag;
-        if(focusShapes->contains(subPoint))
+        if(shape->contains(subPoint))
         {
 //            qDebug() << it->type();
-            return focusShapes;
+            return shape;
         }
     }
     return this->groupShape.atShape(loc);
-    return nullptr;
+    //return nullptr;
 }
 
 VPoint TestWidget::getLoc(const VPoint & point)
