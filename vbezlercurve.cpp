@@ -72,7 +72,7 @@ VShape* VBezlerCurve::clone() const
 
 void VBezlerCurve::draw(QPainter *painter,const VTransform &transform)
 {
-    painter->setPen(QPen(pen.brush(),1,Qt::SolidLine,Qt::RoundCap,Qt::RoundJoin));
+    painter->setPen(pen);
     painter->setBrush(brush);
     QPainterPath path;
     auto i=points.begin();
@@ -111,9 +111,11 @@ QString VBezlerCurve::type() const{
 void VBezlerCurve::drawCR(QPainter * painter, const VTransform &transform, double scale)
 {
     VPointGroupShape::drawCR(painter,transform,scale);
-    QBrush bru;
     QPen pen;
-    pen.setColor(Qt::gray);
+    //pen.setColor(Qt::gray);
+    QColor color=this->pen.color();
+    color.setAlpha(color.alpha()/2);
+    pen.setColor(color);
     pen.setWidth(2);
     pen.setStyle(Qt::DashDotDotLine);
     painter->setPen(pen);

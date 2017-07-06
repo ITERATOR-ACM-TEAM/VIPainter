@@ -110,7 +110,7 @@ private slots:
 
     void on_actionPen_triggered();
 
-    void on_actionPenWidth_triggered();
+    void on_actionPenStyle_triggered();
 
 private:
     QVector<VShape*>plugins;

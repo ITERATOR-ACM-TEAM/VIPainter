@@ -485,12 +485,12 @@
     <string>填充颜色</string>
    </property>
   </action>
-  <action name="actionPenWidth">
+  <action name="actionPenStyle">
    <property name="text">
-    <string>线条宽度</string>
+    <string>线条设置</string>
    </property>
    <property name="toolTip">
-    <string>线条宽度</string>
+    <string>线条设置</string>
    </property>
   </action>
  </widget>

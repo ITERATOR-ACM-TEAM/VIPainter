@@ -27,8 +27,8 @@ ChangeTextDialog::ChangeTextDialog(QWidget *parent) :
     ui(new Ui::ChangeTextDialog)
 {
     ui->setupUi(this);
-    ui->buttonBox->button(QDialogButtonBox::Ok)->setText(tr("确定"));
-    ui->buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("取消"));
+//    ui->buttonBox->button(QDialogButtonBox::Ok)->setText(tr("确定"));
+//    ui->buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("取消"));
 }
 
 void ChangeTextDialog::showDialog(VText *vt){

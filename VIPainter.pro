@@ -40,7 +40,8 @@ SOURCES += main.cpp\
     changetextdialog.cpp \
     vroundedrectangle.cpp \
     vdelegate.cpp \
-    vlistview.cpp
+    vlistview.cpp \
+    penstyledialog.cpp
 
 HEADERS  += mainwindow.h \
     vpoint.h \
@@ -66,11 +67,13 @@ HEADERS  += mainwindow.h \
     changetextdialog.h \
     vroundedrectangle.h \
     vdelegate.h \
-    vlistview.h
+    vlistview.h \
+    penstyledialog.h
 
 FORMS    += mainwindow.ui \
     canvassizedialog.ui \
-    changetextdialog.ui
+    changetextdialog.ui \
+    penstyledialog.ui
 
 RESOURCES += \
     icon.qrc

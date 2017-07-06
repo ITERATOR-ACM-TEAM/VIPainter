@@ -23,6 +23,7 @@
 #include "canvassizedialog.h"
 #include "vtransform.h"
 #include "vtext.h"
+#include "penstyledialog.h"
 #include <QJsonDocument>
 #include <QApplication>
 #include <QClipboard>
@@ -95,6 +96,7 @@ MainWindow::MainWindow(QWidget *parent) :
     contextMenu->addAction(ui->actionDelete);
     contextMenu->addSeparator();
     contextMenu->addAction(ui->actionPen);
+    contextMenu->addAction(ui->actionPenStyle);
     contextMenu->addAction(ui->actionBrush);
     contextMenu->addSeparator();
     contextMenu->addAction(ui->actionGroup);
@@ -398,6 +400,7 @@ void MainWindow::changeMenuAction(TestWidget *widget, VPoint loc)
         ui->actionCut->setEnabled(false);
         ui->actionDelete->setEnabled(false);
         ui->actionPen->setVisible(false);
+        ui->actionPenStyle->setVisible(false);
         ui->actionBrush->setVisible(false);
         ui->actionGroup->setVisible(false);
         ui->actionBreakUp->setVisible(false);
@@ -418,6 +421,7 @@ void MainWindow::changeMenuAction(TestWidget *widget, VPoint loc)
         if(flag)
         {
             ui->actionPen->setVisible(true);
+            ui->actionPenStyle->setVisible(true);
             ui->actionBrush->setVisible(true);
             ui->actionGroup->setVisible(true);
             ui->actionBreakUp->setVisible(true);
@@ -431,6 +435,7 @@ void MainWindow::changeMenuAction(TestWidget *widget, VPoint loc)
         else
         {
             ui->actionPen->setVisible(false);
+            ui->actionPenStyle->setVisible(false);
             ui->actionBrush->setVisible(false);
             ui->actionGroup->setVisible(false);
             ui->actionBreakUp->setVisible(false);
@@ -807,16 +812,10 @@ void MainWindow::on_actionPen_triggered()
     }
 }
 
-void MainWindow::on_actionPenWidth_triggered()
+void MainWindow::on_actionPenStyle_triggered()
 {
     TestWidget *widget=getTestWidget();
     if(widget==nullptr)return;
     if(widget->focusShapes.empty())return;
-    QColorDialog dialog(widget->focusShapes.first()->getPen().color(),this);
-    dialog.setOption(QColorDialog::ShowAlphaChannel);
-    if(dialog.exec()==QDialog::Accepted)
-    {
-        for(VShape *shape:widget->focusShapes)shape->setPen(dialog.selectedColor());
-        widget->update();
-    }
+    PenStyleDialog::showDialog("线条设置",widget->focusShapes);
 }

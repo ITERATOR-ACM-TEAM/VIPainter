@@ -173,8 +173,8 @@ void VPointGroupShape::drawCR(QPainter *painter, const VTransform &trans, double
 {
     QBrush bru;
     QPen pen;
-    bru.setColor(Qt::black);
-    pen.setColor(Qt::black);
+    bru.setColor(this->pen.color());
+    pen.setColor(this->pen.color());
     pen.setWidth(0);
     bru.setStyle(Qt::SolidPattern);
     pen.setStyle(Qt::SolidLine);
