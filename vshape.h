@@ -89,6 +89,11 @@ public:
     VPoint transformPoint(const VPoint & point) const;
     VPoint reverseTransformPoint(const VPoint &point) const;
 
+    virtual void setPen(QPen pen);
+    virtual void setBrush(QBrush brush);
+    QPen getPen();
+    QBrush getBrush();
+
 };
 
 #endif //#ifndef VSHAPE_H

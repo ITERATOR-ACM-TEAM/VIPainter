@@ -98,7 +98,7 @@ QJsonObject VText::toJsonObject()const{
 
 void VText::draw(QPainter *painter, const VTransform &transform){
     painter->setPen(defaultPen);
-    painter->setBrush(defaultBrush);
+    painter->setBrush(brush);
 
     QTextOption option(Qt::AlignLeft | Qt::AlignVCenter);
     option.setWrapMode(QTextOption::WordWrap);

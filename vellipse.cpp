@@ -48,7 +48,8 @@ const VEllipse& VEllipse::operator=(const VEllipse &shape)
 void VEllipse::draw(QPainter *painter, const VTransform &transform)
 {
     painter->setPen(defaultPen);
-    painter->setBrush(defaultBrush);
+    painter->setBrush(brush);
+    qDebug()<<brush;
     VPoint loc=transform.map(VPoint(0,0));
     double width=transform.map(VPoint(1,0))-loc;
     double height=transform.map(VPoint(0,1))-loc;

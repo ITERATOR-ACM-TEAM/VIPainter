@@ -206,10 +206,10 @@ VShape* VGroupShape::clone() const
 
 void VGroupShape::draw(QPainter *painter,const VTransform &trans)
 {
-    for(int i=shapes.size()-1;i>=0;i--)
+    for(VShape *shape:shapes)
     {
         painter->save();
-        shapes[i]->draw(painter,shapes[i]->getTransform()*trans);
+        shape->draw(painter,shape->getTransform()*trans);
         //qDebug() << *it;
         painter->restore();
     }
@@ -434,51 +434,14 @@ void VGroupShape::clear(bool force)
 VSize VGroupShape::getSize()
 {
     return cr;
-//    if(shapes.empty())return VSize(1,1);
-//    double minX, minY;
-//    double maxX, maxY;
-//    int der[4][2] = {1,1,-1,1,-1,-1,1,-1};
+}
 
-//    // if no subShape, return (0,0)
+void VGroupShape::setPen(QPen pen)
+{
+    for(VShape *shape:shapes)shape->setPen(pen);
+}
 
-//    //init max&min
-//    VPoint point;
-//    VShape * first = shapes[0];
-//    VPoint loc = first->getLocation();
-//    VSize siz = first->getSize();
-//    double a = first->getAngle();
-
-//    for(int i=0; i<4; i++)
-//    {
-//        point = VPoint(loc.x + der[i][0]*siz.x, loc.y + der[i][1]*siz.y);
-//        point=point.rotate(loc, a);
-//        maxX = point.x;
-//        maxY = point.y;
-//        minX = point.x;
-//        minY = point.y;
-//    }
-
-//    // loop
-//    for(auto & it : this->shapes)
-//    {
-//        loc = it->getLocation();
-//        siz = it->getSize();
-//        a = it->getAngle();
-//        for(int i=0; i<4; i++)
-//        {
-//            point = VPoint(loc.x + der[i][0]*siz.x, loc.y + der[i][1]*siz.y);
-//            point=point.rotate( loc, a);
-//            maxX = std::max(maxX, point.x);
-//            maxY = std::max(maxY, point.y);
-//            minX = std::min(minX, point.x);
-//            minY = std::min(minY, point.y);
-//        }
-//    }
-//    VPoint mid((minX+maxX)/2,(minY+maxY)/2);
-//    for(const auto&i:shapes)
-//    {
-//        VPoint loc=i->getLocation();
-//        i->setLocation(VPoint(loc.x-mid.x,loc.y-mid.y));
-//    }
-//    return VSize(maxX-minX, maxY-minY);
+void VGroupShape::setBrush(QBrush brush)
+{
+    for(VShape *shape:shapes)shape->setBrush(brush);
 }

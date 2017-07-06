@@ -112,6 +112,13 @@ const VShape& VShape::operator=(const QJsonObject &jsonObject)
 {
     name=jsonObject.value("name").toString();
     transform=jsonObject.value("transform").toArray();
+    {
+        QJsonObject brush=jsonObject.value("brush").toObject();
+        unsigned int argb=brush.value("color").toString().toUInt(nullptr,16);
+        QColor color((argb>>8)&0xff,(argb>>4)&0xff,argb&0xff,(argb>>12)&0xff);
+        this->brush.setColor(color);
+        this->brush.setStyle((Qt::BrushStyle)brush.value("type").toInt());
+    }
     return *this;
 }
 
@@ -121,6 +128,17 @@ QJsonObject VShape::toJsonObject()const
     jsonObject.insert("type",this->type());
     jsonObject.insert("name",this->getName());
     jsonObject.insert("transform",this->transform.toJsonArray());
+    {
+        QJsonObject brush;
+        QColor color=this->brush.color();
+        unsigned int argb=color.blue();
+        argb=(argb<<4)|color.green();
+        argb=(argb<<4)|color.red();
+        argb=(argb<<4)|color.alpha();
+        brush.insert("color",QString().sprintf("%x",argb));
+        brush.insert("style",this->brush.style());
+        jsonObject.insert("brush",brush);
+    }
     return jsonObject;
 }
 
@@ -282,3 +300,24 @@ void VShape::changeMag(int i, const VVector & vec)
                                         )
                           );
 }
+
+void VShape::setPen(QPen pen)
+{
+    this->pen=pen;
+}
+
+void VShape::setBrush(QBrush brush)
+{
+    this->brush=brush;
+}
+
+QPen VShape::getPen()
+{
+    return pen;
+}
+
+QBrush VShape::getBrush()
+{
+    return brush;
+}
+

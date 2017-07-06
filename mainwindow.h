@@ -105,6 +105,10 @@ private slots:
 
     void on_actionSelectAll_triggered();
 
+    void on_actionBrush_triggered();
+
+    void on_actionPen_triggered();
+
 private:
     QVector<VShape*>plugins;
     Ui::MainWindow *ui;
@@ -117,6 +121,8 @@ private:
     VCursorType cursorState;
     VDelegate *delegate;
     VListView *listView;
+    QPen pen;
+    QBrush brush;
 
     void loadPlugin(QString filename);
 

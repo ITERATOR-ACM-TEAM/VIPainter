@@ -46,10 +46,12 @@
 #include <QMessageBox>
 #include <QMimeData>
 #include <QTimer>
+#include <QColorDialog>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow),focus(nullptr),cursorState(VCursorType::CHOOSE)
+    ui(new Ui::MainWindow),focus(nullptr),cursorState(VCursorType::CHOOSE),
+    brush(QColor(0xff,0xff,0xff,0))
 {
     ui->setupUi(this);
     delete takeCentralWidget();
@@ -119,7 +121,10 @@ void MainWindow::loadPlugin(QString filename)
     connect(action,&QAction::triggered,[this,shape]{
         //qDebug()<<"add"<<*shape;
         if(getTestWidget()==nullptr)return;
-        getTestWidget()->groupShape.insertShape(shape->clone());
+        VShape *newShape=shape->clone();
+        newShape->setPen(this->pen);
+        newShape->setBrush(this->brush);
+        getTestWidget()->groupShape.insertShape(newShape);
         getTestWidget()->updateList();
         getTestWidget()->update();
     });
@@ -676,4 +681,22 @@ void MainWindow::on_actionSelectAll_triggered()
     widget->focusShapes.clear();
     for(auto &i:widget->groupShape.getShapes())widget->focusShapes.append(i);
     widget->update();
+}
+
+void MainWindow::on_actionBrush_triggered()
+{
+    QColorDialog dialog(brush.color(),this);
+    dialog.setOption(QColorDialog::ShowAlphaChannel);
+    if(dialog.exec()==QDialog::Accepted)
+    {
+        brush.setColor(dialog.selectedColor());
+    }
+    TestWidget *widget=getTestWidget();
+    if(widget==nullptr)return;
+    for(VShape *shape:widget->focusShapes)shape->setBrush(this->brush);
+}
+
+void MainWindow::on_actionPen_triggered()
+{
+
 }

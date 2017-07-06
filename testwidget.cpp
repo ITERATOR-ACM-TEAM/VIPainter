@@ -166,7 +166,7 @@ void TestWidget::mousePressEvent(QMouseEvent *event)
         }
     }
     lastMove=VPoint(pressPoint.x(),pressPoint.y());
-    lastPress=getLoc(lastMove);
+    locMove=locPress=getLoc(lastMove);
 }
 
 void TestWidget::mouseDoubleClickEvent(QMouseEvent* event)
@@ -206,8 +206,8 @@ void TestWidget::mouseReleaseEvent(QMouseEvent *event)
         {
             if(crPos==-2)
             {
-                QRectF rect(lastPress.x,lastPress.y,
-                            pos.x-lastPress.x,pos.y-lastPress.y);
+                QRectF rect(locPress.x,locPress.y,
+                            pos.x-locPress.x,pos.y-locPress.y);
                 for(VShape *shape:groupShape.getShapes())
                 {
                     bool flag=true;
@@ -273,15 +273,15 @@ void TestWidget::mouseMoveEvent(QMouseEvent *event)
     {
         if(cursorType == VCursorType::MOVE)
         {
-            canvasLocation.x+=qpoint.x()-lastMove.x;
-            canvasLocation.y+=qpoint.y()-lastMove.y;
+            canvasLocation.x+=(vpoint.x-lastMove.x);
+            canvasLocation.y+=(vpoint.y-lastMove.y);
             //qDebug()<<"canvasLocation: ("<<canvasLocation.x<<","<<canvasLocation.y<<")"<<endl;
             update();
         }else if(cursorType == VCursorType::CHOOSE){
             if(!focusShapes.empty())
             {
                 //VPoint loc = focusShapes.first()->getLocation();
-                VPoint lp = groupShape.transformPoint(getLoc(lastMove));
+                VPoint lp = groupShape.transformPoint(locMove);
                 //qDebug() << pos << lp;
                 //qDebug() << loc;
                 VPoint v(pos.x-lp.x, pos.y-lp.y);
@@ -322,11 +322,8 @@ void TestWidget::mouseMoveEvent(QMouseEvent *event)
             if(focusShapes.size()==1)
             {
                 VShape *shape=focusShapes.first();
-                VVector vlp(shape->getLocation(), getLoc(lastMove)),
-//                        vlm(focusShape->getLocation(), getLoc(lastMove)),
+                VVector vlp(shape->getLocation(), locMove),
                         vnow(shape->getLocation(), pos);
-//                qDebug() << VVector::rotationAngle(vlp, vnow)
-//                         << vnow+VPoint(0,0) << vlm+VPoint(0,0);
                 VPoint loc=shape->getLocation();
                 shape->getTransform().translate(
                             shape->getTransform().inverted().map(VPoint(0,0))
@@ -343,7 +340,8 @@ void TestWidget::mouseMoveEvent(QMouseEvent *event)
     }
     VPoint point(qpoint.x()-(this->width()/2+canvasLocation.x),qpoint.y()-(this->height()/2+canvasLocation.y));
     mainwindow->statusBar()->showMessage(QString("%1,%2").arg(floor(point.x/scale+0.5)).arg(floor(point.y/scale+0.5)));
-    lastMove = vpoint;
+    locMove = pos;
+    lastMove=vpoint;
 }
 
 void TestWidget::paintEvent(QPaintEvent *event)
@@ -380,11 +378,11 @@ void TestWidget::paintEvent(QPaintEvent *event)
 
     if(crPos==-2)
     {
-        VPoint point=getLoc(lastMove);
+        VPoint point=locMove;
         painter.setPen(QPen(QBrush(Qt::gray),2,Qt::DotLine,Qt::SquareCap,Qt::MiterJoin));
         painter.setBrush(QColor(0xaa,0xaa,0xaa,9));
-        painter.drawRect(lastPress.x*scale,lastPress.y*scale,
-                         (point.x-lastPress.x)*scale,(point.y-lastPress.y)*scale);
+        painter.drawRect(locPress.x*scale,locPress.y*scale,
+                         (point.x-locPress.x)*scale,(point.y-locPress.y)*scale);
     }
 
 }

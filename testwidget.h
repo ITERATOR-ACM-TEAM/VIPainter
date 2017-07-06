@@ -69,8 +69,9 @@ private:
     VCursorType cursorType;
     VShape * getShape(const VPoint &point);
     VPoint getLoc(const VPoint & point);
+    VPoint locMove;
     VPoint lastMove;
-    VPoint lastPress;
+    VPoint locPress;
     double lastAngle;
     int crPos;
     bool antialiasing;

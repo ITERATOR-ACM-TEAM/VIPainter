@@ -20,7 +20,7 @@
      <x>0</x>
      <y>0</y>
      <width>1206</width>
-     <height>29</height>
+     <height>26</height>
     </rect>
    </property>
    <property name="toolTip">
@@ -87,13 +87,15 @@
    <addaction name="actionChoose"/>
    <addaction name="actionMove"/>
    <addaction name="actionUndo"/>
-   <addaction name="actionPen"/>
+   <addaction name="actionDraw"/>
    <addaction name="actionZoomIn"/>
    <addaction name="actionZoomOut"/>
    <addaction name="actionResume"/>
    <addaction name="actionGroup"/>
    <addaction name="actionBreakUp"/>
    <addaction name="actionDelete"/>
+   <addaction name="actionPen"/>
+   <addaction name="actionBrush"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QToolBar" name="shapeBar">
@@ -173,7 +175,7 @@
     </layout>
    </widget>
   </widget>
-  <action name="actionPen">
+  <action name="actionDraw">
    <property name="icon">
     <iconset resource="icon.qrc">
      <normaloff>:/icon/pen.png</normaloff>:/icon/pen.png</iconset>
@@ -470,6 +472,22 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+A</string>
+   </property>
+  </action>
+  <action name="actionPen">
+   <property name="text">
+    <string>画笔颜色</string>
+   </property>
+   <property name="toolTip">
+    <string>画笔颜色</string>
+   </property>
+  </action>
+  <action name="actionBrush">
+   <property name="text">
+    <string>画刷颜色</string>
+   </property>
+   <property name="toolTip">
+    <string>画刷颜色</string>
    </property>
   </action>
  </widget>

@@ -22,6 +22,7 @@
 #include <QDir>
 #include <QDebug>
 #include <QString>
+#include <QTranslator>
 
 int main(int argc, char *argv[])
 {

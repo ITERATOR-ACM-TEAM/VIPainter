@@ -74,6 +74,9 @@ public:
     const VGroupShape& operator=(const QJsonArray &jsonArray);
     virtual void getCircumscribedRectangle(bool force=false);//获得外接矩形的左上点、右下点
     VShape* clone()const override;
+
+    void setPen(QPen pen)override;
+    void setBrush(QBrush brush)override;
 };
 
 #endif // VGROUPSHAPE_H
