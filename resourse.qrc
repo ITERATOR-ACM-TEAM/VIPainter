@@ -11,5 +11,6 @@
         <file>icon/zoomzero.png</file>
         <file>translate/zh_CN.qm</file>
         <file>translate/qtcreator_zh_CN.qm</file>
+        <file>icon/hand.png</file>
     </qresource>
 </RCC>

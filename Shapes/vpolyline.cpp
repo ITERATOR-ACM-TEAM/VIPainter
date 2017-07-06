@@ -53,6 +53,11 @@ void VPolyline::draw(QPainter *painter, const VTransform &transform)
     painter->setPen(pen);
     painter->setBrush(brush);
     QPolygonF qpf;
+    if(points.size() == 1)
+    {
+        painter->drawPoint(QPointF(0,0)*transform);
+        return;
+    }
     for(auto &i : this->points){
         qpf << (i*transform).toQPointF();
     }

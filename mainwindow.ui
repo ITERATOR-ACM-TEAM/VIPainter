@@ -20,7 +20,7 @@
      <x>0</x>
      <y>0</y>
      <width>1206</width>
-     <height>26</height>
+     <height>23</height>
     </rect>
    </property>
    <property name="toolTip">
@@ -41,10 +41,19 @@
     <property name="title">
      <string>图像</string>
     </property>
+    <widget class="QMenu" name="menuLineStyle">
+     <property name="title">
+      <string>线条样式</string>
+     </property>
+     <addaction name="actionCurveLine"/>
+     <addaction name="actionPolyLine"/>
+    </widget>
     <addaction name="actionCanvasSize"/>
     <addaction name="actionShapeSize"/>
     <addaction name="separator"/>
     <addaction name="actionAntialiasing"/>
+    <addaction name="separator"/>
+    <addaction name="menuLineStyle"/>
    </widget>
    <widget class="QMenu" name="menu_3">
     <property name="title">
@@ -171,8 +180,11 @@
    </widget>
   </widget>
   <action name="actionDraw">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
-    <iconset resource="icon.qrc">
+    <iconset resource="resourse.qrc">
      <normaloff>:/icon/pen.png</normaloff>:/icon/pen.png</iconset>
    </property>
    <property name="text">
@@ -230,7 +242,7 @@
   </action>
   <action name="actionZoomIn">
    <property name="icon">
-    <iconset resource="icon.qrc">
+    <iconset resource="resourse.qrc">
      <normaloff>:/icon/zoomin.png</normaloff>:/icon/zoomin.png</iconset>
    </property>
    <property name="text">
@@ -245,7 +257,7 @@
   </action>
   <action name="actionZoomOut">
    <property name="icon">
-    <iconset resource="icon.qrc">
+    <iconset resource="resourse.qrc">
      <normaloff>:/icon/zoomout.png</normaloff>:/icon/zoomout.png</iconset>
    </property>
    <property name="text">
@@ -263,7 +275,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="icon.qrc">
+    <iconset resource="resourse.qrc">
      <normaloff>:/icon/undo.png</normaloff>:/icon/undo.png</iconset>
    </property>
    <property name="text">
@@ -278,7 +290,7 @@
   </action>
   <action name="actionRedo">
    <property name="icon">
-    <iconset resource="icon.qrc">
+    <iconset resource="resourse.qrc">
      <normaloff>:/icon/redo.png</normaloff>:/icon/redo.png</iconset>
    </property>
    <property name="text">
@@ -299,7 +311,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="icon.qrc">
+    <iconset resource="resourse.qrc">
      <normaloff>:/icon/cursor.png</normaloff>:/icon/cursor.png</iconset>
    </property>
    <property name="text">
@@ -317,8 +329,8 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="icon.qrc">
-     <normaloff>:/icon/mover.png</normaloff>:/icon/mover.png</iconset>
+    <iconset resource="resourse.qrc">
+     <normaloff>:/icon/hand.png</normaloff>:/icon/hand.png</iconset>
    </property>
    <property name="text">
     <string>移动</string>
@@ -332,7 +344,7 @@
   </action>
   <action name="actionResume">
    <property name="icon">
-    <iconset resource="icon.qrc">
+    <iconset resource="resourse.qrc">
      <normaloff>:/icon/zoomzero.png</normaloff>:/icon/zoomzero.png</iconset>
    </property>
    <property name="text">
@@ -493,10 +505,29 @@
     <string>线条设置</string>
    </property>
   </action>
+  <action name="actionCurveLine">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>曲线</string>
+   </property>
+  </action>
+  <action name="actionPolyLine">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>直线</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>
-  <include location="icon.qrc"/>
+  <include location="resourse.qrc"/>
  </resources>
  <connections/>
 </ui>
