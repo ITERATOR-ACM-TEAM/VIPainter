@@ -110,6 +110,8 @@ private slots:
 
     void on_actionPenStyle_triggered();
 
+    void on_actionDraw_triggered();
+
     void on_actionAbout_triggered();
 
 private:
@@ -120,7 +122,8 @@ private:
     QDockWidget *focus;
     QVector<QDockWidget *> docks;
 
-    QActionGroup  *group;
+    QActionGroup  *barGroup;
+    QActionGroup  *menuGroup;
     VCursorType cursorState;
     VDelegate *delegate;
     VListView *listView;

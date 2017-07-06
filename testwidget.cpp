@@ -25,6 +25,7 @@
 #include "vtext.h"
 #include "changetextdialog.h"
 #include "vroundedrectangle.h"
+#include "vbezlercurve.h"
 #include <QPainter>
 #include <QSize>
 #include <QPen>
@@ -174,6 +175,34 @@ void TestWidget::mousePressEvent(QMouseEvent *event)
                 lastAngle = 0;
             }
         }
+        else if(cursorType == VCursorType::DRAWPOLYLINE || cursorType == VCursorType::DRAWBEZIERCURVE)
+        {
+            VPointGroupShape * pl;
+            if(crPos == -1)
+            {
+//                qDebug() << "!!!!!!";
+                if(cursorType == VCursorType::DRAWPOLYLINE)
+                    pl = new VPolyline();
+                else if (cursorType == VCursorType::DRAWBEZIERCURVE)
+                    pl = new VBezlerCurve();
+                groupShape.insertShape(pl);
+                pl->moveLoc(pl->transformPoint(getLoc(point)));
+                focusShapes.push_back(pl);
+
+//                pl->addPoint(pl->transformPoint(getLoc((point))));
+//                crPos++;
+                updateList();
+            }
+            else
+            {
+                pl = dynamic_cast<VPointGroupShape *>(focusShapes[0]);
+            }
+
+//            qDebug() << pl << focusShapes.size() << crPos;
+            pl->addPoint(pl->transformPoint(getLoc((point))));
+            crPos++;
+            update();
+        }
         lastMove=VPoint(pressPoint.x(),pressPoint.y());
         locMove=locPress=getLoc(lastMove);
     }
@@ -242,7 +271,8 @@ void TestWidget::mouseReleaseEvent(QMouseEvent *event)
                 update();
             }
         }
-        crPos = -1;
+        if(cursorType != VCursorType::DRAWBEZIERCURVE && cursorType != VCursorType::DRAWPOLYLINE)
+            crPos = -1;
     }
 }
 
@@ -279,6 +309,9 @@ void TestWidget::mouseMoveEvent(QMouseEvent *event)
         }
         if(flag)this->setCursor(Qt::ArrowCursor);
     }
+
+
+
     if(event->buttons()&Qt::LeftButton)
     {
         if(cursorType == VCursorType::MOVE)
@@ -319,7 +352,7 @@ void TestWidget::mouseMoveEvent(QMouseEvent *event)
                         VPointGroupShape * shape=dynamic_cast<VPointGroupShape *>(focusShapes.first());
                         if(shape!=nullptr)
                         {
-                            shape->changePoint(crPos - 8, shape->transformPoint(lp));
+                            shape->changePoint(crPos - 8, shape->transformPoint(pos));
                         }
                     }
                 }
@@ -346,6 +379,21 @@ void TestWidget::mouseMoveEvent(QMouseEvent *event)
                             );
                 update();
             }
+        }
+        else if(cursorType == VCursorType::DRAWBEZIERCURVE || cursorType == VCursorType::DRAWPOLYLINE)
+        {
+            if(crPos > -1)
+            {
+                VPointGroupShape * shape=dynamic_cast<VPointGroupShape *>(focusShapes.first());
+                if(shape!=nullptr)
+                {
+                    int index = shape->getPointList().size() - 1;
+                    if(index >= 0)
+                        shape->changePoint(index, shape->transformPoint(pos));
+                    update();
+                }
+            }
+
         }
     }
     VPoint point(qpoint.x()-(this->width()/2+canvasLocation.x),qpoint.y()-(this->height()/2+canvasLocation.y));
@@ -434,6 +482,15 @@ bool TestWidget::eventFilter(QObject * obj, QEvent * ev)
                 shape->moveLoc(shape->transformPoint(VPoint(loc.x+1,loc.y)));
             }
             break;
+        case Qt::Key_Return:
+            {
+                if(cursorType == VCursorType::DRAWBEZIERCURVE || cursorType == VCursorType::DRAWPOLYLINE)
+                {
+                    focusShapes.clear();
+                    crPos = -1;
+                    update();
+                }
+            }
         }
         update();
         return true;
@@ -460,6 +517,15 @@ void TestWidget::changeCursor(VCursorType type)
     {
         this->setCursor(QCursor(VRotate, 15, 15));
         crPos = -1;
+    }break;
+    case VCursorType::DRAWPOLYLINE: case VCursorType::DRAWBEZIERCURVE:
+    {
+        crPos = -1;
+        focusShapes.clear();
+        static QCursor pen = QCursor(QPixmap(":/icon/pen.png").scaled(20,20), 0, 19);
+        this->setCursor(pen);
+        update();
+        updateList();
     }break;
     default:
     {
@@ -512,6 +578,7 @@ void TestWidget::updateList()
 
 void TestWidget::changeFocus()
 {
+    if(cursorType == VCursorType::DRAWBEZIERCURVE || cursorType == VCursorType::DRAWPOLYLINE) return;
     decltype(focusShapes) newFocus;
     for(auto &index:selectionModel->selectedRows())
         newFocus.append(groupShape.getShapes().at(groupShape.getVectorSize()-index.row()-1));

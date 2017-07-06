@@ -104,6 +104,12 @@ void VPointGroupShape::getCircumscribedRectangle(){
     {
         cr2.x=cr2.y=1;
         return;
+    }else if(points.size() == 1)
+    {
+        cr2.x=cr2.y=1;
+        moveLoc(points[0]);
+        points[0] = VPoint(0,0);
+        return;
     }
 
     double x1 = points[0].x, y1 = points[0].y;
@@ -135,6 +141,8 @@ void VPointGroupShape::getCircumscribedRectangle(){
     cr1.y = 0;
     cr2.x -= x1;
     cr2.y -= y1;
+    if(cr2.x < 1e-9) cr2.x = 1e-9;
+    if(cr2.y < 1e-9) cr2.y = 1e-9;
 }
 
 VSize VPointGroupShape::getSize()

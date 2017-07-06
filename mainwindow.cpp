@@ -71,13 +71,19 @@ MainWindow::MainWindow(QWidget *parent) :
         }
     });
 
-    //菜单编组 menu group
-    group = new QActionGroup(this);
-    group->addAction(ui->actionChoose);
-    group->addAction(ui->actionMove);
-    group->addAction(ui->actionUndo);
+    //工具栏编组 bar group
+    barGroup = new QActionGroup(this);
+    barGroup->addAction(ui->actionChoose);
+    barGroup->addAction(ui->actionMove);
+    barGroup->addAction(ui->actionUndo);
+    barGroup->addAction(ui->actionDraw);
     connect(this, SIGNAL(cursorChange(VCursorType)), this, SLOT(changeCursor(VCursorType)));
     QTimer::singleShot(0,this,SLOT(initAction(QDir)));
+
+    //菜单编组 menu group
+    menuGroup = new QActionGroup(this);
+    menuGroup->addAction(ui->actionCurveLine);
+    menuGroup->addAction(ui->actionPolyLine);
 
     //List View init
     listView=new VListView(this);
@@ -383,7 +389,20 @@ void MainWindow::on_actionChoose_triggered()
 
 void MainWindow::changeCursor(VCursorType type)
 {
+    if(cursorState == VCursorType::DRAWBEZIERCURVE || cursorState == VCursorType::DRAWPOLYLINE)
+    {
+        ui->actionDelete->setEnabled(true);
+        ui->actionCopy->setEnabled(true);
+        ui->actionCut->setEnabled(true);
+    }
     cursorState = type;
+    if(type == VCursorType::DRAWBEZIERCURVE || type == VCursorType::DRAWPOLYLINE)
+    {
+        ui->actionDelete->setEnabled(false);
+        ui->actionCopy->setEnabled(false);
+        ui->actionCut->setEnabled(false);
+    }
+
 }
 
 void MainWindow::on_actionNew_triggered()
@@ -477,16 +496,19 @@ bool MainWindow::eventFilter(QObject * obj, QEvent * ev)
     }
     else if(ev->type() ==QEvent::ContextMenu)
     {
-        QContextMenuEvent *event=static_cast<QContextMenuEvent*>(ev);
-        TestWidget *widget=qobject_cast<TestWidget*>(obj);
-        QPoint qpoint=event->pos();
-        VPoint point(qpoint.x(),qpoint.y());
-        VPoint loc=widget->getLoc(point);
-        if(widget!=nullptr)
+        if(cursorState != VCursorType::DRAWBEZIERCURVE && cursorState != VCursorType::DRAWPOLYLINE)
         {
-            changeMenuAction(widget,loc);
-            contextMenu->exec(event->globalPos());
-            return true;
+            QContextMenuEvent *event=static_cast<QContextMenuEvent*>(ev);
+            TestWidget *widget=qobject_cast<TestWidget*>(obj);
+            QPoint qpoint=event->pos();
+            VPoint point(qpoint.x(),qpoint.y());
+            VPoint loc=widget->getLoc(point);
+            if(widget!=nullptr)
+            {
+                changeMenuAction(widget,loc);
+                contextMenu->exec(event->globalPos());
+                return true;
+            }
         }
     }
 
@@ -832,4 +854,22 @@ void MainWindow::on_actionAbout_triggered()
                                  "本程序是基于使用目的而加以发布，然而不负任何担保责任；亦无对适售性或特定目的适用性所为的默示性担保。详情请参照GNU通用公共授权。\n"
                                  "您应已收到附随于本程序的GNU通用公共授权的副本；如果没有，请参照\n"
                                  "<http://www.gnu.org/licenses/>.\n"));
+}
+
+void MainWindow::on_actionDraw_triggered()
+{
+    if(ui->actionDraw->isChecked())
+    {
+        if(ui->actionCurveLine->isChecked())
+        {
+            emit cursorChange(VCursorType::DRAWBEZIERCURVE);
+        }
+        else if(ui->actionPolyLine->isChecked())
+        {
+            emit cursorChange(VCursorType::DRAWPOLYLINE);
+        }
+    }
+    else
+        emit cursorChange(VCursorType::DEFAULT);
+
 }

@@ -20,7 +20,7 @@
      <x>0</x>
      <y>0</y>
      <width>1206</width>
-     <height>29</height>
+     <height>23</height>
     </rect>
    </property>
    <property name="toolTip">
@@ -41,10 +41,19 @@
     <property name="title">
      <string>图像</string>
     </property>
+    <widget class="QMenu" name="menuLineStyle">
+     <property name="title">
+      <string>线条样式</string>
+     </property>
+     <addaction name="actionCurveLine"/>
+     <addaction name="actionPolyLine"/>
+    </widget>
     <addaction name="actionCanvasSize"/>
     <addaction name="actionShapeSize"/>
     <addaction name="separator"/>
     <addaction name="actionAntialiasing"/>
+    <addaction name="separator"/>
+    <addaction name="menuLineStyle"/>
    </widget>
    <widget class="QMenu" name="menu_3">
     <property name="title">
@@ -184,6 +193,9 @@
    </widget>
   </widget>
   <action name="actionDraw">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="resourse.qrc">
      <normaloff>:/icon/pen.png</normaloff>:/icon/pen.png</iconset>
@@ -331,7 +343,7 @@
    </property>
    <property name="icon">
     <iconset resource="resourse.qrc">
-     <normaloff>:/icon/mover.png</normaloff>:/icon/mover.png</iconset>
+     <normaloff>:/icon/hand.png</normaloff>:/icon/hand.png</iconset>
    </property>
    <property name="text">
     <string>移动</string>
@@ -506,6 +518,25 @@
     <string>线条设置</string>
    </property>
   </action>
+  <action name="actionCurveLine">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>曲线</string>
+   </property>
+  </action>
+  <action name="actionPolyLine">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>直线</string>
+    </property>
+   </action>
   <action name="actionAbout">
    <property name="text">
     <string>关于VIPainter</string>

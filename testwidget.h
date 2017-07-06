@@ -32,6 +32,7 @@
 #include <QStringListModel>
 #include <QItemSelectionModel>
 #include <QList>
+#include <QString>
 #include "vgroupshape.h"
 #include "vsize.h"
 #include "vpoint.h"
@@ -69,6 +70,8 @@ protected:
     bool eventFilter(QObject * obj, QEvent * ev)override;
 
 private:
+    QString fileName;
+
     VCursorType cursorType;
     VShape * getShape(const VPoint &point);
     QList<QJsonObject>swp;

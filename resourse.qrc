@@ -10,6 +10,7 @@
         <file>icon/zoomout.png</file>
         <file>icon/zoomzero.png</file>
         <file>translate/zh_CN.qm</file>
+        <file>icon/hand.png</file>
         <file>translate/qtbase_zh_CN.qm</file>
     </qresource>
 </RCC>
