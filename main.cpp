@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
     QTranslator qtTranslate;
     if(qtTranslate.load("qtcreator_zh_CN.qm",":/translate/"))a.installTranslator(&qtTranslate);
     QTranslator translate;
-    if(translate.load("zh_CN.qm",":/translate/"))a.installTranslator(&translate);
+    //if(translate.load("zh_CN.qm",":/translate/"))a.installTranslator(&translate);
 
 #if defined(Q_OS_WIN32)
 #elif defined(Q_OS_LINUX)
