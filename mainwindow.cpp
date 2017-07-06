@@ -122,8 +122,8 @@ void MainWindow::loadPlugin(QString filename)
         //qDebug()<<"add"<<*shape;
         if(getTestWidget()==nullptr)return;
         VShape *newShape=shape->clone();
-        newShape->setPen(this->pen);
-        newShape->setBrush(this->brush);
+//        newShape->setPen(this->pen);
+//        newShape->setBrush(this->brush);
         getTestWidget()->groupShape.insertShape(newShape);
         getTestWidget()->updateList();
         getTestWidget()->update();
@@ -194,7 +194,7 @@ QDockWidget* MainWindow::newDock(QString dockname)
     connect(ui->actionPaste,SIGNAL(triggered()),widget,SLOT(updateList()));
     connect(ui->actionDelete,SIGNAL(triggered()),widget,SLOT(updateList()));
     connect(ui->actionGroup,SIGNAL(triggered()),widget,SLOT(updateList()));
-    connect(getTestWidget(dockWidget),SIGNAL(selected(const QModelIndex&)),listView,SLOT(setCurrentIndex(const QModelIndex &index)));
+    //connect(getTestWidget(dockWidget),SIGNAL(selected(const QModelIndex&)),listView,SLOT(setCurrentIndex(const QModelIndex &index)));
 
     if(dockname=="")dockWidget->setWindowTitle(QString("untitled %1").arg(id++));
     else dockWidget->setWindowTitle(dockname);
@@ -690,10 +690,10 @@ void MainWindow::on_actionBrush_triggered()
     if(dialog.exec()==QDialog::Accepted)
     {
         brush.setColor(dialog.selectedColor());
+        TestWidget *widget=getTestWidget();
+        if(widget==nullptr)return;
+        for(VShape *shape:widget->focusShapes)shape->setBrush(this->brush);
     }
-    TestWidget *widget=getTestWidget();
-    if(widget==nullptr)return;
-    for(VShape *shape:widget->focusShapes)shape->setBrush(this->brush);
 }
 
 void MainWindow::on_actionPen_triggered()

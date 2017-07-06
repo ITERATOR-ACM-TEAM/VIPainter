@@ -105,6 +105,13 @@ VShape::VShape(const QJsonObject jsonObject)
     :name(jsonObject.value("name").toString())
     ,transform(jsonObject.value("transform").toArray())
 {
+    {
+        QJsonObject brush=jsonObject.value("brush").toObject();
+        unsigned int argb=brush.value("color").toString().toUInt(nullptr,16);
+        QColor color((argb>>16)&0xff,(argb>>8)&0xff,argb&0xff,(argb>>24)&0xff);
+        this->brush.setColor(color);
+        this->brush.setStyle((Qt::BrushStyle)brush.value("type").toInt());
+    }
 }
 
 
@@ -115,7 +122,7 @@ const VShape& VShape::operator=(const QJsonObject &jsonObject)
     {
         QJsonObject brush=jsonObject.value("brush").toObject();
         unsigned int argb=brush.value("color").toString().toUInt(nullptr,16);
-        QColor color((argb>>8)&0xff,(argb>>4)&0xff,argb&0xff,(argb>>12)&0xff);
+        QColor color((argb>>16)&0xff,(argb>>8)&0xff,argb&0xff,(argb>>24)&0xff);
         this->brush.setColor(color);
         this->brush.setStyle((Qt::BrushStyle)brush.value("type").toInt());
     }
@@ -131,11 +138,11 @@ QJsonObject VShape::toJsonObject()const
     {
         QJsonObject brush;
         QColor color=this->brush.color();
-        unsigned int argb=color.blue();
-        argb=(argb<<4)|color.green();
-        argb=(argb<<4)|color.red();
-        argb=(argb<<4)|color.alpha();
-        brush.insert("color",QString().sprintf("%x",argb));
+        unsigned int argb=color.alpha();
+        argb=(argb<<8)|color.red();
+        argb=(argb<<8)|color.green();
+        argb=(argb<<8)|color.blue();
+        brush.insert("color",QString().sprintf("0x%08x",argb));
         brush.insert("style",this->brush.style());
         jsonObject.insert("brush",brush);
     }
