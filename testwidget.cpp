@@ -535,3 +535,9 @@ void TestWidget::emitSelected()
     }
     emit selected(list,QItemSelectionModel::ClearAndSelect);
 }
+
+void TestWidget::saveSwp()
+{
+    while(swp.size()>20)swp.erase(swp.begin());
+    swp.append(groupShape.toJsonArray());
+}

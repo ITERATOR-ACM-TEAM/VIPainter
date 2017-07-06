@@ -31,6 +31,7 @@
 #include <QModelIndex>
 #include <QStringListModel>
 #include <QItemSelectionModel>
+#include <QList>
 #include "vgroupshape.h"
 #include "vsize.h"
 #include "vpoint.h"
@@ -70,6 +71,7 @@ protected:
 private:
     VCursorType cursorType;
     VShape * getShape(const VPoint &point);
+    QList<QJsonObject>swp;
     VPoint locMove;
     VPoint lastMove;
     VPoint locPress;
@@ -81,6 +83,7 @@ private:
 public slots:
     void updateList();
     void changeFocus();
+    void saveSwp();
     void changeCursor(VCursorType type);
     void setAntialiasing(bool antialiasing);
 
