@@ -283,7 +283,11 @@ void MainWindow::on_actionResume_triggered()
 
 void MainWindow::on_actionSave_triggered()
 {
-    if(getTestWidget()==nullptr)return;
+    TestWidget *widget=getTestWidget();
+    if(widget==nullptr)return;
+    QString filename = widget->getFileName();
+    if(filename=="")on_actionSaveAs_triggered();
+    else saveFile(filename);
 }
 
 void MainWindow::saveFile(QString filename)
@@ -351,6 +355,17 @@ void MainWindow::on_actionOpen_triggered()
     for(auto &filename:filenames)
     {
         if(filename=="")return;
+        bool flag=false;
+        for(auto &dock:docks)
+        {
+            TestWidget *widget=getTestWidget(dock);
+            if(widget->getFileName()==filename)
+            {
+                focusDock(dock);
+                flag=true;
+            }
+        }
+        if(flag)continue;
         ui->statusBar->showMessage(tr("打开文件 ")+filename);
         QFile file(filename);
         if(!file.open(QFile::ReadOnly|QFile::Text))return;
