@@ -61,6 +61,15 @@ TestWidget::~TestWidget()
 {
 }
 
+void TestWidget::setFileName(QString filename)
+{
+    this->filename=filename;
+}
+
+QString TestWidget::getFileName() const
+{
+    return filename;
+}
 
 void TestWidget::setAntialiasing(bool antialiasing)
 {
@@ -203,9 +212,9 @@ void TestWidget::mousePressEvent(QMouseEvent *event)
             crPos++;
             update();
         }
-        lastMove=VPoint(pressPoint.x(),pressPoint.y());
-        locMove=locPress=getLoc(lastMove);
     }
+    lastMove=VPoint(pressPoint.x(),pressPoint.y());
+    locMove=locPress=getLoc(lastMove);
 }
 
 void TestWidget::mouseDoubleClickEvent(QMouseEvent* event)
@@ -224,10 +233,12 @@ void TestWidget::mouseDoubleClickEvent(QMouseEvent* event)
             if (vpg != nullptr)
             {
                 ChangeTextDialog::showDialog(vpg->getText());
+                saveSwp();
             }
             if(vt != nullptr)
             {
                 ChangeTextDialog::showDialog(vt);
+                saveSwp();
             }
         }
     }
@@ -269,6 +280,17 @@ void TestWidget::mouseReleaseEvent(QMouseEvent *event)
                 std::unique(focusShapes.begin(),focusShapes.end());
                 //emit selected(listModel.createIndex(1,0));
                 update();
+            }
+            else if(pos.x!=locPress.x||pos.y!=locPress.y)
+            {
+                saveSwp();
+            }
+        }
+        else if(cursorType==VCursorType::ROTATE)
+        {
+            if(focusShapes.size()==1&&(pos.x!=locPress.x||pos.y!=locPress.y))
+            {
+                saveSwp();
             }
         }
         if(cursorType != VCursorType::DRAWBEZIERCURVE && cursorType != VCursorType::DRAWPOLYLINE)
@@ -605,6 +627,28 @@ void TestWidget::emitSelected()
 
 void TestWidget::saveSwp()
 {
-    while(swp.size()>20)swp.erase(swp.begin());
-    swp.append(groupShape.toJsonArray());
+    while(swpNow-swpL>=SWPSIZE)swpL++;
+    swp[swpNow%SWPSIZE]=groupShape.toJsonArray();
+    swpNow++;
+    swpR=swpNow;
+}
+
+void TestWidget::undo()
+{
+    if(swpNow-swpL<=1)return;
+    focusShapes.clear();
+    swpNow--;
+    groupShape=swp[(swpNow-1)%SWPSIZE];
+    update();
+    updateList();
+}
+
+void TestWidget::redo()
+{
+    if(swpNow>=swpR)return;
+    focusShapes.clear();
+    groupShape=swp[swpNow%SWPSIZE];
+    swpNow++;
+    update();
+    updateList();
 }

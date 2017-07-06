@@ -74,7 +74,7 @@ private slots:
 
     void on_actionBreakUp_triggered();
 
-    void on_actionUndo_triggered();
+    void on_actionRotate_triggered();
 
     void on_actionRedo_triggered();
 
@@ -113,6 +113,8 @@ private slots:
     void on_actionDraw_triggered();
 
     void on_actionAbout_triggered();
+
+    void on_actionUndo_triggered();
 
 private:
     QVector<VShape*>plugins;

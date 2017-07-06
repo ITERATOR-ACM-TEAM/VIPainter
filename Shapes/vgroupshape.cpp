@@ -105,7 +105,7 @@ const VGroupShape & VGroupShape:: operator=(const QJsonObject &jsonObject)
             shapes.push_back(tmp);
         }
     }
-    getCircumscribedRectangle(true);
+    getCircumscribedRectangle();
     return *this;
 }
 
@@ -123,7 +123,7 @@ const VGroupShape & VGroupShape:: operator=(const QJsonArray &jsonArray)
             shapes.push_back(tmp);
         }
     }
-    getCircumscribedRectangle(true);
+    getCircumscribedRectangle();
     return *this;
 }
 

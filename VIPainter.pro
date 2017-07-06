@@ -81,6 +81,6 @@ FORMS    += mainwindow.ui \
 RESOURCES += \
     resourse.qrc
 
-TRANSLATIONS+=zh_CN.ts
+TRANSLATIONS+=translate/zh_CN.ts
 
 RC_ICONS = icon/VIPainter.ico

@@ -58,6 +58,8 @@ public:
     QItemSelectionModel *selectionModel;
     QMenu *contextMenu;
     VPoint getLoc(const VPoint & point);
+    void setFileName(QString filename);
+    QString getFileName()const;
     ~TestWidget();
 
 protected:
@@ -70,11 +72,15 @@ protected:
     bool eventFilter(QObject * obj, QEvent * ev)override;
 
 private:
-    QString fileName;
+    QString filename;
 
     VCursorType cursorType;
     VShape * getShape(const VPoint &point);
-    QList<QJsonObject>swp;
+    static const int SWPSIZE=20;
+    QJsonArray swp[SWPSIZE];
+    int swpL=0;
+    int swpR=0;
+    int swpNow=0;
     VPoint locMove;
     VPoint lastMove;
     VPoint locPress;
@@ -87,6 +93,8 @@ public slots:
     void updateList();
     void changeFocus();
     void saveSwp();
+    void undo();
+    void redo();
     void changeCursor(VCursorType type);
     void setAntialiasing(bool antialiasing);
 

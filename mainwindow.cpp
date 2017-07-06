@@ -75,7 +75,7 @@ MainWindow::MainWindow(QWidget *parent) :
     barGroup = new QActionGroup(this);
     barGroup->addAction(ui->actionChoose);
     barGroup->addAction(ui->actionMove);
-    barGroup->addAction(ui->actionUndo);
+    barGroup->addAction(ui->actionRotate);
     barGroup->addAction(ui->actionDraw);
     connect(this, SIGNAL(cursorChange(VCursorType)), this, SLOT(changeCursor(VCursorType)));
     QTimer::singleShot(0,this,SLOT(initAction(QDir)));
@@ -164,6 +164,7 @@ void MainWindow::loadPlugin(QString filename)
         getTestWidget()->groupShape.insertShape(newShape);
         getTestWidget()->updateList();
         getTestWidget()->update();
+        getTestWidget()->saveSwp();
     });
 }
 
@@ -244,6 +245,7 @@ QDockWidget* MainWindow::newDock(QString dockname)
         ui->shapesDock->show();
         splitDockWidget(dockWidget,ui->shapesDock,Qt::Horizontal);
     }
+    widget->saveSwp();
 
     return dockWidget;
 }
@@ -304,6 +306,7 @@ void MainWindow::saveFile(QString filename)
             file.write(jsonDocument.toJson());
             file.close();
             focus->setWindowTitle(filename.split("/").back());
+            getTestWidget(focus)->setFileName(filename);
         }
         else QMessageBox::warning(this,tr("错误"),tr("保存文件")+filename+tr("失败"));
     }
@@ -324,10 +327,12 @@ void MainWindow::saveFile(QString filename)
 void MainWindow::on_actionSaveAs_triggered()
 {
     if(getTestWidget()==nullptr)return;
-    QString filename=
+    QString filename=getTestWidget()->getFileName();
+    if(filename=="")filename="image.json";
+    filename=
             QFileDialog::getSaveFileName(this,
                                          tr("保存文件"),
-                                         tr("image.json"),
+                                         filename,
                                          tr("json file (*.json);;"
                                             "png file (*.png);;"
                                             "jpg file (*.jpg);;"
@@ -367,6 +372,7 @@ void MainWindow::on_actionOpen_triggered()
         {
             getTestWidget(newWidget)->groupShape.insertShape(VShape::fromJsonObject(doc.object()));
         }
+        getTestWidget(newWidget)->setFileName(filename);
         newWidget->update();
     }
 }
@@ -394,6 +400,10 @@ void MainWindow::changeCursor(VCursorType type)
         ui->actionDelete->setEnabled(true);
         ui->actionCopy->setEnabled(true);
         ui->actionCut->setEnabled(true);
+        ui->actionRedo->setEnabled(true);
+        ui->actionUndo->setEnabled(true);
+        ui->actionGroup->setEnabled(true);
+        ui->actionBreakUp->setEnabled(true);
     }
     cursorState = type;
     if(type == VCursorType::DRAWBEZIERCURVE || type == VCursorType::DRAWPOLYLINE)
@@ -401,6 +411,10 @@ void MainWindow::changeCursor(VCursorType type)
         ui->actionDelete->setEnabled(false);
         ui->actionCopy->setEnabled(false);
         ui->actionCut->setEnabled(false);
+        ui->actionRedo->setEnabled(false);
+        ui->actionUndo->setEnabled(false);
+        ui->actionGroup->setEnabled(false);
+        ui->actionBreakUp->setEnabled(false);
     }
 
 }
@@ -413,6 +427,7 @@ void MainWindow::on_actionNew_triggered()
 //判断Action的显示状态
 void MainWindow::changeMenuAction(TestWidget *widget, VPoint loc)
 {
+    if(cursorState == VCursorType::DRAWBEZIERCURVE || cursorState == VCursorType::DRAWPOLYLINE)return;
     bool flag=false;
     if(widget->focusShapes.empty())
     {
@@ -554,6 +569,7 @@ void MainWindow::on_actionShapeSize_triggered()
     {
         i->zoomin(mag);
     }
+    widget->saveSwp();
 }
 
 TestWidget * MainWindow::getTestWidget()
@@ -583,13 +599,14 @@ void MainWindow::on_actionBreakUp_triggered()
             for(auto &i:shs)widget->focusShapes.append(i);
         }
         getTestWidget()->update();
+        widget->saveSwp();
     }
 }
 
-void MainWindow::on_actionUndo_triggered()
+void MainWindow::on_actionRotate_triggered()
 {
 
-    if(ui->actionUndo->isChecked())
+    if(ui->actionRotate->isChecked())
         emit cursorChange(VCursorType::ROTATE);
     else
         emit cursorChange(VCursorType::DEFAULT);
@@ -598,12 +615,9 @@ void MainWindow::on_actionUndo_triggered()
 
 void MainWindow::on_actionRedo_triggered()
 {
-//    if(focus == nullptr) return;
-//    if(getTestWidget()->focusShape == nullptr) return;
-//    double angle = getTestWidget()->focusShape->getAngle();
-//    getTestWidget()->focusShape->setAngle(angle-10);
-//    getTestWidget()->update();
-//    emit cursorChange(VCursorType::ROTSATE);
+    TestWidget *widget=getTestWidget();
+    if(widget==nullptr)return;
+    widget->redo();
 }
 
 void MainWindow::on_actionReloadPlugon_triggered()
@@ -644,6 +658,7 @@ void MainWindow::on_actionDelete_triggered()
         }
         widget->focusShapes.clear();
         widget->update();
+        widget->saveSwp();
     }
 }
 
@@ -751,6 +766,7 @@ void MainWindow::on_actionPaste_triggered()
                 widget->focusShapes.clear();
                 widget->focusShapes.append(shape);
                 widget->update();
+                widget->saveSwp();
             }
             else if(doc.isArray())
             {
@@ -764,6 +780,7 @@ void MainWindow::on_actionPaste_triggered()
                     widget->focusShapes.append(shape);
                 }
                 widget->update();
+                widget->saveSwp();
             }
         }
         else if(mimeData->hasText())
@@ -772,6 +789,7 @@ void MainWindow::on_actionPaste_triggered()
             text->setName(mimeData->text());
             widget->groupShape.insertShape(text);
             widget->update();
+            widget->saveSwp();
         }
     }
 
@@ -796,6 +814,7 @@ void MainWindow::on_actionGroup_triggered()
     group->setName(name);
     widget->focusShapes.append(group);
     widget->update();
+    widget->saveSwp();
 }
 
 void MainWindow::on_actionSelectAll_triggered()
@@ -818,6 +837,7 @@ void MainWindow::on_actionBrush_triggered()
     {
         for(VShape *shape:widget->focusShapes)shape->setBrush(dialog.selectedColor());
         widget->update();
+        widget->saveSwp();
     }
 }
 
@@ -832,6 +852,7 @@ void MainWindow::on_actionPen_triggered()
     {
         for(VShape *shape:widget->focusShapes)shape->setPen(dialog.selectedColor());
         widget->update();
+        widget->saveSwp();
     }
 }
 
@@ -842,6 +863,7 @@ void MainWindow::on_actionPenStyle_triggered()
     if(widget->focusShapes.empty())return;
     PenStyleDialog::showDialog(tr("线条设置"),widget->focusShapes);
     widget->update();
+    widget->saveSwp();
 }
 
 void MainWindow::on_actionAbout_triggered()
@@ -872,4 +894,11 @@ void MainWindow::on_actionDraw_triggered()
     else
         emit cursorChange(VCursorType::DEFAULT);
 
+}
+
+void MainWindow::on_actionUndo_triggered()
+{
+    TestWidget *widget=getTestWidget();
+    if(widget==nullptr)return;
+    widget->undo();
 }

@@ -20,7 +20,7 @@
      <x>0</x>
      <y>0</y>
      <width>1206</width>
-     <height>23</height>
+     <height>29</height>
     </rect>
    </property>
    <property name="toolTip">
@@ -71,6 +71,9 @@
     <addaction name="actionPaste"/>
     <addaction name="actionCut"/>
     <addaction name="separator"/>
+    <addaction name="actionUndo"/>
+    <addaction name="actionRedo"/>
+    <addaction name="separator"/>
     <addaction name="actionGroup"/>
     <addaction name="actionBreakUp"/>
     <addaction name="actionDelete"/>
@@ -108,7 +111,7 @@
    </attribute>
    <addaction name="actionChoose"/>
    <addaction name="actionMove"/>
-   <addaction name="actionUndo"/>
+   <addaction name="actionRotate"/>
    <addaction name="actionDraw"/>
    <addaction name="actionZoomIn"/>
    <addaction name="actionZoomOut"/>
@@ -197,7 +200,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="resourse.qrc">
+    <iconset>
      <normaloff>:/icon/pen.png</normaloff>:/icon/pen.png</iconset>
    </property>
    <property name="text">
@@ -255,7 +258,7 @@
   </action>
   <action name="actionZoomIn">
    <property name="icon">
-    <iconset resource="resourse.qrc">
+    <iconset>
      <normaloff>:/icon/zoomin.png</normaloff>:/icon/zoomin.png</iconset>
    </property>
    <property name="text">
@@ -270,7 +273,7 @@
   </action>
   <action name="actionZoomOut">
    <property name="icon">
-    <iconset resource="resourse.qrc">
+    <iconset>
      <normaloff>:/icon/zoomout.png</normaloff>:/icon/zoomout.png</iconset>
    </property>
    <property name="text">
@@ -283,19 +286,19 @@
     <string>Ctrl+-</string>
    </property>
   </action>
-  <action name="actionUndo">
+  <action name="actionRotate">
    <property name="checkable">
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="resourse.qrc">
+    <iconset>
      <normaloff>:/icon/undo.png</normaloff>:/icon/undo.png</iconset>
    </property>
    <property name="text">
-    <string>撤销</string>
+    <string>旋转</string>
    </property>
    <property name="toolTip">
-    <string>撤销</string>
+    <string>旋转</string>
    </property>
    <property name="shortcut">
     <string>3</string>
@@ -303,7 +306,7 @@
   </action>
   <action name="actionRedo">
    <property name="icon">
-    <iconset resource="resourse.qrc">
+    <iconset>
      <normaloff>:/icon/redo.png</normaloff>:/icon/redo.png</iconset>
    </property>
    <property name="text">
@@ -324,7 +327,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="resourse.qrc">
+    <iconset>
      <normaloff>:/icon/cursor.png</normaloff>:/icon/cursor.png</iconset>
    </property>
    <property name="text">
@@ -342,7 +345,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="resourse.qrc">
+    <iconset>
      <normaloff>:/icon/hand.png</normaloff>:/icon/hand.png</iconset>
    </property>
    <property name="text">
@@ -357,7 +360,7 @@
   </action>
   <action name="actionResume">
    <property name="icon">
-    <iconset resource="resourse.qrc">
+    <iconset>
      <normaloff>:/icon/zoomzero.png</normaloff>:/icon/zoomzero.png</iconset>
    </property>
    <property name="text">
@@ -368,22 +371,6 @@
    </property>
    <property name="shortcut">
     <string>0</string>
-   </property>
-  </action>
-  <action name="actionTestShape1">
-   <property name="text">
-    <string>testShape1</string>
-   </property>
-   <property name="toolTip">
-    <string>testShape1</string>
-   </property>
-  </action>
-  <action name="actionTestShape2">
-   <property name="text">
-    <string>testShape2</string>
-   </property>
-   <property name="toolTip">
-    <string>testShape1</string>
    </property>
   </action>
   <action name="actionCanvasSize">
@@ -535,17 +522,26 @@
    </property>
    <property name="text">
     <string>直线</string>
-    </property>
-   </action>
+   </property>
+  </action>
   <action name="actionAbout">
    <property name="text">
-    <string>关于VIPainter</string>
+    <string>关于&amp;VIPainter</string>
+   </property>
+  </action>
+  <action name="actionUndo">
+   <property name="text">
+    <string>撤销</string>
+   </property>
+   <property name="toolTip">
+    <string>撤销</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Z</string>
    </property>
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources>
-  <include location="resourse.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>
