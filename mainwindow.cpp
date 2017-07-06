@@ -68,7 +68,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->shapesDock->setWidget(listView);
     delegate=new VDelegate(this);
     listView->setItemDelegate(delegate);
-    connect(listView,SIGNAL(selectedListChanged(QModelIndexList)),this,SLOT(changeShapeFocus(QModelIndexList)));
+    connect(delegate,SIGNAL(dataChanged(const QModelIndex &)),this,SLOT(changeShapeName(const QModelIndex &)));
 
     update();
 }
@@ -130,16 +130,6 @@ void MainWindow::changeShapeName(const QModelIndex &index)
     TestWidget *widget=getTestWidget();
     if(widget==nullptr)return;
     widget->groupShape.getShapes().at(widget->groupShape.getVectorSize()-index.row()-1)->setName(index.data().toString());
-}
-
-void MainWindow::changeShapeFocus(QModelIndexList indexList)
-{
-    TestWidget *widget=getTestWidget();
-    if(widget==nullptr)return;
-    widget->focusShapes.clear();
-    for(auto &index:indexList)
-        widget->focusShapes.append(widget->groupShape.getShapes().at(widget->groupShape.getVectorSize()-index.row()-1));
-    widget->update();
 }
 
 void MainWindow::initAction(QDir dir)
@@ -374,7 +364,8 @@ bool MainWindow::eventFilter(QObject * obj, QEvent * ev)
             {
                 //qDebug() << "focusing"<<obj;
                 focus = *it;
-                listView->setModel(&getTestWidget(focus)->listModel);
+                listView->setModel(getTestWidget(focus)->listModel);
+                listView->setSelectionModel(getTestWidget(focus)->selectionModel);
                 getTestWidget(focus)->updateList();
                 return false;
             }else if(ev->type() == QEvent::Close)

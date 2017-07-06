@@ -30,6 +30,7 @@
 #include <QKeyEvent>
 #include <QModelIndex>
 #include <QStringListModel>
+#include <QItemSelectionModel>
 #include "vgroupshape.h"
 #include "vsize.h"
 #include "vpoint.h"
@@ -51,7 +52,8 @@ public:
     QVector<VShape*> focusShapes;
     VPoint canvasLocation;
     VSize canvasSize;
-    QStringListModel listModel;
+    QStringListModel *listModel;
+    QItemSelectionModel *selectionModel;
     ~TestWidget();
 
 protected:
@@ -72,14 +74,16 @@ private:
     double lastAngle;
     int crPos;
     bool antialiasing;
+    void emitSelected();
 
 public slots:
     void updateList();
+    void changeFocus();
     void changeCursor(VCursorType type);
     void setAntialiasing(bool antialiasing);
 
 signals:
-    void selected(const QModelIndex &index);
+    void selected(const QItemSelection &list,QItemSelectionModel::SelectionFlags command);
 };
 
 #endif // TESTWIDGET_H

@@ -102,7 +102,6 @@ private slots:
     void focusDock(bool checked);
 
     void changeShapeName(const QModelIndex &index);
-    void changeShapeFocus(QModelIndexList indexList);
 
     void on_actionSelectAll_triggered();
 

@@ -49,6 +49,12 @@ TestWidget::TestWidget(QMainWindow *parent, bool antialiasing) :
 //    groupShape.setName("main shape");
 //    groupShape.setLocation(VPoint(0,0));
 //    groupShape.setSize(VSize(10,10));
+    listModel=new QStringListModel(this);
+    selectionModel=new QItemSelectionModel(listModel,this);
+    connect(selectionModel,SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &))
+            ,this,SLOT(changeFocus()));
+    connect(this,SIGNAL(selected(const QItemSelection&,QItemSelectionModel::SelectionFlags)),
+            selectionModel,SLOT(select(const QItemSelection&,QItemSelectionModel::SelectionFlags)));
     update();
 }
 
@@ -210,7 +216,7 @@ void TestWidget::mouseReleaseEvent(QMouseEvent *event)
                 }
                 std::sort(focusShapes.begin(),focusShapes.end());
                 std::unique(focusShapes.begin(),focusShapes.end());
-                emit selected(listModel.createIndex(1,0));
+                //emit selected(listModel.createIndex(1,0));
                 update();
             }
         }
@@ -480,5 +486,31 @@ void TestWidget::updateList()
         if(groupShape.getShapes().at(i)->getName()=="")groupShape.getShapes().at(i)->setName(tr("没有名字的图形"));
         list.append(groupShape.getShapes().at(i)->getName());
     }
-    listModel.setStringList(list);
+    listModel->setStringList(list);
+}
+
+void TestWidget::changeFocus()
+{
+    decltype(focusShapes) newFocus;
+    for(auto &index:selectionModel->selectedRows())
+        newFocus.append(groupShape.getShapes().at(groupShape.getVectorSize()-index.row()-1));
+    if(focusShapes!=newFocus)
+    {
+        focusShapes=std::move(newFocus);
+        update();
+    }
+}
+
+void TestWidget::emitSelected()
+{
+    QItemSelection list;
+    for(VShape *shape:focusShapes)
+    {
+        QModelIndex index=listModel->index
+                (groupShape.getShapes().end()-
+                 std::find(groupShape.getShapes().begin(),groupShape.getShapes().end(),shape)-1
+                 );
+        list.select(index,index);
+    }
+    emit selected(list,QItemSelectionModel::ClearAndSelect);
 }
