@@ -1,7 +1,5 @@
 /**
- * Copyright (C) 2017 kkkeQAQ
- *               2017 Bcai0797
- *               2017 Penn000
+ * Copyright (C) 2017 VIPainter
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,6 +56,9 @@ MainWindow::MainWindow(QWidget *parent) :
     delete takeCentralWidget();//去掉中心控件
     setDockNestingEnabled(true);//设置DOCK可随意移动
     this->setContextMenuPolicy(Qt::NoContextMenu);//取消右键菜单
+    ui->menuTools->addAction(ui->mainToolBar->toggleViewAction());
+    ui->menuTools->addAction(ui->shapeBar->toggleViewAction());
+    ui->menuTools->addAction(ui->shapesDock->toggleViewAction());
     setWindowTitle("VIPainter");
     ui->shapesDock->hide();
 
@@ -817,5 +818,18 @@ void MainWindow::on_actionPenStyle_triggered()
     TestWidget *widget=getTestWidget();
     if(widget==nullptr)return;
     if(widget->focusShapes.empty())return;
-    PenStyleDialog::showDialog("线条设置",widget->focusShapes);
+    PenStyleDialog::showDialog(tr("线条设置"),widget->focusShapes);
+    widget->update();
+}
+
+void MainWindow::on_actionAbout_triggered()
+{
+    QMessageBox::information(this,tr("关于VIPainter")
+                             ,tr("VIPainter是一款轻量的矢量图绘图软件\n"
+                                 "\n"
+                                 "版权所有(C) 2017 VIPainter\n"
+                                 "本程序为自由软件；您可依据自由软件基金会所发表的GNU通用公共授权条款，对本程序再次发布和/或修改；无论您依据的是本授权的第三版，或（您可选的）任一日后发行的版本。\n"
+                                 "本程序是基于使用目的而加以发布，然而不负任何担保责任；亦无对适售性或特定目的适用性所为的默示性担保。详情请参照GNU通用公共授权。\n"
+                                 "您应已收到附随于本程序的GNU通用公共授权的副本；如果没有，请参照\n"
+                                 "<http://www.gnu.org/licenses/>.\n"));
 }

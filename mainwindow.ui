@@ -20,7 +20,7 @@
      <x>0</x>
      <y>0</y>
      <width>1206</width>
-     <height>26</height>
+     <height>29</height>
     </rect>
    </property>
    <property name="toolTip">
@@ -66,10 +66,23 @@
     <addaction name="actionBreakUp"/>
     <addaction name="actionDelete"/>
    </widget>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>控件</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>帮助</string>
+    </property>
+    <addaction name="actionAbout"/>
+   </widget>
    <addaction name="menu"/>
    <addaction name="menuEdit"/>
    <addaction name="menu_2"/>
    <addaction name="menu_3"/>
+   <addaction name="menuTools"/>
+   <addaction name="menuHelp"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <property name="windowTitle">
@@ -172,7 +185,7 @@
   </widget>
   <action name="actionDraw">
    <property name="icon">
-    <iconset resource="icon.qrc">
+    <iconset resource="resourse.qrc">
      <normaloff>:/icon/pen.png</normaloff>:/icon/pen.png</iconset>
    </property>
    <property name="text">
@@ -230,7 +243,7 @@
   </action>
   <action name="actionZoomIn">
    <property name="icon">
-    <iconset resource="icon.qrc">
+    <iconset resource="resourse.qrc">
      <normaloff>:/icon/zoomin.png</normaloff>:/icon/zoomin.png</iconset>
    </property>
    <property name="text">
@@ -245,7 +258,7 @@
   </action>
   <action name="actionZoomOut">
    <property name="icon">
-    <iconset resource="icon.qrc">
+    <iconset resource="resourse.qrc">
      <normaloff>:/icon/zoomout.png</normaloff>:/icon/zoomout.png</iconset>
    </property>
    <property name="text">
@@ -263,7 +276,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="icon.qrc">
+    <iconset resource="resourse.qrc">
      <normaloff>:/icon/undo.png</normaloff>:/icon/undo.png</iconset>
    </property>
    <property name="text">
@@ -278,7 +291,7 @@
   </action>
   <action name="actionRedo">
    <property name="icon">
-    <iconset resource="icon.qrc">
+    <iconset resource="resourse.qrc">
      <normaloff>:/icon/redo.png</normaloff>:/icon/redo.png</iconset>
    </property>
    <property name="text">
@@ -299,7 +312,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="icon.qrc">
+    <iconset resource="resourse.qrc">
      <normaloff>:/icon/cursor.png</normaloff>:/icon/cursor.png</iconset>
    </property>
    <property name="text">
@@ -317,7 +330,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="icon.qrc">
+    <iconset resource="resourse.qrc">
      <normaloff>:/icon/mover.png</normaloff>:/icon/mover.png</iconset>
    </property>
    <property name="text">
@@ -332,7 +345,7 @@
   </action>
   <action name="actionResume">
    <property name="icon">
-    <iconset resource="icon.qrc">
+    <iconset resource="resourse.qrc">
      <normaloff>:/icon/zoomzero.png</normaloff>:/icon/zoomzero.png</iconset>
    </property>
    <property name="text">
@@ -493,10 +506,15 @@
     <string>线条设置</string>
    </property>
   </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>关于VIPainter</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>
-  <include location="icon.qrc"/>
+  <include location="resourse.qrc"/>
  </resources>
  <connections/>
 </ui>

@@ -1,7 +1,5 @@
 /**
- * Copyright (C) 2017 kkkeQAQ
- *               2017 Bcai0797
- *               2017 Penn000
+ * Copyright (C) 2017 VIPainter
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -111,6 +109,8 @@ private slots:
     void on_actionPen_triggered();
 
     void on_actionPenStyle_triggered();
+
+    void on_actionAbout_triggered();
 
 private:
     QVector<VShape*>plugins;
