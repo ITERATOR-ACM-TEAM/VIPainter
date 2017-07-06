@@ -54,10 +54,22 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow),focus(nullptr),cursorState(VCursorType::CHOOSE)
 {
     ui->setupUi(this);
-    delete takeCentralWidget();
-    setDockNestingEnabled(true);
+    delete takeCentralWidget();//去掉中心控件
+    setDockNestingEnabled(true);//设置DOCK可随意移动
+    this->setContextMenuPolicy(Qt::NoContextMenu);//取消右键菜单
     setWindowTitle("VIPainter");
     ui->shapesDock->hide();
+
+    //菜单逻辑
+    connect(ui->menuEdit,&QMenu::aboutToShow,[this]{
+        TestWidget *widget=getTestWidget();
+        if(widget!=nullptr)
+        {
+            changeMenuAction(widget,VPoint(0,0));
+        }
+    });
+
+    //菜单编组 menu group
     group = new QActionGroup(this);
     group->addAction(ui->actionChoose);
     group->addAction(ui->actionMove);
@@ -376,6 +388,56 @@ void MainWindow::on_actionNew_triggered()
     newDock();
 }
 
+//判断Action的显示状态
+void MainWindow::changeMenuAction(TestWidget *widget, VPoint loc)
+{
+    bool flag=false;
+    if(widget->focusShapes.empty())
+    {
+        ui->actionCopy->setEnabled(false);
+        ui->actionCut->setEnabled(false);
+        ui->actionDelete->setEnabled(false);
+        ui->actionPen->setVisible(false);
+        ui->actionBrush->setVisible(false);
+        ui->actionGroup->setVisible(false);
+        ui->actionBreakUp->setVisible(false);
+    }
+    else
+    {
+        ui->actionCopy->setEnabled(true);
+        ui->actionCut->setEnabled(true);
+        ui->actionDelete->setEnabled(true);
+        for(VShape *shape:widget->focusShapes)
+        {
+            if(shape->contains(shape->transformPoint(loc)))
+            {
+                flag=true;
+                break;
+            }
+        }
+        if(flag)
+        {
+            ui->actionPen->setVisible(true);
+            ui->actionBrush->setVisible(true);
+            ui->actionGroup->setVisible(true);
+            ui->actionBreakUp->setVisible(true);
+            if(widget->focusShapes.size()==1
+                    &&widget->focusShapes.first()->type()==VType::GroupShape)
+            {
+                ui->actionBreakUp->setEnabled(true);
+            }
+            else ui->actionBreakUp->setEnabled(false);
+        }
+        else
+        {
+            ui->actionPen->setVisible(false);
+            ui->actionBrush->setVisible(false);
+            ui->actionGroup->setVisible(false);
+            ui->actionBreakUp->setVisible(false);
+        }
+    }
+}
+
 bool MainWindow::eventFilter(QObject * obj, QEvent * ev)
 {
 
@@ -416,51 +478,7 @@ bool MainWindow::eventFilter(QObject * obj, QEvent * ev)
         VPoint loc=widget->getLoc(point);
         if(widget!=nullptr)
         {
-            bool flag=false;
-            if(widget->focusShapes.empty())
-            {
-                ui->actionCopy->setEnabled(false);
-                ui->actionCut->setEnabled(false);
-                ui->actionDelete->setEnabled(false);
-                ui->actionPen->setVisible(false);
-                ui->actionBrush->setVisible(false);
-                ui->actionGroup->setVisible(false);
-                ui->actionBreakUp->setVisible(false);
-            }
-            else
-            {
-                ui->actionCopy->setEnabled(true);
-                ui->actionCut->setEnabled(true);
-                ui->actionDelete->setEnabled(true);
-                for(VShape *shape:widget->focusShapes)
-                {
-                    if(shape->contains(shape->transformPoint(loc)))
-                    {
-                        flag=true;
-                        break;
-                    }
-                }
-                if(flag)
-                {
-                    ui->actionPen->setVisible(true);
-                    ui->actionBrush->setVisible(true);
-                    ui->actionGroup->setVisible(true);
-                    ui->actionBreakUp->setVisible(true);
-                    if(widget->focusShapes.size()==1
-                            &&widget->focusShapes.first()->type()==VType::GroupShape)
-                    {
-                        ui->actionBreakUp->setEnabled(true);
-                    }
-                    else ui->actionBreakUp->setEnabled(false);
-                }
-                else
-                {
-                    ui->actionPen->setVisible(false);
-                    ui->actionBrush->setVisible(false);
-                    ui->actionGroup->setVisible(false);
-                    ui->actionBreakUp->setVisible(false);
-                }
-            }
+            changeMenuAction(widget,loc);
             contextMenu->exec(event->globalPos());
             return true;
         }
@@ -771,6 +789,7 @@ void MainWindow::on_actionBrush_triggered()
     if(dialog.exec()==QDialog::Accepted)
     {
         for(VShape *shape:widget->focusShapes)shape->setBrush(dialog.selectedColor());
+        widget->update();
     }
 }
 
@@ -784,5 +803,20 @@ void MainWindow::on_actionPen_triggered()
     if(dialog.exec()==QDialog::Accepted)
     {
         for(VShape *shape:widget->focusShapes)shape->setPen(dialog.selectedColor());
+        widget->update();
+    }
+}
+
+void MainWindow::on_actionPenWidth_triggered()
+{
+    TestWidget *widget=getTestWidget();
+    if(widget==nullptr)return;
+    if(widget->focusShapes.empty())return;
+    QColorDialog dialog(widget->focusShapes.first()->getPen().color(),this);
+    dialog.setOption(QColorDialog::ShowAlphaChannel);
+    if(dialog.exec()==QDialog::Accepted)
+    {
+        for(VShape *shape:widget->focusShapes)shape->setPen(dialog.selectedColor());
+        widget->update();
     }
 }

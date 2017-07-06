@@ -20,7 +20,7 @@
      <x>0</x>
      <y>0</y>
      <width>1206</width>
-     <height>29</height>
+     <height>26</height>
     </rect>
    </property>
    <property name="toolTip">
@@ -53,7 +53,7 @@
     <addaction name="actionReloadPlugon"/>
     <addaction name="actionLoadExPlugin"/>
    </widget>
-   <widget class="QMenu" name="menu_4">
+   <widget class="QMenu" name="menuEdit">
     <property name="title">
      <string>编辑</string>
     </property>
@@ -67,7 +67,7 @@
     <addaction name="actionDelete"/>
    </widget>
    <addaction name="menu"/>
-   <addaction name="menu_4"/>
+   <addaction name="menuEdit"/>
    <addaction name="menu_2"/>
    <addaction name="menu_3"/>
   </widget>
@@ -471,18 +471,26 @@
   </action>
   <action name="actionPen">
    <property name="text">
-    <string>画笔颜色</string>
+    <string>线条颜色</string>
    </property>
    <property name="toolTip">
-    <string>画笔颜色</string>
+    <string>线条颜色</string>
    </property>
   </action>
   <action name="actionBrush">
    <property name="text">
-    <string>画刷颜色</string>
+    <string>填充颜色</string>
    </property>
    <property name="toolTip">
-    <string>画刷颜色</string>
+    <string>填充颜色</string>
+   </property>
+  </action>
+  <action name="actionPenWidth">
+   <property name="text">
+    <string>线条宽度</string>
+   </property>
+   <property name="toolTip">
+    <string>线条宽度</string>
    </property>
   </action>
  </widget>

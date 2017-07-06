@@ -110,6 +110,8 @@ private slots:
 
     void on_actionPen_triggered();
 
+    void on_actionPenWidth_triggered();
+
 private:
     QVector<VShape*>plugins;
     Ui::MainWindow *ui;
@@ -124,6 +126,8 @@ private:
     VListView *listView;
 
     QMenu *contextMenu;
+
+    void changeMenuAction(TestWidget *widget,VPoint loc);
 
     void loadPlugin(QString filename);
 
