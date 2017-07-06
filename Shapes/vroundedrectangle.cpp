@@ -62,7 +62,7 @@ const VRoundedRectangle& VRoundedRectangle::operator=(const QJsonObject &jsonObj
 
 void VRoundedRectangle::draw(QPainter *painter,const VTransform &transform)
 {
-    painter->setPen(QPen(pen.brush(),1,Qt::SolidLine,Qt::SquareCap,Qt::MiterJoin));
+    painter->setPen(pen);
     painter->setBrush(brush);
     painter->save();
     VPoint loc=transform.map(VPoint(0,0));
