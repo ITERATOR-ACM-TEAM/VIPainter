@@ -438,10 +438,24 @@ VSize VGroupShape::getSize()
 
 void VGroupShape::setPen(QPen pen)
 {
+    VShape::setPen(pen);
     for(VShape *shape:shapes)shape->setPen(pen);
 }
 
 void VGroupShape::setBrush(QBrush brush)
 {
+    VShape::setBrush(brush);
+    for(VShape *shape:shapes)shape->setBrush(brush);
+}
+
+void VGroupShape::setPen(QColor pen)
+{
+    VShape::setPen(pen);
+    for(VShape *shape:shapes)shape->setPen(pen);
+}
+
+void VGroupShape::setBrush(QColor brush)
+{
+    VShape::setBrush(brush);
     for(VShape *shape:shapes)shape->setBrush(brush);
 }

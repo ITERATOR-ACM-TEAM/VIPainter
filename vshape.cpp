@@ -33,7 +33,7 @@
 
 const double VShape::PI=atan(1)*4.0;
 const QPen VShape::defaultPen(QBrush(Qt::black),1);
-const QBrush VShape::defaultBrush(Qt::NoBrush);
+const QBrush VShape::defaultBrush(Qt::white,Qt::NoBrush);
 
 VShape::~VShape()
 {
@@ -112,6 +112,16 @@ VShape::VShape(const QJsonObject jsonObject)
         this->brush.setColor(QColor(brush.value("color").toString()));
         this->brush.setStyle(Qt::BrushStyle(brush.value("style").toInt()));
     }
+    QJsonObject pen=jsonObject.value("pen").toObject();
+    if(pen.isEmpty())this->pen=defaultPen;
+    else
+    {
+        this->pen.setColor(QColor(pen.value("color").toString()));
+        this->pen.setWidth(pen.value("width").toInt());
+        this->pen.setStyle(Qt::PenStyle(pen.value("style").toInt()));
+        this->pen.setCapStyle(Qt::PenCapStyle(pen.value("capStyle").toInt()));
+        this->pen.setJoinStyle(Qt::PenJoinStyle(pen.value("joinStyle").toInt()));
+    }
 }
 
 
@@ -126,6 +136,16 @@ const VShape& VShape::operator=(const QJsonObject &jsonObject)
         this->brush.setColor(QColor(brush.value("color").toString()));
         this->brush.setStyle(Qt::BrushStyle(brush.value("style").toInt()));
     }
+    QJsonObject pen=jsonObject.value("pen").toObject();
+    if(pen.isEmpty())this->pen=defaultPen;
+    else
+    {
+        this->pen.setColor(QColor(pen.value("color").toString()));
+        this->pen.setWidth(pen.value("width").toInt());
+        this->pen.setStyle(Qt::PenStyle(pen.value("style").toInt()));
+        this->pen.setCapStyle(Qt::PenCapStyle(pen.value("capStyle").toInt()));
+        this->pen.setJoinStyle(Qt::PenJoinStyle(pen.value("joinStyle").toInt()));
+    }
     return *this;
 }
 
@@ -135,11 +155,21 @@ QJsonObject VShape::toJsonObject()const
     jsonObject.insert("type",this->type());
     jsonObject.insert("name",this->getName());
     jsonObject.insert("transform",this->transform.toJsonArray());
-    {
+    if(brush!=defaultBrush){
         QJsonObject brush;
         brush.insert("color",this->brush.color().name(QColor::HexArgb));
         brush.insert("style",this->brush.style());
         jsonObject.insert("brush",brush);
+    }
+    if(pen!=defaultPen){
+        QJsonObject pen;
+        //(color,width,style, cap,join)
+        pen.insert("color",this->pen.color().name(QColor::HexArgb));
+        pen.insert("width",this->pen.width());
+        pen.insert("style",this->pen.style());
+        pen.insert("capStyle",this->pen.capStyle());
+        pen.insert("joinStyle",this->pen.joinStyle());
+        jsonObject.insert("pen",pen);
     }
     return jsonObject;
 }
@@ -321,5 +351,15 @@ QPen VShape::getPen()
 QBrush VShape::getBrush()
 {
     return brush;
+}
+
+void VShape::setPen(QColor pen)
+{
+    this->pen.setColor(pen);
+}
+
+void VShape::setBrush(QColor brush)
+{
+    this->brush=QBrush(brush);
 }
 

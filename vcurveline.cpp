@@ -99,7 +99,7 @@ VShape* VCurveline::clone() const
 
 void VCurveline::draw(QPainter *painter,const VTransform &transform)
 {
-    painter->setPen(QPen(QBrush(Qt::black),1,Qt::SolidLine,Qt::RoundCap,Qt::RoundJoin));
+    painter->setPen(QPen(pen.brush(),1,Qt::SolidLine,Qt::RoundCap,Qt::RoundJoin));
     painter->setBrush(brush);
 
 //    double x[20], y[20];

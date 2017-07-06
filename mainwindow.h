@@ -124,8 +124,6 @@ private:
     VListView *listView;
 
     QMenu *contextMenu;
-    QPen pen;
-    QBrush brush;
 
     void loadPlugin(QString filename);
 

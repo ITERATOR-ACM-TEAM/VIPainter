@@ -72,7 +72,7 @@ VShape* VBezlerCurve::clone() const
 
 void VBezlerCurve::draw(QPainter *painter,const VTransform &transform)
 {
-    painter->setPen(QPen(QBrush(Qt::black),1,Qt::SolidLine,Qt::RoundCap,Qt::RoundJoin));
+    painter->setPen(QPen(pen.brush(),1,Qt::SolidLine,Qt::RoundCap,Qt::RoundJoin));
     painter->setBrush(brush);
     QPainterPath path;
     auto i=points.begin();

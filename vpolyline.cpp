@@ -50,7 +50,7 @@ const VPolyline& VPolyline::operator=(const QJsonObject &jsonObject){
 
 void VPolyline::draw(QPainter *painter, const VTransform &transform)
 {
-    painter->setPen(QPen(QBrush(Qt::black),1,Qt::SolidLine,Qt::SquareCap,Qt::MiterJoin));
+    painter->setPen(QPen(pen.brush(),1,Qt::SolidLine,Qt::SquareCap,Qt::MiterJoin));
     painter->setBrush(brush);
     QPolygonF qpf;
     for(auto &i : this->points){

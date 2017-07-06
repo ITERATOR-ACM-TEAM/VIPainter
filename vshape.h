@@ -91,6 +91,8 @@ public:
 
     virtual void setPen(QPen pen);
     virtual void setBrush(QBrush brush);
+    virtual void setPen(QColor pen);
+    virtual void setBrush(QColor brush);
     QPen getPen();
     QBrush getBrush();
 

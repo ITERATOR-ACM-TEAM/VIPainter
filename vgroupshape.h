@@ -77,6 +77,8 @@ public:
 
     void setPen(QPen pen)override;
     void setBrush(QBrush brush)override;
+    void setPen(QColor pen)override;
+    void setBrush(QColor brush)override;
 };
 
 #endif // VGROUPSHAPE_H

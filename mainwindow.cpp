@@ -51,8 +51,7 @@
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow),focus(nullptr),cursorState(VCursorType::CHOOSE),
-    brush(QColor(0xff,0xff,0xff,0))
+    ui(new Ui::MainWindow),focus(nullptr),cursorState(VCursorType::CHOOSE)
 {
     ui->setupUi(this);
     delete takeCentralWidget();
@@ -82,6 +81,9 @@ MainWindow::MainWindow(QWidget *parent) :
     contextMenu->addAction(ui->actionCut);
     contextMenu->addAction(ui->actionPaste);
     contextMenu->addAction(ui->actionDelete);
+    contextMenu->addSeparator();
+    contextMenu->addAction(ui->actionPen);
+    contextMenu->addAction(ui->actionBrush);
     contextMenu->addSeparator();
     contextMenu->addAction(ui->actionGroup);
     contextMenu->addAction(ui->actionBreakUp);
@@ -284,7 +286,7 @@ void MainWindow::saveFile(QString filename)
         }
         else QMessageBox::warning(this,tr("错误"),tr("保存文件")+filename+tr("失败"));
     }
-    else if(format=="JPG"||format=="PNG"||format=="RGB")
+    else if(format=="JPG"||format=="PNG"||format=="BMP")
     {
         QImage image(getTestWidget()->canvasSize.width,getTestWidget()->canvasSize.height,QImage::Format_ARGB32_Premultiplied);
         image.fill(0x00ffffff);
@@ -420,6 +422,8 @@ bool MainWindow::eventFilter(QObject * obj, QEvent * ev)
                 ui->actionCopy->setEnabled(false);
                 ui->actionCut->setEnabled(false);
                 ui->actionDelete->setEnabled(false);
+                ui->actionPen->setVisible(false);
+                ui->actionBrush->setVisible(false);
                 ui->actionGroup->setVisible(false);
                 ui->actionBreakUp->setVisible(false);
             }
@@ -438,6 +442,8 @@ bool MainWindow::eventFilter(QObject * obj, QEvent * ev)
                 }
                 if(flag)
                 {
+                    ui->actionPen->setVisible(true);
+                    ui->actionBrush->setVisible(true);
                     ui->actionGroup->setVisible(true);
                     ui->actionBreakUp->setVisible(true);
                     if(widget->focusShapes.size()==1
@@ -449,6 +455,8 @@ bool MainWindow::eventFilter(QObject * obj, QEvent * ev)
                 }
                 else
                 {
+                    ui->actionPen->setVisible(false);
+                    ui->actionBrush->setVisible(false);
                     ui->actionGroup->setVisible(false);
                     ui->actionBreakUp->setVisible(false);
                 }
@@ -755,18 +763,26 @@ void MainWindow::on_actionSelectAll_triggered()
 
 void MainWindow::on_actionBrush_triggered()
 {
-    QColorDialog dialog(brush.color(),this);
+    TestWidget *widget=getTestWidget();
+    if(widget==nullptr)return;
+    if(widget->focusShapes.empty())return;
+    QColorDialog dialog(widget->focusShapes.first()->getBrush().color(),this);
     dialog.setOption(QColorDialog::ShowAlphaChannel);
     if(dialog.exec()==QDialog::Accepted)
     {
-        brush.setColor(dialog.selectedColor());
-        TestWidget *widget=getTestWidget();
-        if(widget==nullptr)return;
-        for(VShape *shape:widget->focusShapes)shape->setBrush(this->brush);
+        for(VShape *shape:widget->focusShapes)shape->setBrush(dialog.selectedColor());
     }
 }
 
 void MainWindow::on_actionPen_triggered()
 {
-
+    TestWidget *widget=getTestWidget();
+    if(widget==nullptr)return;
+    if(widget->focusShapes.empty())return;
+    QColorDialog dialog(widget->focusShapes.first()->getPen().color(),this);
+    dialog.setOption(QColorDialog::ShowAlphaChannel);
+    if(dialog.exec()==QDialog::Accepted)
+    {
+        for(VShape *shape:widget->focusShapes)shape->setPen(dialog.selectedColor());
+    }
 }
