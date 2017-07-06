@@ -20,7 +20,7 @@
      <x>0</x>
      <y>0</y>
      <width>1206</width>
-     <height>26</height>
+     <height>29</height>
     </rect>
    </property>
    <property name="toolTip">
@@ -91,11 +91,6 @@
    <addaction name="actionZoomIn"/>
    <addaction name="actionZoomOut"/>
    <addaction name="actionResume"/>
-   <addaction name="actionGroup"/>
-   <addaction name="actionBreakUp"/>
-   <addaction name="actionDelete"/>
-   <addaction name="actionPen"/>
-   <addaction name="actionBrush"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QToolBar" name="shapeBar">

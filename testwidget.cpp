@@ -93,80 +93,92 @@ void TestWidget::mousePressEvent(QMouseEvent *event)
 {
     QPoint pressPoint=event->pos();
     VPoint point(pressPoint.x(), pressPoint.y());
-    if(cursorType == VCursorType::MOVE)
-        this->setCursor(Qt::ClosedHandCursor);
-    else if(cursorType == VCursorType::CHOOSE)
+    if(event->button()==Qt::LeftButton)
     {
-        if(!focusShapes.empty())
+        if(cursorType == VCursorType::MOVE)
+            this->setCursor(Qt::ClosedHandCursor);
+        else if(cursorType == VCursorType::CHOOSE)
         {
-            //qDebug() << focusShape->transformPoint(getLoc(point));
-            for(VShape *shape:focusShapes)
+            if(!focusShapes.empty())
             {
-                crPos = shape->atCrPoints(shape->transformPoint( getLoc(point)),scale);
-                if(crPos == -1)
+                //qDebug() << focusShape->transformPoint(getLoc(point));
+                for(VShape *shape:focusShapes)
                 {
-                    VPointGroupShape * pgs = dynamic_cast<VPointGroupShape *>(shape);
-                    if (pgs != nullptr)
+                    crPos = shape->atCrPoints(shape->transformPoint( getLoc(point)),scale);
+                    if(crPos == -1)
                     {
-                        int tmp = pgs->atPoints(shape->transformPoint( getLoc(point)));
-                        if(tmp != -1)
+                        VPointGroupShape * pgs = dynamic_cast<VPointGroupShape *>(shape);
+                        if (pgs != nullptr)
                         {
-                            crPos = tmp+8;
-                            focusShapes.clear();
-                            focusShapes.append(shape);
+                            int tmp = pgs->atPoints(shape->transformPoint( getLoc(point)));
+                            if(tmp != -1)
+                            {
+                                crPos = tmp+8;
+                                focusShapes.clear();
+                                focusShapes.append(shape);
+                                emitSelected();
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        focusShapes.clear();
+                        focusShapes.append(shape);
+                        emitSelected();
+                        break;
+                    }
+                }
+            }
+
+            if(crPos == -1)
+            {
+                VShape *shape= getShape(point);
+                if(shape!=nullptr)
+                {
+                    auto it=std::find(focusShapes.begin(),focusShapes.end(),shape);
+                    if(it==focusShapes.end())
+                    {
+                        if(QApplication::keyboardModifiers () != Qt::ControlModifier)focusShapes.clear();
+                        focusShapes.append(shape);
+                        emitSelected();
+                    }
+                    else
+                    {
+                        if(QApplication::keyboardModifiers () == Qt::ControlModifier)
+                        {
+                            focusShapes.erase(it);
                             emitSelected();
-                            break;
                         }
                     }
                 }
                 else
                 {
-                    focusShapes.clear();
-                    focusShapes.append(shape);
-                    emitSelected();
-                    break;
+                    if(QApplication::keyboardModifiers () != Qt::ControlModifier)
+                    {
+                        focusShapes.clear();
+                        emitSelected();
+                    }
+                    crPos=-2;
                 }
             }
-        }
 
-        if(crPos == -1)
+            update();
+        }
+        else if(cursorType == VCursorType::ROTATE)
         {
-            VShape *shape= getShape(point);
-            if(shape!=nullptr)
+            if(!focusShapes.empty())
             {
-                if(std::find(focusShapes.begin(),focusShapes.end(),shape)==focusShapes.end())
-                {
-                    if(QApplication::keyboardModifiers () != Qt::ControlModifier)focusShapes.clear();
-                    focusShapes.append(shape);
-                    emitSelected();
-                }
-            }
-            else
-            {
-                if(QApplication::keyboardModifiers () != Qt::ControlModifier)
-                {
-                    focusShapes.clear();
-                    emitSelected();
-                }
-                crPos=-2;
+                VShape *shape= focusShapes.back();
+                focusShapes.clear();
+                focusShapes.append(shape);
+                emitSelected();
+                lastAngle = 0;
             }
         }
-
-        update();
+        lastMove=VPoint(pressPoint.x(),pressPoint.y());
+        locMove=locPress=getLoc(lastMove);
     }
-    else if(cursorType == VCursorType::ROTATE)
-    {
-        if(!focusShapes.empty())
-        {
-            VShape *shape= focusShapes.back();
-            focusShapes.clear();
-            focusShapes.append(shape);
-            emitSelected();
-            lastAngle = 0;
-        }
-    }
-    lastMove=VPoint(pressPoint.x(),pressPoint.y());
-    locMove=locPress=getLoc(lastMove);
 }
 
 void TestWidget::mouseDoubleClickEvent(QMouseEvent* event)
@@ -497,6 +509,7 @@ void TestWidget::updateList()
         list.append(groupShape.getShapes().at(i)->getName());
     }
     listModel->setStringList(list);
+    emitSelected();
 }
 
 void TestWidget::changeFocus()

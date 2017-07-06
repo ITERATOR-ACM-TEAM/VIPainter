@@ -27,6 +27,8 @@
 #include <QRect>
 #include <QDir>
 #include <QWheelEvent>
+#include <QContextMenuEvent>
+#include <QMenu>
 #include <QKeyEvent>
 #include <QModelIndex>
 #include <QStringListModel>
@@ -45,7 +47,7 @@ class TestWidget : public QWidget
 public:
     QPixmap VSizeAll = QPixmap("://icon/mover.png").scaled(30,30);
     QPixmap VRotate = QPixmap("://icon/undo.png").scaled(20,20);
-    explicit TestWidget(QMainWindow *mainwindow,bool antialiasing);
+    explicit TestWidget(QMainWindow *mainwindow, bool antialiasing);
     double scale=1;
     QMainWindow *mainwindow;
     VGroupShape groupShape;
@@ -54,6 +56,7 @@ public:
     VSize canvasSize;
     QStringListModel *listModel;
     QItemSelectionModel *selectionModel;
+    QMenu *contextMenu;
     ~TestWidget();
 
 protected:

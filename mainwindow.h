@@ -24,6 +24,7 @@
 #include <QPaintEvent>
 #include <QActionGroup>
 #include <QDir>
+#include <QMenu>
 #include <vcursortype.h>
 #include "testwidget.h"
 #include "vshape.h"
@@ -121,6 +122,8 @@ private:
     VCursorType cursorState;
     VDelegate *delegate;
     VListView *listView;
+
+    QMenu *contextMenu;
     QPen pen;
     QBrush brush;
 
@@ -131,7 +134,7 @@ private:
 
     void focusDock(QDockWidget * target);
     TestWidget * getTestWidget();
-    TestWidget * getTestWidget(QDockWidget * target);
+    TestWidget * getTestWidget(QDockWidget *target);
 };
 
 #endif // MAINWINDOW_H

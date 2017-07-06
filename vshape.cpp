@@ -33,7 +33,7 @@
 
 const double VShape::PI=atan(1)*4.0;
 const QPen VShape::defaultPen(QBrush(Qt::black),1);
-const QBrush VShape::defaultBrush(Qt::transparent);
+const QBrush VShape::defaultBrush(Qt::NoBrush);
 
 VShape::~VShape()
 {
@@ -105,12 +105,12 @@ VShape::VShape(const QJsonObject jsonObject)
     :name(jsonObject.value("name").toString())
     ,transform(jsonObject.value("transform").toArray())
 {
+    QJsonObject brush=jsonObject.value("brush").toObject();
+    if(brush.isEmpty())this->brush=defaultBrush;
+    else
     {
-        QJsonObject brush=jsonObject.value("brush").toObject();
-        unsigned int argb=brush.value("color").toString().toUInt(nullptr,16);
-        QColor color((argb>>16)&0xff,(argb>>8)&0xff,argb&0xff,(argb>>24)&0xff);
-        this->brush.setColor(color);
-        this->brush.setStyle((Qt::BrushStyle)brush.value("type").toInt());
+        this->brush.setColor(QColor(brush.value("color").toString()));
+        this->brush.setStyle(Qt::BrushStyle(brush.value("style").toInt()));
     }
 }
 
@@ -119,12 +119,12 @@ const VShape& VShape::operator=(const QJsonObject &jsonObject)
 {
     name=jsonObject.value("name").toString();
     transform=jsonObject.value("transform").toArray();
+    QJsonObject brush=jsonObject.value("brush").toObject();
+    if(brush.isEmpty())this->brush=defaultBrush;
+    else
     {
-        QJsonObject brush=jsonObject.value("brush").toObject();
-        unsigned int argb=brush.value("color").toString().toUInt(nullptr,16);
-        QColor color((argb>>16)&0xff,(argb>>8)&0xff,argb&0xff,(argb>>24)&0xff);
-        this->brush.setColor(color);
-        this->brush.setStyle((Qt::BrushStyle)brush.value("type").toInt());
+        this->brush.setColor(QColor(brush.value("color").toString()));
+        this->brush.setStyle(Qt::BrushStyle(brush.value("style").toInt()));
     }
     return *this;
 }
@@ -137,12 +137,7 @@ QJsonObject VShape::toJsonObject()const
     jsonObject.insert("transform",this->transform.toJsonArray());
     {
         QJsonObject brush;
-        QColor color=this->brush.color();
-        unsigned int argb=color.alpha();
-        argb=(argb<<8)|color.red();
-        argb=(argb<<8)|color.green();
-        argb=(argb<<8)|color.blue();
-        brush.insert("color",QString().sprintf("0x%08x",argb));
+        brush.insert("color",this->brush.color().name(QColor::HexArgb));
         brush.insert("style",this->brush.style());
         jsonObject.insert("brush",brush);
     }

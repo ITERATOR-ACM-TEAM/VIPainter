@@ -96,7 +96,6 @@ void VPolygon::draw(QPainter *painter, const VTransform &transform)
 {
     painter->setPen(QPen(QBrush(Qt::black),1,Qt::SolidLine,Qt::SquareCap,Qt::MiterJoin));
     painter->setBrush(brush);
-    qDebug()<<brush;
     QPolygonF qpf;
     for(auto &i : points){
         qpf << (i*transform).toQPointF();

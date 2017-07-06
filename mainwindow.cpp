@@ -47,6 +47,7 @@
 #include <QMimeData>
 #include <QTimer>
 #include <QColorDialog>
+#include <QContextMenuEvent>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -71,6 +72,18 @@ MainWindow::MainWindow(QWidget *parent) :
     delegate=new VDelegate(this);
     listView->setItemDelegate(delegate);
     connect(delegate,SIGNAL(dataChanged(const QModelIndex &)),this,SLOT(changeShapeName(const QModelIndex &)));
+
+    //contextMenu init
+    contextMenu=new QMenu(this);
+    contextMenu->addAction(ui->actionSelectAll);
+    contextMenu->addAction(ui->actionCanvasSize);
+    contextMenu->addAction(ui->actionCopy);
+    contextMenu->addAction(ui->actionCut);
+    contextMenu->addAction(ui->actionPaste);
+    contextMenu->addAction(ui->actionDelete);
+    contextMenu->addSeparator();
+    contextMenu->addAction(ui->actionGroup);
+    contextMenu->addAction(ui->actionBreakUp);
 
     update();
 }
@@ -158,6 +171,7 @@ QDockWidget* MainWindow::newDock(QString dockname)
     TestWidget* widget=new TestWidget(this,ui->actionAntialiasing->isChecked());
     connect(this, SIGNAL(cursorChange(VCursorType)), widget, SLOT(changeCursor(VCursorType)));
     emit cursorChange(this->cursorState);
+    widget->installEventFilter(this);
 
     QDockWidget *dockWidget=new QDockWidget;
     dockWidget->installEventFilter(widget);
@@ -361,32 +375,45 @@ void MainWindow::on_actionNew_triggered()
 
 bool MainWindow::eventFilter(QObject * obj, QEvent * ev)
 {
-    for(auto it = docks.begin(); it != docks.end(); it++)
+
+    if(ev->type() == QEvent::FocusIn)
     {
-        if(obj == *it)
+        QDockWidget *dock=qobject_cast<QDockWidget*>(obj);
+        if(dock!=nullptr)
         {
-            if(ev->type() == QEvent::FocusIn)
+            focus = dock;
+            listView->setModel(getTestWidget(dock)->listModel);
+            listView->setSelectionModel(getTestWidget(dock)->selectionModel);
+            getTestWidget(dock)->updateList();
+            return false;
+        }
+    }
+    else if(ev->type() == QEvent::Close)
+    {
+        auto it=std::find(docks.begin(),docks.end(),obj);
+        if(it!=docks.end())
+        {
+            (*it)->deleteLater();
+            docks.erase(it);
+            if(!docks.empty())
             {
-                //qDebug() << "focusing"<<obj;
-                focus = *it;
-                listView->setModel(getTestWidget(focus)->listModel);
-                listView->setSelectionModel(getTestWidget(focus)->selectionModel);
-                getTestWidget(focus)->updateList();
-                return false;
-            }else if(ev->type() == QEvent::Close)
-            {
-                //qDebug() << "closing";
-                (*it)->deleteLater();
-                docks.erase(it);
-                if(!docks.empty())
-                {
-                    this->focusDock(docks.back());
-                }
-                else if(ui->shapesDock->isVisible())ui->shapesDock->hide();
-                focus = nullptr;
-                //qDebug() << docks.size();
-                return true;
+                this->focusDock(docks.back());
             }
+            else if(ui->shapesDock->isVisible())ui->shapesDock->hide();
+            focus = nullptr;
+            return true;
+        }
+    }
+    else if(ev->type() ==QEvent::ContextMenu)
+    {
+        QContextMenuEvent *event=static_cast<QContextMenuEvent*>(ev);
+        TestWidget *widget=qobject_cast<TestWidget*>(obj);
+        if(widget!=nullptr)
+        {
+            ui->actionGroup->setVisible(false);
+            ui->actionBreakUp->setVisible(false);
+            contextMenu->exec(event->globalPos());
+            return true;
         }
     }
 
@@ -440,7 +467,7 @@ TestWidget * MainWindow::getTestWidget()
     return qobject_cast<TestWidget *>(focus->widget());
 }
 
-TestWidget * MainWindow::getTestWidget(QDockWidget * target)
+TestWidget * MainWindow::getTestWidget(QDockWidget *target)
 {
     return qobject_cast<TestWidget *>(target->widget());
 }
@@ -646,7 +673,9 @@ void MainWindow::on_actionPaste_triggered()
         }
         else if(mimeData->hasText())
         {
-            widget->groupShape.insertShape(new VText(mimeData->text()));
+            VText *text=new VText(mimeData->text());
+            text->setName(mimeData->text());
+            widget->groupShape.insertShape(text);
             widget->update();
         }
     }
