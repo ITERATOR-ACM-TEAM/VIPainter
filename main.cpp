@@ -1,7 +1,5 @@
 /**
- * Copyright (C) 2017 kkkeQAQ
- *               2017 Bcai0797
- *               2017 Penn000
+ * Copyright (C) 2017 VIPainter
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,12 +21,14 @@
 #include <QDebug>
 #include <QString>
 #include <QTranslator>
+#include <QLibraryInfo>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     QTranslator qtTranslate;
-    if(qtTranslate.load("qtcreator_zh_CN.qm",":/translate/"))a.installTranslator(&qtTranslate);
+    if(qtTranslate.load("qt_zh_CN.qm", QLibraryInfo::location(QLibraryInfo::TranslationsPath)))a.installTranslator(&qtTranslate);
+    if(qtTranslate.load("qtbase_zh_CN.qm", ":/translate/"))a.installTranslator(&qtTranslate);
     QTranslator translate;
     if(translate.load("zh_CN.qm",":/translate/"))a.installTranslator(&translate);
 

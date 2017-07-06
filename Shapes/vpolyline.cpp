@@ -1,7 +1,5 @@
 /**
- * Copyright (C) 2017 kkkeQAQ
- *               2017 Bcai0797
- *               2017 Penn000
+ * Copyright (C) 2017 VIPainter
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,7 +53,8 @@ void VPolyline::draw(QPainter *painter, const VTransform &transform)
     QPolygonF qpf;
     if(points.size() == 1)
     {
-        painter->drawPoint(QPointF(0,0)*transform);
+        VPoint p = transform.map(VPoint(0,0));
+        painter->drawPoint(p.x, p.y);
         return;
     }
     for(auto &i : this->points){
