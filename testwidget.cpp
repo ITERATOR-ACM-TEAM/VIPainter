@@ -114,6 +114,7 @@ void TestWidget::mousePressEvent(QMouseEvent *event)
                             crPos = tmp+8;
                             focusShapes.clear();
                             focusShapes.append(shape);
+                            emitSelected();
                             break;
                         }
                     }
@@ -122,6 +123,7 @@ void TestWidget::mousePressEvent(QMouseEvent *event)
                 {
                     focusShapes.clear();
                     focusShapes.append(shape);
+                    emitSelected();
                     break;
                 }
             }
@@ -136,11 +138,16 @@ void TestWidget::mousePressEvent(QMouseEvent *event)
                 {
                     if(QApplication::keyboardModifiers () != Qt::ControlModifier)focusShapes.clear();
                     focusShapes.append(shape);
+                    emitSelected();
                 }
             }
             else
             {
-                if(QApplication::keyboardModifiers () != Qt::ControlModifier)focusShapes.clear();
+                if(QApplication::keyboardModifiers () != Qt::ControlModifier)
+                {
+                    focusShapes.clear();
+                    emitSelected();
+                }
                 crPos=-2;
             }
         }
@@ -154,6 +161,7 @@ void TestWidget::mousePressEvent(QMouseEvent *event)
             VShape *shape= focusShapes.back();
             focusShapes.clear();
             focusShapes.append(shape);
+            emitSelected();
             lastAngle = 0;
         }
     }
@@ -212,7 +220,11 @@ void TestWidget::mouseReleaseEvent(QMouseEvent *event)
                             break;
                         }
                     }
-                    if(flag)focusShapes.append(shape);
+                    if(flag)
+                    {
+                        focusShapes.append(shape);
+                        emitSelected();
+                    }
                 }
                 std::sort(focusShapes.begin(),focusShapes.end());
                 std::unique(focusShapes.begin(),focusShapes.end());
