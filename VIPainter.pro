@@ -79,7 +79,7 @@ FORMS    += mainwindow.ui \
     penstyledialog.ui
 
 RESOURCES += \
-    icon.qrc
+    resourse.qrc
 
 TRANSLATIONS+=zh_CN.ts
 

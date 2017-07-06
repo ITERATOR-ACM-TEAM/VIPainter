@@ -9,5 +9,7 @@
         <file>icon/zoomin.png</file>
         <file>icon/zoomout.png</file>
         <file>icon/zoomzero.png</file>
+        <file>translate/zh_CN.qm</file>
+        <file>translate/qtcreator_zh_CN.qm</file>
     </qresource>
 </RCC>
