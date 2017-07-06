@@ -23,6 +23,7 @@
 #include <QActionGroup>
 #include <QDir>
 #include <QMenu>
+#include <QCloseEvent>
 #include <vcursortype.h>
 #include "testwidget.h"
 #include "vshape.h"
@@ -46,6 +47,7 @@ signals:
 
 protected:
     bool eventFilter(QObject * obj, QEvent * ev)override;
+    void closeEvent(QCloseEvent *event)override;
 
 private slots:
     void on_actionZoomIn_triggered();
@@ -142,6 +144,7 @@ private:
     void focusDock(QDockWidget * target);
     TestWidget * getTestWidget();
     TestWidget * getTestWidget(QDockWidget *target);
+    bool closeWidget(TestWidget *widget);
 };
 
 #endif // MAINWINDOW_H

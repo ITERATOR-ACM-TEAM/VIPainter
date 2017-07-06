@@ -478,6 +478,56 @@ void MainWindow::changeMenuAction(TestWidget *widget, VPoint loc)
     }
 }
 
+bool MainWindow::closeWidget(TestWidget *widget)
+{
+    bool flag=false;
+    QString filename=widget->getFileName();
+    if(filename=="")flag=true;
+    else
+    {
+        QFile file(filename);
+        if(file.open(QFile::ReadOnly|QFile::Text))
+        {
+            QJsonDocument doc=QJsonDocument::fromJson(file.readAll());
+            file.close();
+            QJsonDocument jsonDocument;
+            QJsonObject obj;
+            obj.insert("type",QString("canvas"));
+            obj.insert("size",widget->canvasSize);
+            obj.insert("shapes",widget->groupShape.toJsonArray());
+            jsonDocument.setObject(obj);
+            if(doc!=jsonDocument)flag=true;
+        }
+    }
+    if(flag)
+    {
+        int button
+                =QMessageBox::information(this,tr("退出"),
+                                          tr("是否在退出之前保存文件?"),
+                                          QMessageBox::Yes,QMessageBox::No,QMessageBox::Cancel);
+        if(button==QMessageBox::Yes)on_actionSave_triggered();
+        else if(button!=QMessageBox::No)
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    bool flag=true;
+    for(auto &dock:docks)
+    {
+        TestWidget *widget=getTestWidget(dock);
+        if(!closeWidget(widget))flag=false;
+    }
+    if(!flag)
+    {
+        event->ignore();
+    }
+}
+
 bool MainWindow::eventFilter(QObject * obj, QEvent * ev)
 {
 
@@ -498,6 +548,12 @@ bool MainWindow::eventFilter(QObject * obj, QEvent * ev)
         auto it=std::find(docks.begin(),docks.end(),obj);
         if(it!=docks.end())
         {
+            TestWidget *widget=getTestWidget(*it);
+            if(!closeWidget(widget))
+            {
+                ev->ignore();
+                return true;
+            }
             (*it)->deleteLater();
             docks.erase(it);
             if(!docks.empty())

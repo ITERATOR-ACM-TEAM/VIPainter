@@ -58,6 +58,7 @@ public:
     QItemSelectionModel *selectionModel;
     QMenu *contextMenu;
     VPoint getLoc(const VPoint & point);
+    bool fileChanged=false;
     void setFileName(QString filename);
     QString getFileName()const;
     ~TestWidget();
