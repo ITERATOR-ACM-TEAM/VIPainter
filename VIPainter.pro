@@ -74,3 +74,5 @@ FORMS    += mainwindow.ui \
 
 RESOURCES += \
     icon.qrc
+
+RC_ICONS = icon/VIPainter.ico

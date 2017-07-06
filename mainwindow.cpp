@@ -77,6 +77,7 @@ MainWindow::MainWindow(QWidget *parent) :
     contextMenu=new QMenu(this);
     contextMenu->addAction(ui->actionSelectAll);
     contextMenu->addAction(ui->actionCanvasSize);
+    contextMenu->addSeparator();
     contextMenu->addAction(ui->actionCopy);
     contextMenu->addAction(ui->actionCut);
     contextMenu->addAction(ui->actionPaste);
@@ -408,10 +409,50 @@ bool MainWindow::eventFilter(QObject * obj, QEvent * ev)
     {
         QContextMenuEvent *event=static_cast<QContextMenuEvent*>(ev);
         TestWidget *widget=qobject_cast<TestWidget*>(obj);
+        QPoint qpoint=event->pos();
+        VPoint point(qpoint.x(),qpoint.y());
+        VPoint loc=widget->getLoc(point);
         if(widget!=nullptr)
         {
-            ui->actionGroup->setVisible(false);
-            ui->actionBreakUp->setVisible(false);
+            bool flag=false;
+            if(widget->focusShapes.empty())
+            {
+                ui->actionCopy->setEnabled(false);
+                ui->actionCut->setEnabled(false);
+                ui->actionDelete->setEnabled(false);
+                ui->actionGroup->setVisible(false);
+                ui->actionBreakUp->setVisible(false);
+            }
+            else
+            {
+                ui->actionCopy->setEnabled(true);
+                ui->actionCut->setEnabled(true);
+                ui->actionDelete->setEnabled(true);
+                for(VShape *shape:widget->focusShapes)
+                {
+                    if(shape->contains(shape->transformPoint(loc)))
+                    {
+                        flag=true;
+                        break;
+                    }
+                }
+                if(flag)
+                {
+                    ui->actionGroup->setVisible(true);
+                    ui->actionBreakUp->setVisible(true);
+                    if(widget->focusShapes.size()==1
+                            &&widget->focusShapes.first()->type()==VType::GroupShape)
+                    {
+                        ui->actionBreakUp->setEnabled(true);
+                    }
+                    else ui->actionBreakUp->setEnabled(false);
+                }
+                else
+                {
+                    ui->actionGroup->setVisible(false);
+                    ui->actionBreakUp->setVisible(false);
+                }
+            }
             contextMenu->exec(event->globalPos());
             return true;
         }

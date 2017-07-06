@@ -57,6 +57,7 @@ public:
     QStringListModel *listModel;
     QItemSelectionModel *selectionModel;
     QMenu *contextMenu;
+    VPoint getLoc(const VPoint & point);
     ~TestWidget();
 
 protected:
@@ -71,7 +72,6 @@ protected:
 private:
     VCursorType cursorType;
     VShape * getShape(const VPoint &point);
-    VPoint getLoc(const VPoint & point);
     VPoint locMove;
     VPoint lastMove;
     VPoint locPress;
