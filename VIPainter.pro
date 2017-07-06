@@ -14,61 +14,64 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = VIPainter
 TEMPLATE = app
 
+INCLUDEPATH += Shapes Tools
 
-SOURCES += main.cpp\
-        mainwindow.cpp \
-    vpoint.cpp \
-    vpolygon.cpp \
-    vellipse.cpp \
-    vshape.cpp \
-    vgroupshape.cpp \
-    vpolyline.cpp \
-    vsize.cpp \
-    vtype.cpp \
-    vcurveline.cpp \
-    testwidget.cpp \
-    interpolation.cpp \
-    vpointgroupshape.cpp \
-    vmagnification.cpp \
-    vcursortype.cpp \
-    vdocktitlebar.cpp \
+SOURCES += \
     canvassizedialog.cpp \
-    vvector.cpp \
-    vbezlercurve.cpp \
-    vtext.cpp \
-    vtransform.cpp \
     changetextdialog.cpp \
-    vroundedrectangle.cpp \
+    main.cpp \
+    mainwindow.cpp \
+    penstyledialog.cpp \
+    testwidget.cpp \
+    vcursortype.cpp \
     vdelegate.cpp \
+    vdocktitlebar.cpp \
     vlistview.cpp \
-    penstyledialog.cpp
+    Tools/vvector.cpp \
+    Tools/vtransform.cpp \
+    Tools/vsize.cpp \
+    Tools/vpoint.cpp \
+    Tools/vmagnification.cpp \
+    Tools/interpolation.cpp \
+    Shapes/vtype.cpp \
+    Shapes/vtext.cpp \
+    Shapes/vshape.cpp \
+    Shapes/vroundedrectangle.cpp \
+    Shapes/vpolyline.cpp \
+    Shapes/vpolygon.cpp \
+    Shapes/vpointgroupshape.cpp \
+    Shapes/vgroupshape.cpp \
+    Shapes/vellipse.cpp \
+    Shapes/vcurveline.cpp \
+    Shapes/vbezlercurve.cpp
 
-HEADERS  += mainwindow.h \
-    vpoint.h \
-    vpolygon.h \
-    vshape.h \
-    vellipse.h \
-    vgroupshape.h \
-    vpolyline.h \
-    vsize.h \
-    vtype.h \
-    vcurveline.h \
-    testwidget.h \
-    interpolation.h \
-    vpointgroupshape.h \
-    vmagnification.h \
-    vcursortype.h \
-    vdocktitlebar.h \
+HEADERS  += \
     canvassizedialog.h \
-    vvector.h \
-    vbezlercurve.h \
-    vtext.h \
-    vtransform.h \
     changetextdialog.h \
-    vroundedrectangle.h \
+    mainwindow.h \
+    penstyledialog.h \
+    testwidget.h \
+    vcursortype.h \
     vdelegate.h \
+    vdocktitlebar.h \
     vlistview.h \
-    penstyledialog.h
+    Tools/vvector.h \
+    Tools/vtransform.h \
+    Tools/vsize.h \
+    Tools/vpoint.h \
+    Tools/vmagnification.h \
+    Tools/interpolation.h \
+    Shapes/vtype.h \
+    Shapes/vtext.h \
+    Shapes/vshape.h \
+    Shapes/vroundedrectangle.h \
+    Shapes/vpolyline.h \
+    Shapes/vpolygon.h \
+    Shapes/vpointgroupshape.h \
+    Shapes/vgroupshape.h \
+    Shapes/vellipse.h \
+    Shapes/vcurveline.h \
+    Shapes/vbezlercurve.h
 
 FORMS    += mainwindow.ui \
     canvassizedialog.ui \
@@ -77,5 +80,7 @@ FORMS    += mainwindow.ui \
 
 RESOURCES += \
     icon.qrc
+
+TRANSLATIONS+=zh_CN.ts
 
 RC_ICONS = icon/VIPainter.ico

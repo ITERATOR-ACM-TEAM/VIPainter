@@ -161,7 +161,7 @@ int VPointGroupShape::atPoints(const VPoint & point)const
 {
     for(int i=points.size()-1;i>=0;i--)
     {
-        if(reverseTransformPoint(points[i])-reverseTransformPoint(point) <= crDis/2)
+        if(reverseTransformPoint(points[i])-reverseTransformPoint(point) <= (this->pen.width()+1)/2)
         {
             return i;
         }
@@ -184,7 +184,7 @@ void VPointGroupShape::drawCR(QPainter *painter, const VTransform &trans, double
 
     for(auto it: points)
     {
-        painter->drawEllipse((it*trans).toQPointF(), scale*crDis/2, scale*crDis/2);
+        painter->drawEllipse((it*trans).toQPointF(), scale*(this->pen.width()+1)/2, scale*(this->pen.width()+1)/2);
     }
     VShape::drawCR(painter,trans,scale);
 }
