@@ -21,6 +21,6 @@ QString VType::Polyline="Polyline";
 QString VType::Ellipse="Ellipse";
 QString VType::Curveline="Curveline";
 QString VType::GroupShape="GroupShape";
-QString VType::BezlerCurve="BezlerCurve";
+QString VType::BezierCurve="BezierCurve";
 QString VType::Text="Text";
 QString VType::RoundedRectangle="RoundedRectangle";

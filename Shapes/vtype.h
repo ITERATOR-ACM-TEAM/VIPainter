@@ -28,7 +28,7 @@ public:
     static QString Ellipse;
     static QString Curveline;
     static QString GroupShape;
-    static QString BezlerCurve;
+    static QString BezierCurve;
     static QString Text;
     static QString RoundedRectangle;
     VType()=delete;

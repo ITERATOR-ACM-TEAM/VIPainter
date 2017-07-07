@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
-#include "testwidget.h"
+#include "paintwidget.h"
 #include "vpolygon.h"
 #include "vellipse.h"
 #include "vpoint.h"
@@ -25,7 +25,7 @@
 #include "vtext.h"
 #include "changetextdialog.h"
 #include "vroundedrectangle.h"
-#include "vbezlercurve.h"
+#include "vbeziercurve.h"
 #include <QPainter>
 #include <QSize>
 #include <QPen>
@@ -40,7 +40,7 @@
 #include <QStringList>
 #include <QColor>
 
-TestWidget::TestWidget(QMainWindow *parent, bool antialiasing) :
+PaintWidget::PaintWidget(QMainWindow *parent, bool antialiasing) :
     QWidget(parent),canvasLocation(0,0),canvasSize(800,600),cursorType(VCursorType::CHOOSE),crPos(-1),antialiasing(antialiasing)
 {
     mainwindow=parent;
@@ -57,28 +57,28 @@ TestWidget::TestWidget(QMainWindow *parent, bool antialiasing) :
     update();
 }
 
-TestWidget::~TestWidget()
+PaintWidget::~PaintWidget()
 {
 }
 
-void TestWidget::setFileName(QString filename)
+void PaintWidget::setFileName(QString filename)
 {
     this->filename=filename;
 }
 
-QString TestWidget::getFileName() const
+QString PaintWidget::getFileName() const
 {
     return filename;
 }
 
-void TestWidget::setAntialiasing(bool antialiasing)
+void PaintWidget::setAntialiasing(bool antialiasing)
 {
     this->antialiasing=antialiasing;
     //qDebug()<<"antialiasing"<<antialiasing;
     update();
 }
 
-void TestWidget::wheelEvent(QWheelEvent * event)
+void PaintWidget::wheelEvent(QWheelEvent * event)
 {
     QPoint qpoint=event->pos();
     VPoint point(qpoint.x()-(this->width()/2+canvasLocation.x),qpoint.y()-(this->height()/2+canvasLocation.y));
@@ -97,7 +97,7 @@ void TestWidget::wheelEvent(QWheelEvent * event)
     update();
 }
 
-void TestWidget::mousePressEvent(QMouseEvent *event)
+void PaintWidget::mousePressEvent(QMouseEvent *event)
 {
     QPoint pressPoint=event->pos();
     VPoint point(pressPoint.x(), pressPoint.y());
@@ -193,7 +193,7 @@ void TestWidget::mousePressEvent(QMouseEvent *event)
                 if(cursorType == VCursorType::DRAWPOLYLINE)
                     pl = new VPolyline();
                 else if (cursorType == VCursorType::DRAWBEZIERCURVE)
-                    pl = new VBezlerCurve();
+                    pl = new VBezierCurve();
                 groupShape.insertShape(pl);
                 pl->moveLoc(pl->transformPoint(getLoc(point)));
                 focusShapes.push_back(pl);
@@ -217,7 +217,7 @@ void TestWidget::mousePressEvent(QMouseEvent *event)
     locMove=locPress=getLoc(lastMove);
 }
 
-void TestWidget::mouseDoubleClickEvent(QMouseEvent* event)
+void PaintWidget::mouseDoubleClickEvent(QMouseEvent* event)
 {
     QPoint qpoint=event->pos();
     VPoint point(qpoint.x(),qpoint.y());
@@ -244,7 +244,7 @@ void TestWidget::mouseDoubleClickEvent(QMouseEvent* event)
     }
 }
 
-void TestWidget::mouseReleaseEvent(QMouseEvent *event)
+void PaintWidget::mouseReleaseEvent(QMouseEvent *event)
 {
     QPoint qpoint=event->pos();
     VPoint pos=getLoc(VPoint(qpoint.x(),qpoint.y()));
@@ -298,7 +298,7 @@ void TestWidget::mouseReleaseEvent(QMouseEvent *event)
     }
 }
 
-void TestWidget::mouseMoveEvent(QMouseEvent *event)
+void PaintWidget::mouseMoveEvent(QMouseEvent *event)
 {
     QPoint qpoint=event->pos();
     VPoint vpoint(qpoint.x(), qpoint.y());
@@ -424,7 +424,7 @@ void TestWidget::mouseMoveEvent(QMouseEvent *event)
     lastMove=vpoint;
 }
 
-void TestWidget::paintEvent(QPaintEvent *event)
+void PaintWidget::paintEvent(QPaintEvent *event)
 {
     Q_UNUSED(event);
     QPainter painter(this);
@@ -468,7 +468,7 @@ void TestWidget::paintEvent(QPaintEvent *event)
 }
 
 
-bool TestWidget::eventFilter(QObject * obj, QEvent * ev)
+bool PaintWidget::eventFilter(QObject * obj, QEvent * ev)
 {
     Q_UNUSED(obj);
     if(ev->type()==QEvent::KeyPress)
@@ -520,7 +520,7 @@ bool TestWidget::eventFilter(QObject * obj, QEvent * ev)
     return false;
 }
 
-void TestWidget::changeCursor(VCursorType type)
+void PaintWidget::changeCursor(VCursorType type)
 {
     this->cursorType = type;
     switch(type)
@@ -557,7 +557,7 @@ void TestWidget::changeCursor(VCursorType type)
     }
 }
 
-VShape * TestWidget::getShape(const VPoint &point)
+VShape * PaintWidget::getShape(const VPoint &point)
 {
     VPoint subPoint;
     VPoint loc = getLoc(point);
@@ -581,12 +581,12 @@ VShape * TestWidget::getShape(const VPoint &point)
     //return nullptr;
 }
 
-VPoint TestWidget::getLoc(const VPoint & point)
+VPoint PaintWidget::getLoc(const VPoint & point)
 {
     return VPoint((point.x-(this->width()/2+canvasLocation.x))/scale,(point.y-(this->height()/2+canvasLocation.y))/scale);
 }
 
-void TestWidget::updateList()
+void PaintWidget::updateList()
 {
     QStringList list;
     for(int i=groupShape.getShapes().size()-1;i>=0;i--)
@@ -598,7 +598,7 @@ void TestWidget::updateList()
     emitSelected();
 }
 
-void TestWidget::changeFocus()
+void PaintWidget::changeFocus()
 {
     if(cursorType == VCursorType::DRAWBEZIERCURVE || cursorType == VCursorType::DRAWPOLYLINE) return;
     decltype(focusShapes) newFocus;
@@ -611,7 +611,7 @@ void TestWidget::changeFocus()
     }
 }
 
-void TestWidget::emitSelected()
+void PaintWidget::emitSelected()
 {
     QItemSelection list;
     for(VShape *shape:focusShapes)
@@ -625,7 +625,7 @@ void TestWidget::emitSelected()
     emit selected(list,QItemSelectionModel::ClearAndSelect);
 }
 
-void TestWidget::saveSwp()
+void PaintWidget::saveSwp()
 {
     while(swpNow-swpL>=SWPSIZE)swpL++;
     swp[swpNow%SWPSIZE]=groupShape.toJsonArray();
@@ -633,7 +633,7 @@ void TestWidget::saveSwp()
     swpR=swpNow;
 }
 
-void TestWidget::undo()
+void PaintWidget::undo()
 {
     if(swpNow-swpL<=1)return;
     focusShapes.clear();
@@ -643,7 +643,7 @@ void TestWidget::undo()
     updateList();
 }
 
-void TestWidget::redo()
+void PaintWidget::redo()
 {
     if(swpNow>=swpR)return;
     focusShapes.clear();

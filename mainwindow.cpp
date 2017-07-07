@@ -64,7 +64,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //菜单逻辑
     connect(ui->menuEdit,&QMenu::aboutToShow,[this]{
-        TestWidget *widget=getTestWidget();
+        PaintWidget *widget=getPaintWidget();
         if(widget!=nullptr)
         {
             changeMenuAction(widget,VPoint(0,0));
@@ -157,20 +157,20 @@ void MainWindow::loadPlugin(QString filename)
 
     connect(action,&QAction::triggered,[this,shape]{
         //qDebug()<<"add"<<*shape;
-        if(getTestWidget()==nullptr)return;
+        if(getPaintWidget()==nullptr)return;
         VShape *newShape=shape->clone();
 //        newShape->setPen(this->pen);
 //        newShape->setBrush(this->brush);
-        getTestWidget()->groupShape.insertShape(newShape);
-        getTestWidget()->updateList();
-        getTestWidget()->update();
-        getTestWidget()->saveSwp();
+        getPaintWidget()->groupShape.insertShape(newShape);
+        getPaintWidget()->updateList();
+        getPaintWidget()->update();
+        getPaintWidget()->saveSwp();
     });
 }
 
 void MainWindow::changeShapeName(const QModelIndex &index)
 {
-    TestWidget *widget=getTestWidget();
+    PaintWidget *widget=getPaintWidget();
     if(widget==nullptr)return;
     widget->groupShape.getShapes().at(widget->groupShape.getVectorSize()-index.row()-1)->setName(index.data().toString());
 }
@@ -193,7 +193,7 @@ QDockWidget* MainWindow::newDock(QString dockname)
 
     static int id = 0;
 
-    TestWidget* widget=new TestWidget(this,ui->actionAntialiasing->isChecked());
+    PaintWidget* widget=new PaintWidget(this,ui->actionAntialiasing->isChecked());
     connect(this, SIGNAL(cursorChange(VCursorType)), widget, SLOT(changeCursor(VCursorType)));
     emit cursorChange(this->cursorState);
     widget->installEventFilter(this);
@@ -233,7 +233,6 @@ QDockWidget* MainWindow::newDock(QString dockname)
     connect(ui->actionPaste,SIGNAL(triggered()),widget,SLOT(updateList()));
     connect(ui->actionDelete,SIGNAL(triggered()),widget,SLOT(updateList()));
     connect(ui->actionGroup,SIGNAL(triggered()),widget,SLOT(updateList()));
-    //connect(getTestWidget(dockWidget),SIGNAL(selected(const QModelIndex&)),listView,SLOT(setCurrentIndex(const QModelIndex &index)));
 
     if(dockname=="")dockWidget->setWindowTitle(QString("untitled %1").arg(id++));
     else dockWidget->setWindowTitle(dockname);
@@ -258,32 +257,29 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_actionZoomIn_triggered()
 {
-    if(getTestWidget()==nullptr)return ;
-    getTestWidget()->scale*=1.1;
-    //qDebug()<<"scale:"<<getTestWidget()->scale<<endl;
-    getTestWidget()->update();
+    if(getPaintWidget()==nullptr)return ;
+    getPaintWidget()->scale*=1.1;
+    getPaintWidget()->update();
 }
 
 void MainWindow::on_actionZoomOut_triggered()
 {
-    if(getTestWidget()==nullptr)return ;
-    getTestWidget()->scale/=1.1;
-    //qDebug()<<"scale:"<<getTestWidget()->scale<<endl;
-    getTestWidget()->update();
+    if(getPaintWidget()==nullptr)return ;
+    getPaintWidget()->scale/=1.1;
+    getPaintWidget()->update();
 }
 
 void MainWindow::on_actionResume_triggered()
 {
-    if(getTestWidget()==nullptr)return ;
-    getTestWidget()->scale=1.0;
-    getTestWidget()->canvasLocation=VPoint(0,0);
-    //qDebug()<<"scale:"<<getTestWidget()->scale<<endl;
-    getTestWidget()->update();
+    if(getPaintWidget()==nullptr)return ;
+    getPaintWidget()->scale=1.0;
+    getPaintWidget()->canvasLocation=VPoint(0,0);
+    getPaintWidget()->update();
 }
 
 void MainWindow::on_actionSave_triggered()
 {
-    TestWidget *widget=getTestWidget();
+    PaintWidget *widget=getPaintWidget();
     if(widget==nullptr)return;
     QString filename = widget->getFileName();
     if(filename=="")on_actionSaveAs_triggered();
@@ -301,8 +297,8 @@ void MainWindow::saveFile(QString filename)
         QJsonDocument jsonDocument;
         QJsonObject obj;
         obj.insert("type",QString("canvas"));
-        obj.insert("size",getTestWidget()->canvasSize);
-        obj.insert("shapes",getTestWidget()->groupShape.toJsonArray());
+        obj.insert("size",getPaintWidget()->canvasSize);
+        obj.insert("shapes",getPaintWidget()->groupShape.toJsonArray());
         jsonDocument.setObject(obj);
         QFile file(filename);
         if(file.open(QFile::WriteOnly|QFile::Text))
@@ -310,19 +306,18 @@ void MainWindow::saveFile(QString filename)
             file.write(jsonDocument.toJson());
             file.close();
             focus->setWindowTitle(filename.split("/").back());
-            getTestWidget(focus)->setFileName(filename);
+            getPaintWidget(focus)->setFileName(filename);
         }
         else QMessageBox::warning(this,tr("错误"),tr("保存文件")+filename+tr("失败"));
     }
     else if(format=="JPG"||format=="PNG"||format=="BMP")
     {
-        QImage image(getTestWidget()->canvasSize.width,getTestWidget()->canvasSize.height,QImage::Format_ARGB32_Premultiplied);
+        QImage image(getPaintWidget()->canvasSize.width,getPaintWidget()->canvasSize.height,QImage::Format_ARGB32_Premultiplied);
         image.fill(0x00ffffff);
         QPainter painter(&image);
         if(ui->actionAntialiasing->isChecked())painter.setRenderHint(QPainter::Antialiasing);
-        painter.translate(getTestWidget()->canvasSize.width/2,getTestWidget()->canvasSize.height/2);
-        getTestWidget()->groupShape.draw(&painter,getTestWidget()->groupShape.getTransform());
-        //image.scaled(getTestWidget()->canvasSize.width,getTestWidget()->canvasSize.height).save(filename);
+        painter.translate(getPaintWidget()->canvasSize.width/2,getPaintWidget()->canvasSize.height/2);
+        getPaintWidget()->groupShape.draw(&painter,getPaintWidget()->groupShape.getTransform());
         if(!image.save(filename,format.toStdString().c_str(),100))QMessageBox::warning(this,tr("错误"),tr("保存文件")+filename+tr("失败"));
     }
     else QMessageBox::warning(this,tr("错误"),format+tr("不能识别的文件格式"));
@@ -330,8 +325,8 @@ void MainWindow::saveFile(QString filename)
 
 void MainWindow::on_actionSaveAs_triggered()
 {
-    if(getTestWidget()==nullptr)return;
-    QString filename=getTestWidget()->getFileName();
+    if(getPaintWidget()==nullptr)return;
+    QString filename=getPaintWidget()->getFileName();
     if(filename=="")filename="image.json";
     filename=
             QFileDialog::getSaveFileName(this,
@@ -358,7 +353,7 @@ void MainWindow::on_actionOpen_triggered()
         bool flag=false;
         for(auto &dock:docks)
         {
-            TestWidget *widget=getTestWidget(dock);
+            PaintWidget *widget=getPaintWidget(dock);
             if(widget->getFileName()==filename)
             {
                 focusDock(dock);
@@ -379,15 +374,15 @@ void MainWindow::on_actionOpen_triggered()
         QDockWidget * newWidget = newDock(filename.split("/").back());
         if(doc.isObject()&&doc.object().value("type")==QString("canvas"))
         {
-            getTestWidget(newWidget)->canvasSize=doc.object().value("size").toObject();
+            getPaintWidget(newWidget)->canvasSize=doc.object().value("size").toObject();
             doc.setArray(doc.object().value("shapes").toArray());
         }
-        if(doc.isArray())getTestWidget(newWidget)->groupShape=doc.array();
+        if(doc.isArray())getPaintWidget(newWidget)->groupShape=doc.array();
         else if(doc.isObject())
         {
-            getTestWidget(newWidget)->groupShape.insertShape(VShape::fromJsonObject(doc.object()));
+            getPaintWidget(newWidget)->groupShape.insertShape(VShape::fromJsonObject(doc.object()));
         }
-        getTestWidget(newWidget)->setFileName(filename);
+        getPaintWidget(newWidget)->setFileName(filename);
         newWidget->update();
     }
 }
@@ -440,7 +435,7 @@ void MainWindow::on_actionNew_triggered()
 }
 
 //判断Action的显示状态
-void MainWindow::changeMenuAction(TestWidget *widget, VPoint loc)
+void MainWindow::changeMenuAction(PaintWidget *widget, VPoint loc)
 {
     if(cursorState == VCursorType::DRAWBEZIERCURVE || cursorState == VCursorType::DRAWPOLYLINE)return;
     bool flag=false;
@@ -493,11 +488,14 @@ void MainWindow::changeMenuAction(TestWidget *widget, VPoint loc)
     }
 }
 
-bool MainWindow::closeWidget(TestWidget *widget)
+bool MainWindow::closeWidget(PaintWidget *widget)
 {
     bool flag=false;
     QString filename=widget->getFileName();
-    if(filename=="")flag=true;
+    if(filename=="")
+    {
+        if(!widget->groupShape.getShapes().empty())flag=true;
+    }
     else
     {
         QFile file(filename);
@@ -518,8 +516,8 @@ bool MainWindow::closeWidget(TestWidget *widget)
     {
         int button
                 =QMessageBox::information(this,tr("退出"),
-                                          tr("是否在退出之前保存文件?"),
-                                          QMessageBox::Yes,QMessageBox::No,QMessageBox::Cancel);
+                                          widget->parentWidget()->windowTitle()+tr("已修改,是否在退出之前保存文件?"),
+                                          QMessageBox::Cancel,QMessageBox::No,QMessageBox::Yes);
         if(button==QMessageBox::Yes)on_actionSave_triggered();
         else if(button!=QMessageBox::No)
         {
@@ -534,7 +532,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
     bool flag=true;
     for(auto &dock:docks)
     {
-        TestWidget *widget=getTestWidget(dock);
+        PaintWidget *widget=getPaintWidget(dock);
         if(!closeWidget(widget))flag=false;
     }
     if(!flag)
@@ -552,9 +550,9 @@ bool MainWindow::eventFilter(QObject * obj, QEvent * ev)
         if(dock!=nullptr)
         {
             focus = dock;
-            listView->setModel(getTestWidget(dock)->listModel);
-            listView->setSelectionModel(getTestWidget(dock)->selectionModel);
-            getTestWidget(dock)->updateList();
+            listView->setModel(getPaintWidget(dock)->listModel);
+            listView->setSelectionModel(getPaintWidget(dock)->selectionModel);
+            getPaintWidget(dock)->updateList();
             return false;
         }
     }
@@ -563,7 +561,7 @@ bool MainWindow::eventFilter(QObject * obj, QEvent * ev)
         auto it=std::find(docks.begin(),docks.end(),obj);
         if(it!=docks.end())
         {
-            TestWidget *widget=getTestWidget(*it);
+            PaintWidget *widget=getPaintWidget(*it);
             if(!closeWidget(widget))
             {
                 ev->ignore();
@@ -585,7 +583,7 @@ bool MainWindow::eventFilter(QObject * obj, QEvent * ev)
         if(cursorState != VCursorType::DRAWBEZIERCURVE && cursorState != VCursorType::DRAWPOLYLINE)
         {
             QContextMenuEvent *event=static_cast<QContextMenuEvent*>(ev);
-            TestWidget *widget=qobject_cast<TestWidget*>(obj);
+            PaintWidget *widget=qobject_cast<PaintWidget*>(obj);
             QPoint qpoint=event->pos();
             VPoint point(qpoint.x(),qpoint.y());
             VPoint loc=widget->getLoc(point);
@@ -622,14 +620,14 @@ void MainWindow::focusDock(QDockWidget * target)
 
 void MainWindow::on_actionCanvasSize_triggered()
 {
-    TestWidget *widget=getTestWidget();
+    PaintWidget *widget=getPaintWidget();
     if(widget==nullptr)return;
     widget->canvasSize=CanvasSizeDialog::showDialog(tr("画布大小"),widget->canvasSize);
 }
 
 void MainWindow::on_actionShapeSize_triggered()
 {
-    TestWidget *widget=getTestWidget();
+    PaintWidget *widget=getPaintWidget();
     if(widget==nullptr)return;
     VSize size=
             widget->groupShape.getSize()*
@@ -643,20 +641,20 @@ void MainWindow::on_actionShapeSize_triggered()
     widget->saveSwp();
 }
 
-TestWidget * MainWindow::getTestWidget()
+PaintWidget * MainWindow::getPaintWidget()
 {
     if(focus==nullptr)return nullptr;
-    return qobject_cast<TestWidget *>(focus->widget());
+    return qobject_cast<PaintWidget *>(focus->widget());
 }
 
-TestWidget * MainWindow::getTestWidget(QDockWidget *target)
+PaintWidget * MainWindow::getPaintWidget(QDockWidget *target)
 {
-    return qobject_cast<TestWidget *>(target->widget());
+    return qobject_cast<PaintWidget *>(target->widget());
 }
 
 void MainWindow::on_actionBreakUp_triggered()
 {
-    TestWidget *widget=getTestWidget();
+    PaintWidget *widget=getPaintWidget();
     if(focus == nullptr) return;
     if(widget->focusShapes.size()==1)
     {
@@ -664,12 +662,11 @@ void MainWindow::on_actionBreakUp_triggered()
         widget->focusShapes.clear();
         if(shape!=nullptr)
         {
-            //qDebug()<<*(getTestWidget()->focusShape);
             QVector<VShape *> shs = VGroupShape::breakUp(shape);
             widget->groupShape.insertShape(shs);
             for(auto &i:shs)widget->focusShapes.append(i);
         }
-        getTestWidget()->update();
+        getPaintWidget()->update();
         widget->saveSwp();
     }
 }
@@ -686,7 +683,7 @@ void MainWindow::on_actionRotate_triggered()
 
 void MainWindow::on_actionRedo_triggered()
 {
-    TestWidget *widget=getTestWidget();
+    PaintWidget *widget=getPaintWidget();
     if(widget==nullptr)return;
     widget->redo();
 }
@@ -715,12 +712,12 @@ void MainWindow::on_actionLoadExPlugin_triggered()
 
 void MainWindow::on_actionAntialiasing_toggled(bool antialiasing)
 {
-    for(auto &i:this->docks)getTestWidget(i)->setAntialiasing(antialiasing);
+    for(auto &i:this->docks)getPaintWidget(i)->setAntialiasing(antialiasing);
 }
 
 void MainWindow::on_actionDelete_triggered()
 {
-    TestWidget *widget=getTestWidget();
+    PaintWidget *widget=getPaintWidget();
     if(widget!=nullptr)
     {
         for(VShape *shape:widget->focusShapes)
@@ -740,7 +737,7 @@ void MainWindow::on_actionClose_triggered()
 
 void MainWindow::on_actionCopy_triggered()
 {
-    TestWidget *widget=getTestWidget();
+    PaintWidget *widget=getPaintWidget();
     if(widget!=nullptr)
     {
         if(widget->focusShapes.size()>0)
@@ -817,7 +814,7 @@ void MainWindow::on_actionCut_triggered()
 
 void MainWindow::on_actionPaste_triggered()
 {
-    TestWidget *widget=getTestWidget();
+    PaintWidget *widget=getPaintWidget();
     if(widget!=nullptr)
     {
         //  Get clipboard
@@ -868,7 +865,7 @@ void MainWindow::on_actionPaste_triggered()
 
 void MainWindow::on_actionGroup_triggered()
 {
-    TestWidget *widget=getTestWidget();
+    PaintWidget *widget=getPaintWidget();
     if(widget==nullptr)return;
     if(widget->focusShapes.empty())return;
     VGroupShape *group=new VGroupShape;
@@ -890,7 +887,7 @@ void MainWindow::on_actionGroup_triggered()
 
 void MainWindow::on_actionSelectAll_triggered()
 {
-    TestWidget *widget=getTestWidget();
+    PaintWidget *widget=getPaintWidget();
     if(widget==nullptr)return;
     widget->focusShapes.clear();
     for(auto &i:widget->groupShape.getShapes())widget->focusShapes.append(i);
@@ -899,7 +896,7 @@ void MainWindow::on_actionSelectAll_triggered()
 
 void MainWindow::on_actionBrush_triggered()
 {
-    TestWidget *widget=getTestWidget();
+    PaintWidget *widget=getPaintWidget();
     if(widget==nullptr)return;
     if(widget->focusShapes.empty())return;
     QColorDialog dialog(widget->focusShapes.first()->getBrush().color(),this);
@@ -914,7 +911,7 @@ void MainWindow::on_actionBrush_triggered()
 
 void MainWindow::on_actionPen_triggered()
 {
-    TestWidget *widget=getTestWidget();
+    PaintWidget *widget=getPaintWidget();
     if(widget==nullptr)return;
     if(widget->focusShapes.empty())return;
     QColorDialog dialog(widget->focusShapes.first()->getPen().color(),this);
@@ -929,7 +926,7 @@ void MainWindow::on_actionPen_triggered()
 
 void MainWindow::on_actionPenStyle_triggered()
 {
-    TestWidget *widget=getTestWidget();
+    PaintWidget *widget=getPaintWidget();
     if(widget==nullptr)return;
     if(widget->focusShapes.empty())return;
     PenStyleDialog::showDialog(tr("线条设置"),widget->focusShapes);
@@ -969,7 +966,7 @@ void MainWindow::on_actionDraw_triggered()
 
 void MainWindow::on_actionUndo_triggered()
 {
-    TestWidget *widget=getTestWidget();
+    PaintWidget *widget=getPaintWidget();
     if(widget==nullptr)return;
     widget->undo();
 }

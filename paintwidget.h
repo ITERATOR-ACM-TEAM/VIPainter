@@ -40,14 +40,14 @@
 #include "vshape.h"
 #include "vpoint.h"
 
-class TestWidget : public QWidget
+class PaintWidget : public QWidget
 {
     Q_OBJECT
 
 public:
     QPixmap VSizeAll = QPixmap("://icon/mover.png").scaled(30,30);
     QPixmap VRotate = QPixmap("://icon/undo.png").scaled(20,20);
-    explicit TestWidget(QMainWindow *mainwindow, bool antialiasing);
+    explicit PaintWidget(QMainWindow *mainwindow, bool antialiasing);
     double scale=1;
     QMainWindow *mainwindow;
     VGroupShape groupShape;
@@ -61,7 +61,7 @@ public:
     bool fileChanged=false;
     void setFileName(QString filename);
     QString getFileName()const;
-    ~TestWidget();
+    ~PaintWidget();
 
 protected:
     void paintEvent(QPaintEvent *event)override;

@@ -22,7 +22,6 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     penstyledialog.cpp \
-    testwidget.cpp \
     vcursortype.cpp \
     vdelegate.cpp \
     vdocktitlebar.cpp \
@@ -43,14 +42,14 @@ SOURCES += \
     Shapes/vgroupshape.cpp \
     Shapes/vellipse.cpp \
     Shapes/vcurveline.cpp \
-    Shapes/vbezlercurve.cpp
+    paintwidget.cpp \
+    Shapes/vbeziercurve.cpp
 
 HEADERS  += \
     canvassizedialog.h \
     changetextdialog.h \
     mainwindow.h \
     penstyledialog.h \
-    testwidget.h \
     vcursortype.h \
     vdelegate.h \
     vdocktitlebar.h \
@@ -71,7 +70,8 @@ HEADERS  += \
     Shapes/vgroupshape.h \
     Shapes/vellipse.h \
     Shapes/vcurveline.h \
-    Shapes/vbezlercurve.h
+    paintwidget.h \
+    Shapes/vbeziercurve.h
 
 FORMS    += mainwindow.ui \
     canvassizedialog.ui \

@@ -14,26 +14,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
-#include "vbezlercurve.h"
+#include "vbeziercurve.h"
 #include "vpoint.h"
 #include <QDebug>
 #include <QPainter>
 #include <QPainterPath>
 #include "vtype.h"
 
-VBezlerCurve::VBezlerCurve():VPointGroupShape(){
+VBezierCurve::VBezierCurve():VPointGroupShape(){
 }
 
-VBezlerCurve::~VBezlerCurve(){
+VBezierCurve::~VBezierCurve(){
 }
 
-VBezlerCurve::VBezlerCurve(const VBezlerCurve &shape):VPointGroupShape(shape){
+VBezierCurve::VBezierCurve(const VBezierCurve &shape):VPointGroupShape(shape){
 }
 
-VBezlerCurve::VBezlerCurve(const QJsonObject &jsonObject):VPointGroupShape(jsonObject){
+VBezierCurve::VBezierCurve(const QJsonObject &jsonObject):VPointGroupShape(jsonObject){
 }
 
-bool VBezlerCurve::contains(VPoint point)
+bool VBezierCurve::contains(VPoint point)
 {
     QPainterPath path;
     auto i=points.begin();
@@ -52,23 +52,23 @@ bool VBezlerCurve::contains(VPoint point)
     return path.contains(point.toQPointF());
 }
 
-const VBezlerCurve& VBezlerCurve::operator=(const VBezlerCurve &vbezlerCurve){
+const VBezierCurve& VBezierCurve::operator=(const VBezierCurve &vbezlerCurve){
     if(this==&vbezlerCurve)return *this;
     VPointGroupShape::operator=(vbezlerCurve);
     return *this;
 }
 
-const VBezlerCurve& VBezlerCurve::operator=(const QJsonObject &jsonObject){
+const VBezierCurve& VBezierCurve::operator=(const QJsonObject &jsonObject){
     VPointGroupShape::operator=(jsonObject);
     return *this;
 }
 
-VShape* VBezlerCurve::clone() const
+VShape* VBezierCurve::clone() const
 {
-    return new VBezlerCurve(*this);
+    return new VBezierCurve(*this);
 }
 
-void VBezlerCurve::draw(QPainter *painter,const VTransform &transform)
+void VBezierCurve::draw(QPainter *painter,const VTransform &transform)
 {
     painter->setPen(pen);
     painter->setBrush(brush);
@@ -102,11 +102,11 @@ void VBezlerCurve::draw(QPainter *painter,const VTransform &transform)
 //    return image;
 //}
 
-QString VBezlerCurve::type() const{
-    return VType::BezlerCurve;
+QString VBezierCurve::type() const{
+    return VType::BezierCurve;
 }
 
-void VBezlerCurve::drawCR(QPainter * painter, const VTransform &transform, double scale)
+void VBezierCurve::drawCR(QPainter * painter, const VTransform &transform, double scale)
 {
     VPointGroupShape::drawCR(painter,transform,scale);
     QPen pen;

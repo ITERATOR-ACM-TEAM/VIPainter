@@ -21,14 +21,14 @@
 #include "vpoint.h"
 #include "vpointgroupshape.h"
 
-class VBezlerCurve : public VPointGroupShape{
+class VBezierCurve : public VPointGroupShape{
 public:
-    VBezlerCurve();
-    VBezlerCurve(const VBezlerCurve &shape);
-    VBezlerCurve(const QJsonObject &jsonObject);
-    ~VBezlerCurve()override;
-    const VBezlerCurve& operator=(const VBezlerCurve &shape);
-    const VBezlerCurve& operator=(const QJsonObject &jsonObject);
+    VBezierCurve();
+    VBezierCurve(const VBezierCurve &shape);
+    VBezierCurve(const QJsonObject &jsonObject);
+    ~VBezierCurve()override;
+    const VBezierCurve& operator=(const VBezierCurve &shape);
+    const VBezierCurve& operator=(const QJsonObject &jsonObject);
     bool contains(VPoint point) override;
     //QImage toImage()override;
     void draw(QPainter *painter,const VTransform &transform)override;
