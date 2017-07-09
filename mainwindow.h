@@ -120,6 +120,8 @@ private slots:
 
     void on_actionPolyLine_triggered();
 
+    void on_actionCurveLine_triggered();
+
 private:
     QVector<VShape*>plugins;
     Ui::MainWindow *ui;

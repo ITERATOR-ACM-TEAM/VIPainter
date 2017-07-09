@@ -41,7 +41,7 @@
 #include <QColor>
 
 PaintWidget::PaintWidget(QMainWindow *parent, bool antialiasing) :
-    QWidget(parent),canvasLocation(0,0),canvasSize(800,600),cursorType(VCursorType::CHOOSE),crPos(-1),antialiasing(antialiasing)
+    QWidget(parent),crPos(-1),canvasLocation(0,0),canvasSize(800,600),cursorType(VCursorType::CHOOSE),antialiasing(antialiasing)
 {
     mainwindow=parent;
     setMouseTracking(true);
@@ -505,11 +505,13 @@ bool PaintWidget::eventFilter(QObject * obj, QEvent * ev)
             }
             break;
         case Qt::Key_Return:
+        case Qt::Key_Escape:
             {
                 if(cursorType == VCursorType::DRAWBEZIERCURVE || cursorType == VCursorType::DRAWPOLYLINE)
                 {
                     focusShapes.clear();
                     crPos = -1;
+                    saveSwp();
                     update();
                 }
             }

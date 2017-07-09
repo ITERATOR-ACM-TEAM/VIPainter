@@ -200,7 +200,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset>
+    <iconset resource="resourse.qrc">
      <normaloff>:/icon/pen.png</normaloff>:/icon/pen.png</iconset>
    </property>
    <property name="text">
@@ -258,7 +258,7 @@
   </action>
   <action name="actionZoomIn">
    <property name="icon">
-    <iconset>
+    <iconset resource="resourse.qrc">
      <normaloff>:/icon/zoomin.png</normaloff>:/icon/zoomin.png</iconset>
    </property>
    <property name="text">
@@ -273,7 +273,7 @@
   </action>
   <action name="actionZoomOut">
    <property name="icon">
-    <iconset>
+    <iconset resource="resourse.qrc">
      <normaloff>:/icon/zoomout.png</normaloff>:/icon/zoomout.png</iconset>
    </property>
    <property name="text">
@@ -291,7 +291,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset>
+    <iconset resource="resourse.qrc">
      <normaloff>:/icon/undo.png</normaloff>:/icon/undo.png</iconset>
    </property>
    <property name="text">
@@ -306,7 +306,7 @@
   </action>
   <action name="actionRedo">
    <property name="icon">
-    <iconset>
+    <iconset resource="resourse.qrc">
      <normaloff>:/icon/redo.png</normaloff>:/icon/redo.png</iconset>
    </property>
    <property name="text">
@@ -327,7 +327,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset>
+    <iconset resource="resourse.qrc">
      <normaloff>:/icon/cursor.png</normaloff>:/icon/cursor.png</iconset>
    </property>
    <property name="text">
@@ -345,7 +345,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset>
+    <iconset resource="resourse.qrc">
      <normaloff>:/icon/hand.png</normaloff>:/icon/hand.png</iconset>
    </property>
    <property name="text">
@@ -360,7 +360,7 @@
   </action>
   <action name="actionResume">
    <property name="icon">
-    <iconset>
+    <iconset resource="resourse.qrc">
      <normaloff>:/icon/zoomzero.png</normaloff>:/icon/zoomzero.png</iconset>
    </property>
    <property name="text">
@@ -542,6 +542,8 @@
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources/>
+ <resources>
+  <include location="resourse.qrc"/>
+ </resources>
  <connections/>
 </ui>

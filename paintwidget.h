@@ -49,6 +49,7 @@ public:
     QPixmap VRotate = QPixmap("://icon/undo.png").scaled(20,20);
     explicit PaintWidget(QMainWindow *mainwindow, bool antialiasing);
     double scale=1;
+    int crPos;
     QMainWindow *mainwindow;
     VGroupShape groupShape;
     QVector<VShape*> focusShapes;
@@ -86,7 +87,6 @@ private:
     VPoint lastMove;
     VPoint locPress;
     double lastAngle;
-    int crPos;
     bool antialiasing;
     void emitSelected();
 

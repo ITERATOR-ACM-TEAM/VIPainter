@@ -414,6 +414,9 @@ void MainWindow::changeCursor(VCursorType type)
         ui->actionUndo->setEnabled(true);
         ui->actionGroup->setEnabled(true);
         ui->actionBreakUp->setEnabled(true);
+        ui->actionSelectAll->setEnabled(true);
+        for(auto &i:docks)
+            if(getPaintWidget(i)->crPos!=-1)getPaintWidget(i)->saveSwp();
     }
     cursorState = type;
     if(type == VCursorType::DRAWBEZIERCURVE || type == VCursorType::DRAWPOLYLINE)
@@ -425,7 +428,10 @@ void MainWindow::changeCursor(VCursorType type)
         ui->actionUndo->setEnabled(false);
         ui->actionGroup->setEnabled(false);
         ui->actionBreakUp->setEnabled(false);
+        ui->actionSelectAll->setEnabled(false);
+        //for(auto &i:docks)getPaintWidget(i)->saveSwp();
     }
+    for(auto &i:docks)getPaintWidget(i)->crPos=-1;
 
 }
 
@@ -966,8 +972,6 @@ void MainWindow::on_actionDraw_triggered()
             emit cursorChange(VCursorType::DRAWPOLYLINE);
         }
     }
-    else
-        emit cursorChange(VCursorType::DEFAULT);
 
 }
 
@@ -978,7 +982,12 @@ void MainWindow::on_actionUndo_triggered()
     widget->undo();
 }
 
+void MainWindow::on_actionCurveLine_triggered()
+{
+    on_actionDraw_triggered();
+}
+
 void MainWindow::on_actionPolyLine_triggered()
 {
-
+    on_actionDraw_triggered();
 }
