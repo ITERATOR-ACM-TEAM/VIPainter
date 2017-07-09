@@ -159,17 +159,16 @@ int VGroupShape::insertShape(const QVector<VShape *> & other)
 
 int VGroupShape::insertShape(const QVector<VShape *> & other, int pos)
 {
-    if(pos<0 || pos>=this->shapes.size()) return -1;
-    VPoint orign;
+    if(pos<0 || pos>this->shapes.size()) return -1;
+    //VPoint orign;
     for(auto &it:other)
     {
         it->setParent(this);
         it->getTransform()=it->getTransform()*this->getTransform();
-        this->shapes.insert(this->shapes.begin()+(pos++), it);
-        orign = it->getLocation();
+        this->shapes.insert(pos++, it);
+        //orign = it->getLocation();
         //it->setLocation(VPoint(orign.x-getLocation().x, orign.y-getLocation().y));
     }
-
     getCircumscribedRectangle();
     return pos-1;
 }
@@ -326,6 +325,13 @@ VShape * VGroupShape::takeShape(VShape * other)
     shapes.erase(it);
     getCircumscribedRectangle();
     return other;
+}
+
+VShape * VGroupShape::takeShape(QVector<VShape*>::iterator it)
+{
+    VShape *shape=*it;
+    shapes.erase(it);
+    return shape;
 }
 
 bool VGroupShape::eraseShape(int i)

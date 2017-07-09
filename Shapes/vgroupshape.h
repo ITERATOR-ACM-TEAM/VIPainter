@@ -53,6 +53,7 @@ public:
     bool eraseShape(int i);
     bool eraseShape(VShape * other);
     VShape *takeShape(VShape * other);
+    VShape *takeShape(QVector<VShape*>::iterator it);
     bool moveShape(int i, VPoint location);
     bool contains(VPoint point);
     void clear(bool force=true);

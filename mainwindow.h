@@ -118,6 +118,8 @@ private slots:
 
     void on_actionUndo_triggered();
 
+    void on_actionPolyLine_triggered();
+
 private:
     QVector<VShape*>plugins;
     Ui::MainWindow *ui;

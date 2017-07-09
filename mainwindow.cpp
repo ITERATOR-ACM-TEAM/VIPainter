@@ -244,7 +244,6 @@ QDockWidget* MainWindow::newDock(QString dockname)
         ui->shapesDock->show();
         splitDockWidget(dockWidget,ui->shapesDock,Qt::Horizontal);
     }
-    widget->saveSwp();
 
     return dockWidget;
 }
@@ -383,6 +382,7 @@ void MainWindow::on_actionOpen_triggered()
             getPaintWidget(newWidget)->groupShape.insertShape(VShape::fromJsonObject(doc.object()));
         }
         getPaintWidget(newWidget)->setFileName(filename);
+        getPaintWidget(newWidget)->saveSwp();
         newWidget->update();
     }
 }
@@ -431,7 +431,8 @@ void MainWindow::changeCursor(VCursorType type)
 
 void MainWindow::on_actionNew_triggered()
 {
-    newDock();
+    QDockWidget * dock = newDock();
+    getPaintWidget(dock)->saveSwp();
 }
 
 //判断Action的显示状态
@@ -662,9 +663,11 @@ void MainWindow::on_actionBreakUp_triggered()
         widget->focusShapes.clear();
         if(shape!=nullptr)
         {
+            auto &shapes=widget->groupShape.getShapes();
+            int i=std::find(shapes.begin(),shapes.end(),shape)-shapes.begin();
             QVector<VShape *> shs = VGroupShape::breakUp(shape);
-            widget->groupShape.insertShape(shs);
-            for(auto &i:shs)widget->focusShapes.append(i);
+            widget->groupShape.insertShape(shs,i);
+            widget->focusShapes=std::move(shs);
         }
         getPaintWidget()->update();
         widget->saveSwp();
@@ -870,11 +873,15 @@ void MainWindow::on_actionGroup_triggered()
     if(widget->focusShapes.empty())return;
     VGroupShape *group=new VGroupShape;
     QString name;
-    for(VShape *shape:widget->focusShapes)
+    for(QVector<VShape*>::iterator it=const_cast<QVector<VShape*>::iterator>(widget->groupShape.getShapes().begin());it!=widget->groupShape.getShapes().end();)
     {
-        if(name!="")name.append(", ");
-        name.append(shape->getName());
-        group->insertShape(widget->groupShape.takeShape(shape));
+        if(widget->focusShapes.contains(*it))
+        {
+            if(name!="")name.append(", ");
+            name.append((*it)->getName());
+            group->insertShape(widget->groupShape.takeShape(it));
+        }
+        else it++;
     }
     widget->groupShape.insertShape(group);
     group->getCircumscribedRectangle();
@@ -969,4 +976,9 @@ void MainWindow::on_actionUndo_triggered()
     PaintWidget *widget=getPaintWidget();
     if(widget==nullptr)return;
     widget->undo();
+}
+
+void MainWindow::on_actionPolyLine_triggered()
+{
+
 }
