@@ -118,7 +118,7 @@ void PaintWidget::mousePressEvent(QMouseEvent *event)
                         VPointGroupShape * pgs = dynamic_cast<VPointGroupShape *>(shape);
                         if (pgs != nullptr)
                         {
-                            int tmp = pgs->atPoints(shape->transformPoint( getLoc(point)));
+                            int tmp = pgs->atPoints(shape->transformPoint( getLoc(point)),scale);
                             if(tmp != -1)
                             {
                                 crPos = tmp+8;
@@ -321,7 +321,7 @@ void PaintWidget::mouseMoveEvent(QMouseEvent *event)
             {
                 VPointGroupShape * pgs = dynamic_cast<VPointGroupShape *>(groupShape.getShapes().at(i));
 
-                if((crPos == -1 && groupShape.contains(pos)) && (pgs == nullptr || pgs->atPoints(pgs->transformPoint(pos)) == -1))
+                if((crPos == -1 && groupShape.contains(pos)) && (pgs == nullptr || pgs->atPoints(pgs->transformPoint(pos),scale) == -1))
                 {
                     this->setCursor(Qt::SizeAllCursor);
                     flag=false;

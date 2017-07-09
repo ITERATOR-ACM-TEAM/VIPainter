@@ -163,11 +163,11 @@ QJsonObject VPointGroupShape::toJsonObject()const
     return jsonObject;
 }
 
-int VPointGroupShape::atPoints(const VPoint & point)const
+int VPointGroupShape::atPoints(const VPoint & point,double scale)const
 {
     for(int i=points.size()-1;i>=0;i--)
     {
-        if(reverseTransformPoint(points[i])-reverseTransformPoint(point) <= (this->pen.width()+1)/2)
+        if(reverseTransformPoint(points[i])-reverseTransformPoint(point) <= crDis*1.5/scale)
         {
             return i;
         }
@@ -179,8 +179,8 @@ void VPointGroupShape::drawCR(QPainter *painter, const VTransform &trans, double
 {
     QBrush bru;
     QPen pen;
-    bru.setColor(this->pen.color());
-    pen.setColor(this->pen.color());
+    bru.setColor(Qt::black);
+    pen.setColor(Qt::white);
     pen.setWidth(0);
     bru.setStyle(Qt::SolidPattern);
     pen.setStyle(Qt::SolidLine);
@@ -190,7 +190,7 @@ void VPointGroupShape::drawCR(QPainter *painter, const VTransform &trans, double
 
     for(auto it: points)
     {
-        painter->drawEllipse((it*trans).toQPointF(), scale*(this->pen.width()+1)/2, scale*(this->pen.width()+1)/2);
+        painter->drawEllipse((it*trans).toQPointF(), crDis*1.5, crDis*1.5);
     }
     VShape::drawCR(painter,trans,scale);
 }
