@@ -57,9 +57,10 @@ public:
     QStringListModel *listModel;
     QItemSelectionModel *selectionModel;
     QMenu *contextMenu;
-    VPoint getLoc(const VPoint & point);
     bool fileChanged=false;
     ~VectorgraphWidget();
+    VPoint getLoc(const VPoint & point);
+    void saveFile(QString filename)override;
 
 protected:
     void paintEvent(QPaintEvent *event)override;

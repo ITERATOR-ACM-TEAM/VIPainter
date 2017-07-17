@@ -2,6 +2,7 @@
 #define PAINTWIDGET_H
 
 #include <QWidget>
+#include <QDockWidget>
 #include "vpoint.h"
 
 class PaintWidget : public QWidget
@@ -15,15 +16,19 @@ protected:
     double scale=1;
     VSize canvasSize;
     bool antialiasing;
+    QDockWidget *dock;
 
 public:
     void setScale(double scale);
     double getScale();
+    void setDock(QDockWidget * dock);
+    QDockWidget * getDock();
     void setCanvasSize(VSize canvasSize);
     VSize getCanvasSize();
     void setFileName(QString filename);
     QString getFileName()const;
     void setAntialiasing(bool antialiasing);
+    virtual void saveFile(QString filename)=0;
 
 signals:
 
@@ -31,8 +36,8 @@ public slots:
     virtual void on_actionZoomIn_triggered();
     virtual void on_actionZoomOut_triggered();
     virtual void on_actionResume_triggered();
-//    virtual void on_actionSave_triggered();
-//    virtual void on_actionSaveAs_triggered();
+    virtual void on_actionSave_triggered();
+    virtual void on_actionSaveAs_triggered();
 //    virtual void on_actionOpen_triggered();
 //    virtual void on_actionMove_triggered();
 //    virtual void on_actionChoose_triggered();

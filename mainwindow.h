@@ -144,7 +144,6 @@ private:
     void loadPlugin(QString filename);
 
     QDockWidget * newDock(QString dockname="");
-    void saveFile(QString filename);
 
     void focusDock(QDockWidget * target);
     PaintWidget * getPaintWidget();

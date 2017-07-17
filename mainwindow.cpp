@@ -202,6 +202,7 @@ QDockWidget* MainWindow::newDock(QString dockname)
     QDockWidget *dockWidget=new QDockWidget;
     dockWidget->installEventFilter(widget);
     dockWidget->setWidget(widget);
+    widget->setDock(dockWidget);
     //dockWidget->setAttribute(Qt::WA_DeleteOnClose);
     this->addDockWidget(Qt::TopDockWidgetArea,dockWidget);
 
@@ -275,65 +276,14 @@ void MainWindow::on_actionResume_triggered()
 
 void MainWindow::on_actionSave_triggered()
 {
-    VectorgraphWidget *widget=qobject_cast<VectorgraphWidget*>(getPaintWidget());
-    if(widget==nullptr)return;
-    QString filename = widget->getFileName();
-    if(filename=="")on_actionSaveAs_triggered();
-    else saveFile(filename);
-}
-
-void MainWindow::saveFile(QString filename)
-{
-    if(filename=="")return;
-    if(focus == nullptr) return;
-    ui->statusBar->showMessage(tr("保存到文件 ")+filename);
-    QString format=filename.split('.').back().toUpper();
-    VectorgraphWidget *widget=qobject_cast<VectorgraphWidget*>(getPaintWidget());
-    if(format==tr("JSON"))
-    {
-        QJsonDocument jsonDocument;
-        QJsonObject obj;
-        obj.insert("type",QString("canvas"));
-        obj.insert("size",widget->getCanvasSize());
-        obj.insert("shapes",widget->groupShape.toJsonArray());
-        jsonDocument.setObject(obj);
-        QFile file(filename);
-        if(file.open(QFile::WriteOnly|QFile::Text))
-        {
-            file.write(jsonDocument.toJson());
-            file.close();
-            focus->setWindowTitle(filename.split("/").back());
-            widget->setFileName(filename);
-        }
-        else QMessageBox::warning(this,tr("错误"),tr("保存文件")+filename+tr("失败"));
-    }
-    else if(format=="JPG"||format=="PNG"||format=="BMP")
-    {
-        QImage image(widget->getCanvasSize().width,widget->getCanvasSize().height,QImage::Format_ARGB32_Premultiplied);
-        image.fill(0x00ffffff);
-        QPainter painter(&image);
-        if(ui->actionAntialiasing->isChecked())painter.setRenderHint(QPainter::Antialiasing);
-        painter.translate(widget->getCanvasSize().width/2,widget->getCanvasSize().height/2);
-        widget->groupShape.draw(&painter,widget->groupShape.getTransform());
-        if(!image.save(filename,format.toStdString().c_str(),100))QMessageBox::warning(this,tr("错误"),tr("保存文件")+filename+tr("失败"));
-    }
-    else QMessageBox::warning(this,tr("错误"),format+tr("不能识别的文件格式"));
+    //Do nothing
+    //Edit in PaintWidget
 }
 
 void MainWindow::on_actionSaveAs_triggered()
 {
-    if(getPaintWidget()==nullptr)return;
-    QString filename=getPaintWidget()->getFileName();
-    if(filename=="")filename="image.json";
-    filename=
-            QFileDialog::getSaveFileName(this,
-                                         tr("保存文件"),
-                                         filename,
-                                         tr("json file (*.json);;"
-                                            "png file (*.png);;"
-                                            "jpg file (*.jpg);;"
-                                            "bmp file (*.bmp)"));
-    saveFile(filename);
+    //Do nothing
+    //Edit in PaintWidget
 }
 
 void MainWindow::on_actionOpen_triggered()
@@ -568,10 +518,18 @@ bool MainWindow::eventFilter(QObject * obj, QEvent * ev)
             disconnect(ui->actionZoomIn,SIGNAL(triggered()),widget,SLOT(on_actionZoomIn_triggered()));
             disconnect(ui->actionZoomOut,SIGNAL(triggered()),widget,SLOT(on_actionZoomOut_triggered()));
             disconnect(ui->actionResume,SIGNAL(triggered()),widget,SLOT(on_actionResume_triggered()));
+            disconnect(ui->actionSave,SIGNAL(triggered()),widget,SLOT(on_actionSave_triggered()));
+            disconnect(ui->actionSaveAs,SIGNAL(triggered()),widget,SLOT(on_actionSaveAs_triggered()));
         }
         if(dock!=nullptr)
         {
             PaintWidget *widget=getPaintWidget(dock);
+            connect(ui->actionZoomIn,SIGNAL(triggered()),widget,SLOT(on_actionZoomIn_triggered()));
+            connect(ui->actionZoomOut,SIGNAL(triggered()),widget,SLOT(on_actionZoomOut_triggered()));
+            connect(ui->actionResume,SIGNAL(triggered()),widget,SLOT(on_actionResume_triggered()));
+            connect(ui->actionSave,SIGNAL(triggered()),widget,SLOT(on_actionSave_triggered()));
+            connect(ui->actionSaveAs,SIGNAL(triggered()),widget,SLOT(on_actionSaveAs_triggered()));
+
             focus = dock;
             VectorgraphWidget *vectorgraphWidget=qobject_cast<VectorgraphWidget *>(widget);
             if(vectorgraphWidget!=nullptr)
@@ -580,11 +538,6 @@ bool MainWindow::eventFilter(QObject * obj, QEvent * ev)
                 listView->setSelectionModel(vectorgraphWidget->selectionModel);
                 vectorgraphWidget->updateList();
             }
-
-            connect(ui->actionZoomIn,SIGNAL(triggered()),widget,SLOT(on_actionZoomIn_triggered()));
-            connect(ui->actionZoomOut,SIGNAL(triggered()),widget,SLOT(on_actionZoomOut_triggered()));
-            connect(ui->actionResume,SIGNAL(triggered()),widget,SLOT(on_actionResume_triggered()));
-
             return false;
         }
     }

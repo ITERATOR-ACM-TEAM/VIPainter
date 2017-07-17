@@ -39,6 +39,13 @@
 #include <QCursor>
 #include <QStringList>
 #include <QColor>
+#include <QFile>
+#include <QImage>
+#include <QJsonObject>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QDockWidget>
+#include <QMessageBox>
 
 VectorgraphWidget::VectorgraphWidget(QMainWindow *parent, bool antialiasing) :
     PaintWidget(parent,antialiasing),crPos(-1),canvasLocation(0,0),cursorType(VCursorType::CHOOSE)
@@ -636,6 +643,41 @@ void VectorgraphWidget::redo()
     swpNow++;
     update();
     updateList();
+}
+
+void VectorgraphWidget::saveFile(QString filename)
+{
+    if(filename=="")return;
+    QString format=filename.split('.').back().toUpper();
+    if(format==tr("JSON"))
+    {
+        QJsonDocument jsonDocument;
+        QJsonObject obj;
+        obj.insert("type",QString("canvas"));
+        obj.insert("size",getCanvasSize());
+        obj.insert("shapes",groupShape.toJsonArray());
+        jsonDocument.setObject(obj);
+        QFile file(filename);
+        if(file.open(QFile::WriteOnly|QFile::Text))
+        {
+            file.write(jsonDocument.toJson());
+            file.close();
+            dock->setWindowTitle(filename.split("/").back());
+            setFileName(filename);
+        }
+        else QMessageBox::warning(this,tr("错误"),tr("保存文件")+filename+tr("失败"));
+    }
+    else if(format=="JPG"||format=="PNG"||format=="BMP")
+    {
+        QImage image(getCanvasSize().width,getCanvasSize().height,QImage::Format_ARGB32_Premultiplied);
+        image.fill(0x00ffffff);
+        QPainter painter(&image);
+        if(antialiasing)painter.setRenderHint(QPainter::Antialiasing);
+        painter.translate(getCanvasSize().width/2,getCanvasSize().height/2);
+        groupShape.draw(&painter,groupShape.getTransform());
+        if(!image.save(filename,format.toStdString().c_str(),100))QMessageBox::warning(this,tr("错误"),tr("保存文件")+filename+tr("失败"));
+    }
+    else QMessageBox::warning(this,tr("错误"),format+tr("不能识别的文件格式"));
 }
 
 void VectorgraphWidget::on_actionResume_triggered()
