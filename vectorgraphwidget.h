@@ -91,8 +91,9 @@ public slots:
     void saveSwp();
     void undo();
     void redo();
-    void changeCursor(VCursorType type);
+    void changeCursor(VCursorType type)override;
     void on_actionResume_triggered()override;
+    void on_actionCanvasSize_triggered()override;
 
 signals:
     void selected(const QItemSelection &list,QItemSelectionModel::SelectionFlags command);

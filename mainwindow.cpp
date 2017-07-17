@@ -520,6 +520,7 @@ bool MainWindow::eventFilter(QObject * obj, QEvent * ev)
             disconnect(ui->actionResume,SIGNAL(triggered()),widget,SLOT(on_actionResume_triggered()));
             disconnect(ui->actionSave,SIGNAL(triggered()),widget,SLOT(on_actionSave_triggered()));
             disconnect(ui->actionSaveAs,SIGNAL(triggered()),widget,SLOT(on_actionSaveAs_triggered()));
+            disconnect(ui->actionCanvasSize,SIGNAL(triggered()),widget,SLOT(on_actionCanvasSize_triggered()));
         }
         if(dock!=nullptr)
         {
@@ -529,6 +530,7 @@ bool MainWindow::eventFilter(QObject * obj, QEvent * ev)
             connect(ui->actionResume,SIGNAL(triggered()),widget,SLOT(on_actionResume_triggered()));
             connect(ui->actionSave,SIGNAL(triggered()),widget,SLOT(on_actionSave_triggered()));
             connect(ui->actionSaveAs,SIGNAL(triggered()),widget,SLOT(on_actionSaveAs_triggered()));
+            connect(ui->actionCanvasSize,SIGNAL(triggered()),widget,SLOT(on_actionCanvasSize_triggered()));
 
             focus = dock;
             VectorgraphWidget *vectorgraphWidget=qobject_cast<VectorgraphWidget *>(widget);
@@ -611,9 +613,8 @@ void MainWindow::focusDock(QDockWidget * target)
 
 void MainWindow::on_actionCanvasSize_triggered()
 {
-    VectorgraphWidget *widget=qobject_cast<VectorgraphWidget *>(getPaintWidget());
-    if(widget==nullptr)return;
-    widget->setCanvasSize(CanvasSizeDialog::showDialog(tr("画布大小"),widget->getCanvasSize()));
+    //Do nothing
+    //Edit in PaintWidget
 }
 
 void MainWindow::on_actionShapeSize_triggered()

@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QDockWidget>
 #include "vpoint.h"
+#include "vcursortype.h"
 
 class PaintWidget : public QWidget
 {
@@ -33,17 +34,13 @@ public:
 signals:
 
 public slots:
+    virtual void changeCursor(VCursorType type)=0;
     virtual void on_actionZoomIn_triggered();
     virtual void on_actionZoomOut_triggered();
     virtual void on_actionResume_triggered();
     virtual void on_actionSave_triggered();
     virtual void on_actionSaveAs_triggered();
-//    virtual void on_actionOpen_triggered();
-//    virtual void on_actionMove_triggered();
-//    virtual void on_actionChoose_triggered();
-//    virtual void changeCursor(VCursorType type);
-//    virtual void on_actionNew_triggered();
-//    virtual void on_actionCanvasSize_triggered();
+    virtual void on_actionCanvasSize_triggered()=0;
 //    virtual void on_actionShapeSize_triggered();
 //    virtual void on_actionBreakUp_triggered();
 //    virtual void on_actionRotate_triggered();

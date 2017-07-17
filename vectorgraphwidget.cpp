@@ -26,6 +26,7 @@
 #include "changetextdialog.h"
 #include "vroundedrectangle.h"
 #include "vbeziercurve.h"
+#include "canvassizedialog.h"
 #include <QPainter>
 #include <QSize>
 #include <QPen>
@@ -684,4 +685,9 @@ void VectorgraphWidget::on_actionResume_triggered()
 {
     canvasLocation=VPoint(0,0);
     PaintWidget::on_actionResume_triggered();
+}
+
+void VectorgraphWidget::on_actionCanvasSize_triggered()
+{
+    setCanvasSize(CanvasSizeDialog::showDialog(tr("画布大小"),getCanvasSize()));
 }
