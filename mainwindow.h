@@ -25,6 +25,7 @@
 #include <QMenu>
 #include <QCloseEvent>
 #include <vcursortype.h>
+#include "vectorgraphwidget.h"
 #include "paintwidget.h"
 #include "vshape.h"
 #include "vdelegate.h"
@@ -138,7 +139,7 @@ private:
 
     QMenu *contextMenu;
 
-    void changeMenuAction(PaintWidget *widget,VPoint loc);
+    void changeMenuAction(VectorgraphWidget *widget,VPoint loc);
 
     void loadPlugin(QString filename);
 
@@ -148,7 +149,7 @@ private:
     void focusDock(QDockWidget * target);
     PaintWidget * getPaintWidget();
     PaintWidget * getPaintWidget(QDockWidget *target);
-    bool closeWidget(PaintWidget *widget);
+    bool closeWidget(VectorgraphWidget *widget);
 };
 
 #endif // MAINWINDOW_H

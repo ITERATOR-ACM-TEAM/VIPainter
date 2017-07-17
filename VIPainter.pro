@@ -42,8 +42,9 @@ SOURCES += \
     Shapes/vgroupshape.cpp \
     Shapes/vellipse.cpp \
     Shapes/vcurveline.cpp \
-    paintwidget.cpp \
-    Shapes/vbeziercurve.cpp
+    Shapes/vbeziercurve.cpp \
+    vectorgraphwidget.cpp \
+    paintwidget.cpp
 
 HEADERS  += \
     canvassizedialog.h \
@@ -70,8 +71,9 @@ HEADERS  += \
     Shapes/vgroupshape.h \
     Shapes/vellipse.h \
     Shapes/vcurveline.h \
-    paintwidget.h \
-    Shapes/vbeziercurve.h
+    Shapes/vbeziercurve.h \
+    vectorgraphwidget.h \
+    paintwidget.h
 
 FORMS    += mainwindow.ui \
     canvassizedialog.ui \

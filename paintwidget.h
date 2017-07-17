@@ -1,106 +1,69 @@
-/**
- * Copyright (C) 2017 VIPainter
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- **/
-#ifndef TESTWIDGET_H
-#define TESTWIDGET_H
+#ifndef PAINTWIDGET_H
+#define PAINTWIDGET_H
 
-#include <QPaintEvent>
-#include <QMouseEvent>
-#include <QResizeEvent>
 #include <QWidget>
-#include <QMainWindow>
-#include <QRect>
-#include <QDir>
-#include <QWheelEvent>
-#include <QContextMenuEvent>
-#include <QMenu>
-#include <QKeyEvent>
-#include <QModelIndex>
-#include <QStringListModel>
-#include <QItemSelectionModel>
-#include <QList>
-#include <QString>
-#include "vgroupshape.h"
-#include "vsize.h"
-#include "vpoint.h"
-#include "vcursortype.h"
-#include "vshape.h"
 #include "vpoint.h"
 
 class PaintWidget : public QWidget
 {
     Q_OBJECT
-
 public:
-    QPixmap VSizeAll = QPixmap("://icon/mover.png").scaled(30,30);
-    QPixmap VRotate = QPixmap("://icon/undo.png").scaled(20,20);
-    explicit PaintWidget(QMainWindow *mainwindow, bool antialiasing);
-    double scale=1;
-    int crPos;
-    QMainWindow *mainwindow;
-    VGroupShape groupShape;
-    QVector<VShape*> focusShapes;
-    VPoint canvasLocation;
-    VSize canvasSize;
-    QStringListModel *listModel;
-    QItemSelectionModel *selectionModel;
-    QMenu *contextMenu;
-    VPoint getLoc(const VPoint & point);
-    bool fileChanged=false;
-    void setFileName(QString filename);
-    QString getFileName()const;
-    ~PaintWidget();
+    explicit PaintWidget(QWidget *parent = 0, bool antialiasing=true);
 
 protected:
-    void paintEvent(QPaintEvent *event)override;
-    void mouseMoveEvent(QMouseEvent *event)override;
-    void mousePressEvent(QMouseEvent *event)override;
-    void mouseDoubleClickEvent(QMouseEvent* event) override;
-    void mouseReleaseEvent(QMouseEvent *event)override;
-    void wheelEvent(QWheelEvent * event)override;
-    bool eventFilter(QObject * obj, QEvent * ev)override;
-
-private:
     QString filename;
-
-    VCursorType cursorType;
-    VShape * getShape(const VPoint &point);
-    static const int SWPSIZE=20;
-    QJsonArray swp[SWPSIZE];
-    int swpL=0;
-    int swpR=0;
-    int swpNow=0;
-    VPoint locMove;
-    VPoint lastMove;
-    VPoint locPress;
-    double lastAngle;
+    double scale=1;
+    VSize canvasSize;
     bool antialiasing;
-    void emitSelected();
 
-public slots:
-    void updateList();
-    void changeFocus();
-    void saveSwp();
-    void undo();
-    void redo();
-    void changeCursor(VCursorType type);
+public:
+    void setScale(double scale);
+    double getScale();
+    void setCanvasSize(VSize canvasSize);
+    VSize getCanvasSize();
+    void setFileName(QString filename);
+    QString getFileName()const;
     void setAntialiasing(bool antialiasing);
 
 signals:
-    void selected(const QItemSelection &list,QItemSelectionModel::SelectionFlags command);
+
+public slots:
+    virtual void on_actionZoomIn_triggered();
+    virtual void on_actionZoomOut_triggered();
+    virtual void on_actionResume_triggered();
+//    virtual void on_actionSave_triggered();
+//    virtual void on_actionSaveAs_triggered();
+//    virtual void on_actionOpen_triggered();
+//    virtual void on_actionMove_triggered();
+//    virtual void on_actionChoose_triggered();
+//    virtual void changeCursor(VCursorType type);
+//    virtual void on_actionNew_triggered();
+//    virtual void on_actionCanvasSize_triggered();
+//    virtual void on_actionShapeSize_triggered();
+//    virtual void on_actionBreakUp_triggered();
+//    virtual void on_actionRotate_triggered();
+//    virtual void on_actionRedo_triggered();
+//    virtual void on_actionReloadPlugon_triggered();
+//    virtual void on_actionLoadExPlugin_triggered();
+//    virtual void on_actionAntialiasing_toggled(bool antialiasing);
+//    virtual void on_actionDelete_triggered();
+//    virtual void on_actionClose_triggered();
+//    virtual void on_actionCopy_triggered();
+//    virtual void on_actionCut_triggered();
+//    virtual void on_actionPaste_triggered();
+//    virtual void on_actionGroup_triggered();
+//    virtual void initAction(QDir dir=QDir("plugin"));
+//    virtual void focusDock(bool checked);
+//    virtual void changeShapeName(const QModelIndex &index);
+//    virtual void on_actionSelectAll_triggered();
+//    virtual void on_actionBrush_triggered();
+//    virtual void on_actionPen_triggered();
+//    virtual void on_actionPenStyle_triggered();
+//    virtual void on_actionDraw_triggered();
+//    virtual void on_actionAbout_triggered();
+//    virtual void on_actionUndo_triggered();
+//    virtual void on_actionPolyLine_triggered();
+//    virtual void on_actionCurveLine_triggered();
 };
 
-#endif // TESTWIDGET_H
+#endif // PAINTWIDGET_H

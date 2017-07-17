@@ -64,7 +64,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //菜单逻辑
     connect(ui->menuEdit,&QMenu::aboutToShow,[this]{
-        PaintWidget *widget=getPaintWidget();
+        VectorgraphWidget *widget=qobject_cast<VectorgraphWidget *>(getPaintWidget());
         if(widget!=nullptr)
         {
             changeMenuAction(widget,VPoint(0,0));
@@ -157,20 +157,21 @@ void MainWindow::loadPlugin(QString filename)
 
     connect(action,&QAction::triggered,[this,shape]{
         //qDebug()<<"add"<<*shape;
-        if(getPaintWidget()==nullptr)return;
+        VectorgraphWidget *widget=qobject_cast<VectorgraphWidget*>(getPaintWidget());
+        if(widget==nullptr)return;
         VShape *newShape=shape->clone();
 //        newShape->setPen(this->pen);
 //        newShape->setBrush(this->brush);
-        getPaintWidget()->groupShape.insertShape(newShape);
-        getPaintWidget()->updateList();
-        getPaintWidget()->update();
-        getPaintWidget()->saveSwp();
+        widget->groupShape.insertShape(newShape);
+        widget->updateList();
+        widget->update();
+        widget->saveSwp();
     });
 }
 
 void MainWindow::changeShapeName(const QModelIndex &index)
 {
-    PaintWidget *widget=getPaintWidget();
+    VectorgraphWidget *widget=qobject_cast<VectorgraphWidget*>(getPaintWidget());
     if(widget==nullptr)return;
     widget->groupShape.getShapes().at(widget->groupShape.getVectorSize()-index.row()-1)->setName(index.data().toString());
 }
@@ -193,7 +194,7 @@ QDockWidget* MainWindow::newDock(QString dockname)
 
     static int id = 0;
 
-    PaintWidget* widget=new PaintWidget(this,ui->actionAntialiasing->isChecked());
+    VectorgraphWidget* widget=new VectorgraphWidget(this,ui->actionAntialiasing->isChecked());
     connect(this, SIGNAL(cursorChange(VCursorType)), widget, SLOT(changeCursor(VCursorType)));
     emit cursorChange(this->cursorState);
     widget->installEventFilter(this);
@@ -256,29 +257,25 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_actionZoomIn_triggered()
 {
-    if(getPaintWidget()==nullptr)return ;
-    getPaintWidget()->scale*=1.1;
-    getPaintWidget()->update();
+    //Do nothing
+    //Edit in PaintWidget
 }
 
 void MainWindow::on_actionZoomOut_triggered()
 {
-    if(getPaintWidget()==nullptr)return ;
-    getPaintWidget()->scale/=1.1;
-    getPaintWidget()->update();
+    //Do nothing
+    //Edit in PaintWidget
 }
 
 void MainWindow::on_actionResume_triggered()
 {
-    if(getPaintWidget()==nullptr)return ;
-    getPaintWidget()->scale=1.0;
-    getPaintWidget()->canvasLocation=VPoint(0,0);
-    getPaintWidget()->update();
+    //Do nothing
+    //Edit in PaintWidget
 }
 
 void MainWindow::on_actionSave_triggered()
 {
-    PaintWidget *widget=getPaintWidget();
+    VectorgraphWidget *widget=qobject_cast<VectorgraphWidget*>(getPaintWidget());
     if(widget==nullptr)return;
     QString filename = widget->getFileName();
     if(filename=="")on_actionSaveAs_triggered();
@@ -291,13 +288,14 @@ void MainWindow::saveFile(QString filename)
     if(focus == nullptr) return;
     ui->statusBar->showMessage(tr("保存到文件 ")+filename);
     QString format=filename.split('.').back().toUpper();
+    VectorgraphWidget *widget=qobject_cast<VectorgraphWidget*>(getPaintWidget());
     if(format==tr("JSON"))
     {
         QJsonDocument jsonDocument;
         QJsonObject obj;
         obj.insert("type",QString("canvas"));
-        obj.insert("size",getPaintWidget()->canvasSize);
-        obj.insert("shapes",getPaintWidget()->groupShape.toJsonArray());
+        obj.insert("size",widget->getCanvasSize());
+        obj.insert("shapes",widget->groupShape.toJsonArray());
         jsonDocument.setObject(obj);
         QFile file(filename);
         if(file.open(QFile::WriteOnly|QFile::Text))
@@ -305,18 +303,18 @@ void MainWindow::saveFile(QString filename)
             file.write(jsonDocument.toJson());
             file.close();
             focus->setWindowTitle(filename.split("/").back());
-            getPaintWidget(focus)->setFileName(filename);
+            widget->setFileName(filename);
         }
         else QMessageBox::warning(this,tr("错误"),tr("保存文件")+filename+tr("失败"));
     }
     else if(format=="JPG"||format=="PNG"||format=="BMP")
     {
-        QImage image(getPaintWidget()->canvasSize.width,getPaintWidget()->canvasSize.height,QImage::Format_ARGB32_Premultiplied);
+        QImage image(widget->getCanvasSize().width,widget->getCanvasSize().height,QImage::Format_ARGB32_Premultiplied);
         image.fill(0x00ffffff);
         QPainter painter(&image);
         if(ui->actionAntialiasing->isChecked())painter.setRenderHint(QPainter::Antialiasing);
-        painter.translate(getPaintWidget()->canvasSize.width/2,getPaintWidget()->canvasSize.height/2);
-        getPaintWidget()->groupShape.draw(&painter,getPaintWidget()->groupShape.getTransform());
+        painter.translate(widget->getCanvasSize().width/2,widget->getCanvasSize().height/2);
+        widget->groupShape.draw(&painter,widget->groupShape.getTransform());
         if(!image.save(filename,format.toStdString().c_str(),100))QMessageBox::warning(this,tr("错误"),tr("保存文件")+filename+tr("失败"));
     }
     else QMessageBox::warning(this,tr("错误"),format+tr("不能识别的文件格式"));
@@ -352,7 +350,7 @@ void MainWindow::on_actionOpen_triggered()
         bool flag=false;
         for(auto &dock:docks)
         {
-            PaintWidget *widget=getPaintWidget(dock);
+            VectorgraphWidget *widget=qobject_cast<VectorgraphWidget*>(getPaintWidget(dock));
             if(widget->getFileName()==filename)
             {
                 focusDock(dock);
@@ -371,18 +369,19 @@ void MainWindow::on_actionOpen_triggered()
             continue;
         }
         QDockWidget * newWidget = newDock(filename.split("/").back());
+        VectorgraphWidget *widget=qobject_cast<VectorgraphWidget*>(getPaintWidget(newWidget));
         if(doc.isObject()&&doc.object().value("type")==QString("canvas"))
         {
-            getPaintWidget(newWidget)->canvasSize=doc.object().value("size").toObject();
+            widget->setCanvasSize(doc.object().value("size").toObject());
             doc.setArray(doc.object().value("shapes").toArray());
         }
-        if(doc.isArray())getPaintWidget(newWidget)->groupShape=doc.array();
+        if(doc.isArray())widget->groupShape=doc.array();
         else if(doc.isObject())
         {
-            getPaintWidget(newWidget)->groupShape.insertShape(VShape::fromJsonObject(doc.object()));
+            widget->groupShape.insertShape(VShape::fromJsonObject(doc.object()));
         }
-        getPaintWidget(newWidget)->setFileName(filename);
-        getPaintWidget(newWidget)->saveSwp();
+        widget->setFileName(filename);
+        widget->saveSwp();
         newWidget->update();
     }
 }
@@ -416,7 +415,10 @@ void MainWindow::changeCursor(VCursorType type)
         ui->actionBreakUp->setEnabled(true);
         ui->actionSelectAll->setEnabled(true);
         for(auto &i:docks)
-            if(getPaintWidget(i)->crPos!=-1)getPaintWidget(i)->saveSwp();
+        {
+            VectorgraphWidget *widget=qobject_cast<VectorgraphWidget*>(getPaintWidget(i));
+            if(widget->crPos!=-1)widget->saveSwp();
+        }
     }
     cursorState = type;
     if(type == VCursorType::DRAWBEZIERCURVE || type == VCursorType::DRAWPOLYLINE)
@@ -431,18 +433,23 @@ void MainWindow::changeCursor(VCursorType type)
         ui->actionSelectAll->setEnabled(false);
         //for(auto &i:docks)getPaintWidget(i)->saveSwp();
     }
-    for(auto &i:docks)getPaintWidget(i)->crPos=-1;
+    for(auto &i:docks)
+    {
+        VectorgraphWidget *widget=qobject_cast<VectorgraphWidget*>(getPaintWidget(i));
+        widget->crPos=-1;
+    }
 
 }
 
 void MainWindow::on_actionNew_triggered()
 {
     QDockWidget * dock = newDock();
-    getPaintWidget(dock)->saveSwp();
+    VectorgraphWidget *widget=qobject_cast<VectorgraphWidget*>(getPaintWidget(dock));
+    widget->saveSwp();
 }
 
 //判断Action的显示状态
-void MainWindow::changeMenuAction(PaintWidget *widget, VPoint loc)
+void MainWindow::changeMenuAction(VectorgraphWidget *widget, VPoint loc)
 {
     if(cursorState == VCursorType::DRAWBEZIERCURVE || cursorState == VCursorType::DRAWPOLYLINE)return;
     bool flag=false;
@@ -495,7 +502,7 @@ void MainWindow::changeMenuAction(PaintWidget *widget, VPoint loc)
     }
 }
 
-bool MainWindow::closeWidget(PaintWidget *widget)
+bool MainWindow::closeWidget(VectorgraphWidget *widget)
 {
     bool flag=false;
     QString filename=widget->getFileName();
@@ -513,7 +520,7 @@ bool MainWindow::closeWidget(PaintWidget *widget)
             QJsonDocument jsonDocument;
             QJsonObject obj;
             obj.insert("type",QString("canvas"));
-            obj.insert("size",widget->canvasSize);
+            obj.insert("size",widget->getCanvasSize());
             obj.insert("shapes",widget->groupShape.toJsonArray());
             jsonDocument.setObject(obj);
             if(doc!=jsonDocument)flag=true;
@@ -539,7 +546,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
     bool flag=true;
     for(auto &dock:docks)
     {
-        PaintWidget *widget=getPaintWidget(dock);
+        VectorgraphWidget *widget=qobject_cast<VectorgraphWidget*>(getPaintWidget(dock));
         if(!closeWidget(widget))flag=false;
     }
     if(!flag)
@@ -550,25 +557,44 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 bool MainWindow::eventFilter(QObject * obj, QEvent * ev)
 {
-
-    if(ev->type() == QEvent::FocusIn)
+    switch(ev->type())
+    {
+    case QEvent::FocusIn:
     {
         QDockWidget *dock=qobject_cast<QDockWidget*>(obj);
+        if(focus!=nullptr)
+        {
+            PaintWidget *widget=getPaintWidget(focus);
+            disconnect(ui->actionZoomIn,SIGNAL(triggered()),widget,SLOT(on_actionZoomIn_triggered()));
+            disconnect(ui->actionZoomOut,SIGNAL(triggered()),widget,SLOT(on_actionZoomOut_triggered()));
+            disconnect(ui->actionResume,SIGNAL(triggered()),widget,SLOT(on_actionResume_triggered()));
+        }
         if(dock!=nullptr)
         {
+            PaintWidget *widget=getPaintWidget(dock);
             focus = dock;
-            listView->setModel(getPaintWidget(dock)->listModel);
-            listView->setSelectionModel(getPaintWidget(dock)->selectionModel);
-            getPaintWidget(dock)->updateList();
+            VectorgraphWidget *vectorgraphWidget=qobject_cast<VectorgraphWidget *>(widget);
+            if(vectorgraphWidget!=nullptr)
+            {
+                listView->setModel(vectorgraphWidget->listModel);
+                listView->setSelectionModel(vectorgraphWidget->selectionModel);
+                vectorgraphWidget->updateList();
+            }
+
+            connect(ui->actionZoomIn,SIGNAL(triggered()),widget,SLOT(on_actionZoomIn_triggered()));
+            connect(ui->actionZoomOut,SIGNAL(triggered()),widget,SLOT(on_actionZoomOut_triggered()));
+            connect(ui->actionResume,SIGNAL(triggered()),widget,SLOT(on_actionResume_triggered()));
+
             return false;
         }
     }
-    else if(ev->type() == QEvent::Close)
+        break;
+    case QEvent::Close:
     {
         auto it=std::find(docks.begin(),docks.end(),obj);
         if(it!=docks.end())
         {
-            PaintWidget *widget=getPaintWidget(*it);
+            VectorgraphWidget *widget=qobject_cast<VectorgraphWidget *>(getPaintWidget(*it));
             if(!closeWidget(widget))
             {
                 ev->ignore();
@@ -585,12 +611,13 @@ bool MainWindow::eventFilter(QObject * obj, QEvent * ev)
             return true;
         }
     }
-    else if(ev->type() ==QEvent::ContextMenu)
+        break;
+    case QEvent::ContextMenu:
     {
         if(cursorState != VCursorType::DRAWBEZIERCURVE && cursorState != VCursorType::DRAWPOLYLINE)
         {
             QContextMenuEvent *event=static_cast<QContextMenuEvent*>(ev);
-            PaintWidget *widget=qobject_cast<PaintWidget*>(obj);
+            VectorgraphWidget *widget=qobject_cast<VectorgraphWidget*>(obj);
             QPoint qpoint=event->pos();
             VPoint point(qpoint.x(),qpoint.y());
             VPoint loc=widget->getLoc(point);
@@ -601,6 +628,10 @@ bool MainWindow::eventFilter(QObject * obj, QEvent * ev)
                 return true;
             }
         }
+    }
+        break;
+    default:
+        break;
     }
 
     return false;
@@ -627,14 +658,14 @@ void MainWindow::focusDock(QDockWidget * target)
 
 void MainWindow::on_actionCanvasSize_triggered()
 {
-    PaintWidget *widget=getPaintWidget();
+    VectorgraphWidget *widget=qobject_cast<VectorgraphWidget *>(getPaintWidget());
     if(widget==nullptr)return;
-    widget->canvasSize=CanvasSizeDialog::showDialog(tr("画布大小"),widget->canvasSize);
+    widget->setCanvasSize(CanvasSizeDialog::showDialog(tr("画布大小"),widget->getCanvasSize()));
 }
 
 void MainWindow::on_actionShapeSize_triggered()
 {
-    PaintWidget *widget=getPaintWidget();
+    VectorgraphWidget *widget=qobject_cast<VectorgraphWidget *>(getPaintWidget());
     if(widget==nullptr)return;
     VSize size=
             widget->groupShape.getSize()*
@@ -661,7 +692,7 @@ PaintWidget * MainWindow::getPaintWidget(QDockWidget *target)
 
 void MainWindow::on_actionBreakUp_triggered()
 {
-    PaintWidget *widget=getPaintWidget();
+    VectorgraphWidget *widget=qobject_cast<VectorgraphWidget *>(getPaintWidget());
     if(focus == nullptr) return;
     if(widget->focusShapes.size()==1)
     {
@@ -692,7 +723,7 @@ void MainWindow::on_actionRotate_triggered()
 
 void MainWindow::on_actionRedo_triggered()
 {
-    PaintWidget *widget=getPaintWidget();
+    VectorgraphWidget *widget=qobject_cast<VectorgraphWidget *>(getPaintWidget());
     if(widget==nullptr)return;
     widget->redo();
 }
@@ -726,7 +757,7 @@ void MainWindow::on_actionAntialiasing_toggled(bool antialiasing)
 
 void MainWindow::on_actionDelete_triggered()
 {
-    PaintWidget *widget=getPaintWidget();
+    VectorgraphWidget *widget=qobject_cast<VectorgraphWidget *>(getPaintWidget());
     if(widget!=nullptr)
     {
         for(VShape *shape:widget->focusShapes)
@@ -746,7 +777,7 @@ void MainWindow::on_actionClose_triggered()
 
 void MainWindow::on_actionCopy_triggered()
 {
-    PaintWidget *widget=getPaintWidget();
+    VectorgraphWidget *widget=qobject_cast<VectorgraphWidget *>(getPaintWidget());
     if(widget!=nullptr)
     {
         if(widget->focusShapes.size()>0)
@@ -823,7 +854,7 @@ void MainWindow::on_actionCut_triggered()
 
 void MainWindow::on_actionPaste_triggered()
 {
-    PaintWidget *widget=getPaintWidget();
+    VectorgraphWidget *widget=qobject_cast<VectorgraphWidget *>(getPaintWidget());
     if(widget!=nullptr)
     {
         //  Get clipboard
@@ -874,7 +905,7 @@ void MainWindow::on_actionPaste_triggered()
 
 void MainWindow::on_actionGroup_triggered()
 {
-    PaintWidget *widget=getPaintWidget();
+    VectorgraphWidget *widget=qobject_cast<VectorgraphWidget *>(getPaintWidget());
     if(widget==nullptr)return;
     if(widget->focusShapes.empty())return;
     VGroupShape *group=new VGroupShape;
@@ -900,7 +931,7 @@ void MainWindow::on_actionGroup_triggered()
 
 void MainWindow::on_actionSelectAll_triggered()
 {
-    PaintWidget *widget=getPaintWidget();
+    VectorgraphWidget *widget=qobject_cast<VectorgraphWidget *>(getPaintWidget());
     if(widget==nullptr)return;
     widget->focusShapes.clear();
     for(auto &i:widget->groupShape.getShapes())widget->focusShapes.append(i);
@@ -909,7 +940,7 @@ void MainWindow::on_actionSelectAll_triggered()
 
 void MainWindow::on_actionBrush_triggered()
 {
-    PaintWidget *widget=getPaintWidget();
+    VectorgraphWidget *widget=qobject_cast<VectorgraphWidget *>(getPaintWidget());
     if(widget==nullptr)return;
     if(widget->focusShapes.empty())return;
     QColorDialog dialog(widget->focusShapes.first()->getBrush().color(),this);
@@ -924,7 +955,7 @@ void MainWindow::on_actionBrush_triggered()
 
 void MainWindow::on_actionPen_triggered()
 {
-    PaintWidget *widget=getPaintWidget();
+    VectorgraphWidget *widget=qobject_cast<VectorgraphWidget *>(getPaintWidget());
     if(widget==nullptr)return;
     if(widget->focusShapes.empty())return;
     QColorDialog dialog(widget->focusShapes.first()->getPen().color(),this);
@@ -939,7 +970,7 @@ void MainWindow::on_actionPen_triggered()
 
 void MainWindow::on_actionPenStyle_triggered()
 {
-    PaintWidget *widget=getPaintWidget();
+    VectorgraphWidget *widget=qobject_cast<VectorgraphWidget *>(getPaintWidget());
     if(widget==nullptr)return;
     if(widget->focusShapes.empty())return;
     PenStyleDialog::showDialog(tr("线条设置"),widget->focusShapes);
@@ -977,7 +1008,7 @@ void MainWindow::on_actionDraw_triggered()
 
 void MainWindow::on_actionUndo_triggered()
 {
-    PaintWidget *widget=getPaintWidget();
+    VectorgraphWidget *widget=qobject_cast<VectorgraphWidget *>(getPaintWidget());
     if(widget==nullptr)return;
     widget->undo();
 }
