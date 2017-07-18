@@ -40,6 +40,7 @@
 #include "vcursortype.h"
 #include "vshape.h"
 #include "vpoint.h"
+#include "swapqueue.h"
 
 class VectorgraphWidget : public PaintWidget
 {
@@ -74,11 +75,7 @@ protected:
 private:
     VCursorType cursorType;
     VShape * getShape(const VPoint &point);
-    static const int SWPSIZE=20;
-    QJsonArray swp[SWPSIZE];
-    int swpL=0;
-    int swpR=0;
-    int swpNow=0;
+    SwapQueue<QJsonArray,20> swapQueue;
     VPoint locMove;
     VPoint lastMove;
     VPoint locPress;

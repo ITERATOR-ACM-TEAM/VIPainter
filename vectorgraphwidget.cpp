@@ -620,28 +620,21 @@ void VectorgraphWidget::emitSelected()
 
 void VectorgraphWidget::saveSwp()
 {
-    while(swpNow-swpL>=SWPSIZE)swpL++;
-    swp[swpNow%SWPSIZE]=groupShape.toJsonArray();
-    swpNow++;
-    swpR=swpNow;
+    swapQueue.push(groupShape.toJsonArray());
 }
 
 void VectorgraphWidget::undo()
 {
-    if(swpNow-swpL<=1)return;
-    focusShapes.clear();
-    swpNow--;
-    groupShape=swp[(swpNow-1)%SWPSIZE];
+    if(swapQueue.atFirst())return;
+    groupShape=swapQueue.undo();
     update();
     updateList();
 }
 
 void VectorgraphWidget::redo()
 {
-    if(swpNow>=swpR)return;
-    focusShapes.clear();
-    groupShape=swp[swpNow%SWPSIZE];
-    swpNow++;
+    if(swapQueue.atLast())return;
+    groupShape=swapQueue.redo();
     update();
     updateList();
 }
