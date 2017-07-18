@@ -41,10 +41,10 @@ public slots:
     virtual void on_actionSave_triggered();
     virtual void on_actionSaveAs_triggered();
     virtual void on_actionCanvasSize_triggered()=0;
-//    virtual void on_actionShapeSize_triggered();
-//    virtual void on_actionBreakUp_triggered();
-//    virtual void on_actionRotate_triggered();
+    virtual void on_actionShapeSize_triggered()=0;
+    virtual void on_actionBreakUp_triggered()=0;
 //    virtual void on_actionRedo_triggered();
+//    virtual void on_actionUndo_triggered();
 //    virtual void on_actionReloadPlugon_triggered();
 //    virtual void on_actionLoadExPlugin_triggered();
 //    virtual void on_actionAntialiasing_toggled(bool antialiasing);
@@ -63,7 +63,6 @@ public slots:
 //    virtual void on_actionPenStyle_triggered();
 //    virtual void on_actionDraw_triggered();
 //    virtual void on_actionAbout_triggered();
-//    virtual void on_actionUndo_triggered();
 //    virtual void on_actionPolyLine_triggered();
 //    virtual void on_actionCurveLine_triggered();
 };

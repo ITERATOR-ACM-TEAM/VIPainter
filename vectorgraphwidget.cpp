@@ -691,3 +691,36 @@ void VectorgraphWidget::on_actionCanvasSize_triggered()
 {
     setCanvasSize(CanvasSizeDialog::showDialog(tr("画布大小"),getCanvasSize()));
 }
+
+void VectorgraphWidget::on_actionShapeSize_triggered()
+{
+    VSize size=
+            groupShape.getSize()*
+            groupShape.getTransform();
+    VSize toSize=CanvasSizeDialog::showDialog(tr("图像大小"),size);
+    VMagnification mag=toSize/size;
+    for(auto &i:groupShape.getShapes())
+    {
+        i->zoomin(mag);
+    }
+    saveSwp();
+}
+
+void VectorgraphWidget::on_actionBreakUp_triggered()
+{
+    if(focusShapes.size()==1)
+    {
+        VGroupShape *shape=dynamic_cast<VGroupShape*>(focusShapes.first());
+        focusShapes.clear();
+        if(shape!=nullptr)
+        {
+            auto &shapes=groupShape.getShapes();
+            int i=std::find(shapes.begin(),shapes.end(),shape)-shapes.begin();
+            QVector<VShape *> shs = VGroupShape::breakUp(shape);
+            groupShape.insertShape(shs,i);
+            focusShapes=std::move(shs);
+        }
+        update();
+        saveSwp();
+    }
+}
