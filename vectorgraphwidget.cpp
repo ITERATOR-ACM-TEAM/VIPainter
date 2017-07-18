@@ -623,17 +623,19 @@ void VectorgraphWidget::saveSwp()
     swapQueue.push(groupShape.toJsonArray());
 }
 
-void VectorgraphWidget::undo()
+void VectorgraphWidget::on_actionUndo_triggered()
 {
     if(swapQueue.atFirst())return;
+    focusShapes.clear();
     groupShape=swapQueue.undo();
     update();
     updateList();
 }
 
-void VectorgraphWidget::redo()
+void VectorgraphWidget::on_actionRedo_triggered()
 {
     if(swapQueue.atLast())return;
+    focusShapes.clear();
     groupShape=swapQueue.redo();
     update();
     updateList();

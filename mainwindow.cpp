@@ -520,6 +520,8 @@ bool MainWindow::eventFilter(QObject * obj, QEvent * ev)
             disconnect(ui->actionCanvasSize,SIGNAL(triggered()),widget,SLOT(on_actionCanvasSize_triggered()));
             disconnect(ui->actionShapeSize,SIGNAL(triggered()),widget,SLOT(on_actionShapeSize_triggered()));
             disconnect(ui->actionBreakUp,SIGNAL(triggered()),widget,SLOT(on_actionBreakUp_triggered()));
+            disconnect(ui->actionRedo,SIGNAL(triggered()),widget,SLOT(on_actionRedo_triggered()));
+            disconnect(ui->actionUndo,SIGNAL(triggered()),widget,SLOT(on_actionUndo_triggered()));
         }
         if(dock!=nullptr)
         {
@@ -532,6 +534,8 @@ bool MainWindow::eventFilter(QObject * obj, QEvent * ev)
             connect(ui->actionCanvasSize,SIGNAL(triggered()),widget,SLOT(on_actionCanvasSize_triggered()));
             connect(ui->actionShapeSize,SIGNAL(triggered()),widget,SLOT(on_actionShapeSize_triggered()));
             connect(ui->actionBreakUp,SIGNAL(triggered()),widget,SLOT(on_actionBreakUp_triggered()));
+            connect(ui->actionRedo,SIGNAL(triggered()),widget,SLOT(on_actionRedo_triggered()));
+            connect(ui->actionUndo,SIGNAL(triggered()),widget,SLOT(on_actionUndo_triggered()));
 
             focus = dock;
             VectorgraphWidget *vectorgraphWidget=qobject_cast<VectorgraphWidget *>(widget);
@@ -653,9 +657,8 @@ void MainWindow::on_actionRotate_triggered()
 
 void MainWindow::on_actionRedo_triggered()
 {
-    VectorgraphWidget *widget=qobject_cast<VectorgraphWidget *>(getPaintWidget());
-    if(widget==nullptr)return;
-    widget->redo();
+    //Do nothing
+    //Edit in PaintWidget
 }
 
 void MainWindow::on_actionReloadPlugon_triggered()
@@ -938,9 +941,8 @@ void MainWindow::on_actionDraw_triggered()
 
 void MainWindow::on_actionUndo_triggered()
 {
-    VectorgraphWidget *widget=qobject_cast<VectorgraphWidget *>(getPaintWidget());
-    if(widget==nullptr)return;
-    widget->undo();
+    //Do nothing
+    //Edit in PaintWidget
 }
 
 void MainWindow::on_actionCurveLine_triggered()
