@@ -44,6 +44,7 @@ VGroupShape::VGroupShape(const VGroupShape &shape):VShape(shape),cr(0,0)
         sp->setParent(this);
         this->shapes.push_back(sp);
     }
+    force=shape.force;
     getCircumscribedRectangle(true);
 }
 
@@ -60,6 +61,7 @@ VGroupShape::VGroupShape(const QJsonArray &jsonArray)
             tmp->setParent(this);
         }
     }
+    force=false;
     getCircumscribedRectangle(true);
 }
 
@@ -86,6 +88,7 @@ const VGroupShape & VGroupShape:: operator=(const VGroupShape &shape)
         this->shapes.push_back(sp);
     }
     getCircumscribedRectangle(true);
+    force=shape.force;
     return *this;
 }
 
@@ -106,6 +109,7 @@ const VGroupShape & VGroupShape:: operator=(const QJsonObject &jsonObject)
         }
     }
     getCircumscribedRectangle();
+    force=jsonObject.value("force").toBool(false);
     return *this;
 }
 
@@ -124,7 +128,18 @@ const VGroupShape & VGroupShape:: operator=(const QJsonArray &jsonArray)
         }
     }
     getCircumscribedRectangle();
+    force=false;
     return *this;
+}
+
+bool VGroupShape::isforce()
+{
+    return force;
+}
+
+void VGroupShape::setForce(bool force)
+{
+    this->force=force;
 }
 
 int VGroupShape::insertShape(VShape * other)
@@ -206,7 +221,15 @@ void VGroupShape::draw(QPainter *painter,const VTransform &trans)
     for(VShape *shape:shapes)
     {
         painter->save();
-        shape->draw(painter,shape->getTransform()*trans);
+        if(force)
+        {
+            painter->setWorldTransform(trans,true);
+            shape->draw(painter,shape->getTransform());
+        }
+        else
+        {
+            shape->draw(painter,shape->getTransform()*trans);
+        }
         //qDebug() << *it;
         painter->restore();
     }
@@ -366,18 +389,13 @@ bool VGroupShape::contains(VPoint point)
 QJsonObject VGroupShape::toJsonObject()const
 {
     QJsonObject jsonObject(VShape::toJsonObject());
-    if(getParent()==nullptr)
-    {
-        jsonObject.erase(jsonObject.find("location"));
-        jsonObject.erase(jsonObject.find("magnification"));
-        jsonObject.erase(jsonObject.find("angle"));
-    }
     QJsonArray jsonArray;
     for(const auto &it: shapes)
     {
         jsonArray.push_back(*it);
     }
     jsonObject.insert("shapes", jsonArray);
+    if(force)jsonObject.insert("force",force);
     return jsonObject;
 }
 
@@ -393,6 +411,7 @@ VGroupShape::VGroupShape(const QJsonObject &jsonObject):VShape(jsonObject)
             shapes.push_back(tmp);
     }
     getCircumscribedRectangle(true);
+    force=jsonObject.value("force").toBool(false);
 }
 
 QVector<VShape *> VGroupShape::breakUp (VGroupShape * group)

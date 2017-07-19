@@ -30,6 +30,7 @@ private:
     QVector<VShape*> shapes;
     void caculateSubShapeAndSize();
     VSize cr;
+    bool force=false;
 
 public:
 
@@ -38,7 +39,7 @@ public:
     VGroupShape();
     VGroupShape(const VGroupShape &shape);
     VGroupShape(const QJsonObject &jsonObject);
-    VGroupShape(const QJsonArray &jsonObject);
+    VGroupShape(const QJsonArray &jsonArray);
     QJsonArray toJsonArray()const;
     ~VGroupShape()override;
     QJsonObject toJsonObject()const;
@@ -64,6 +65,9 @@ public:
 
     int getVectorSize()const;
     VSize getSize()override;
+
+    bool isforce();
+    void setForce(bool force);
 
     void draw(QPainter *painter,const VTransform &transform)override;
     QString type()const override;

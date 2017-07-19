@@ -121,6 +121,8 @@ private slots:
 
     void on_actionCurveLine_triggered();
 
+    void on_actionForceGroup_triggered();
+
 private:
     QVector<VShape*>plugins;
     Ui::MainWindow *ui;

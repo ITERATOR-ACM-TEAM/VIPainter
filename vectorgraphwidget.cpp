@@ -863,7 +863,33 @@ void VectorgraphWidget::on_actionGroup_triggered()
     groupShape.insertShape(group);
     group->getCircumscribedRectangle();
     focusShapes.clear();
-    group->setName(name);
+    group->setName("("+name+")");
+    focusShapes.append(group);
+    update();
+    updateList();
+    saveSwp();
+}
+
+void VectorgraphWidget::on_actionForceGroup_triggered()
+{
+    if(focusShapes.empty())return;
+    VGroupShape *group=new VGroupShape;
+    QString name;
+    for(QVector<VShape*>::iterator it=const_cast<QVector<VShape*>::iterator>(groupShape.getShapes().begin());it!=groupShape.getShapes().end();)
+    {
+        if(focusShapes.contains(*it))
+        {
+            if(name!="")name.append(", ");
+            name.append((*it)->getName());
+            group->insertShape(groupShape.takeShape(it));
+        }
+        else it++;
+    }
+    groupShape.insertShape(group);
+    group->getCircumscribedRectangle();
+    focusShapes.clear();
+    group->setName("["+name+"]");
+    group->setForce(true);
     focusShapes.append(group);
     update();
     updateList();
@@ -944,3 +970,4 @@ QJsonObject VectorgraphWidget::toJsonObject()
     obj.insert("shapes",groupShape.toJsonArray());
     return obj;
 }
+

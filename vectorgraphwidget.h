@@ -105,6 +105,7 @@ public slots:
     void on_actionBrush_triggered()override;
     void on_actionPen_triggered()override;
     void on_actionPenStyle_triggered()override;
+    void on_actionForceGroup_triggered()override;
 
 signals:
     void selected(const QItemSelection &list,QItemSelectionModel::SelectionFlags command);

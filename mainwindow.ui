@@ -75,6 +75,7 @@
     <addaction name="actionRedo"/>
     <addaction name="separator"/>
     <addaction name="actionGroup"/>
+    <addaction name="actionForceGroup"/>
     <addaction name="actionBreakUp"/>
     <addaction name="actionDelete"/>
    </widget>
@@ -538,6 +539,17 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Z</string>
+   </property>
+  </action>
+  <action name="actionForceGroup">
+   <property name="text">
+    <string>强组合</string>
+   </property>
+   <property name="toolTip">
+    <string>强组合</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Alt+G</string>
    </property>
   </action>
  </widget>

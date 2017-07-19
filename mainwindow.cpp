@@ -99,6 +99,7 @@ MainWindow::MainWindow(QWidget *parent) :
     contextMenu->addAction(ui->actionBrush);
     contextMenu->addSeparator();
     contextMenu->addAction(ui->actionGroup);
+    contextMenu->addAction(ui->actionForceGroup);
     contextMenu->addAction(ui->actionBreakUp);
 
     update();
@@ -343,6 +344,7 @@ void MainWindow::changeCursor(VCursorType type)
         ui->actionRedo->setEnabled(true);
         ui->actionUndo->setEnabled(true);
         ui->actionGroup->setEnabled(true);
+        ui->actionForceGroup->setEnabled(true);
         ui->actionBreakUp->setEnabled(true);
         ui->actionSelectAll->setEnabled(true);
         for(auto &i:docks)
@@ -360,6 +362,7 @@ void MainWindow::changeCursor(VCursorType type)
         ui->actionRedo->setEnabled(false);
         ui->actionUndo->setEnabled(false);
         ui->actionGroup->setEnabled(false);
+        ui->actionForceGroup->setEnabled(false);
         ui->actionBreakUp->setEnabled(false);
         ui->actionSelectAll->setEnabled(false);
         //for(auto &i:docks)getPaintWidget(i)->saveSwp();
@@ -393,6 +396,7 @@ void MainWindow::changeMenuAction(VectorgraphWidget *widget, VPoint loc)
         ui->actionPenStyle->setVisible(false);
         ui->actionBrush->setVisible(false);
         ui->actionGroup->setVisible(false);
+        ui->actionForceGroup->setVisible(false);
         ui->actionBreakUp->setVisible(false);
     }
     else
@@ -414,6 +418,7 @@ void MainWindow::changeMenuAction(VectorgraphWidget *widget, VPoint loc)
             ui->actionPenStyle->setVisible(true);
             ui->actionBrush->setVisible(true);
             ui->actionGroup->setVisible(true);
+            ui->actionForceGroup->setVisible(true);
             ui->actionBreakUp->setVisible(true);
             if(widget->focusShapes.size()==1
                     &&widget->focusShapes.first()->type()==VType::GroupShape)
@@ -428,6 +433,7 @@ void MainWindow::changeMenuAction(VectorgraphWidget *widget, VPoint loc)
             ui->actionPenStyle->setVisible(false);
             ui->actionBrush->setVisible(false);
             ui->actionGroup->setVisible(false);
+            ui->actionForceGroup->setVisible(false);
             ui->actionBreakUp->setVisible(false);
         }
     }
@@ -471,35 +477,10 @@ bool MainWindow::eventFilter(QObject * obj, QEvent * ev)
     case QEvent::FocusIn:
     {
         QDockWidget *dock=qobject_cast<QDockWidget*>(obj);
-        if(focus!=nullptr)
-        {
-            PaintWidget *widget=getPaintWidget(focus);
-            disconnect(delegate,SIGNAL(dataChanged(const QModelIndex &)),widget,SLOT(changeModelData(const QModelIndex &)));
-//#define KDISCONNECT(action) disconnect(ui->action,SIGNAL(triggered()),widget,SLOT(on_##action##_triggered()))
-//            KDISCONNECT(actionZoomIn);
-//            KDISCONNECT(actionZoomOut);
-//            KDISCONNECT(actionResume);
-//            KDISCONNECT(actionSave);
-//            KDISCONNECT(actionSaveAs);
-//            KDISCONNECT(actionCanvasSize);
-//            KDISCONNECT(actionShapeSize);
-//            KDISCONNECT(actionBreakUp);
-//            KDISCONNECT(actionRedo);
-//            KDISCONNECT(actionUndo);
-//            KDISCONNECT(actionDelete);
-//            KDISCONNECT(actionCopy);
-//            KDISCONNECT(actionCut);
-//            KDISCONNECT(actionPaste);
-//            KDISCONNECT(actionGroup);
-//            KDISCONNECT(actionSelectAll);
-//            KDISCONNECT(actionBrush);
-//            KDISCONNECT(actionPen);
-//            KDISCONNECT(actionPenStyle);
-//#undef KDISCONNECT
-        }
         if(dock!=nullptr)
         {
             PaintWidget *widget=getPaintWidget(dock);
+            disconnect(delegate,0,0,0);
             connect(delegate,SIGNAL(dataChanged(const QModelIndex &)),widget,SLOT(changeModelData(const QModelIndex &)));
 #define KCONNECT(action) disconnect(ui->action,0,0,0),\
                             connect(ui->action,SIGNAL(triggered()),widget,SLOT(on_##action##_triggered()))
@@ -522,6 +503,7 @@ bool MainWindow::eventFilter(QObject * obj, QEvent * ev)
             KCONNECT(actionBrush);
             KCONNECT(actionPen);
             KCONNECT(actionPenStyle);
+            KCONNECT(actionForceGroup);
 #undef KCONNECT
 
             focus = dock;
@@ -778,4 +760,10 @@ void MainWindow::on_actionCurveLine_triggered()
 void MainWindow::on_actionPolyLine_triggered()
 {
     on_actionDraw_triggered();
+}
+
+void MainWindow::on_actionForceGroup_triggered()
+{
+    //Do nothing
+    //Edit in PaintWidget
 }

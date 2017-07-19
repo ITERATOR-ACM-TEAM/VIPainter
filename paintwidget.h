@@ -72,6 +72,7 @@ public slots:
     virtual void on_actionBrush_triggered()=0;
     virtual void on_actionPen_triggered()=0;
     virtual void on_actionPenStyle_triggered()=0;
+    virtual void on_actionForceGroup_triggered()=0;
 };
 
 #endif // PAINTWIDGET_H
