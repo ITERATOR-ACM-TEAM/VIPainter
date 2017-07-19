@@ -116,6 +116,7 @@ void PaintWidget::on_actionSaveAs_triggered()
 
 void PaintWidget::changeCursor(VCursorType type,VShape *plugin)
 {
+    if(cursorType==VCursorType::PLUGIN)update();
     this->cursorType = type;
     switch(type)
     {

@@ -220,6 +220,7 @@ void VectorgraphWidget::mousePressEvent(QMouseEvent *event)
             focusShapes.append(shape);
             update();
             updateList();
+            saveSwp();
         }break;
         default:
             break;
@@ -344,8 +345,10 @@ void VectorgraphWidget::mouseMoveEvent(QMouseEvent *event)
         }
         if(flag)this->setCursor(Qt::ArrowCursor);
     }
-
-
+    else if(cursorType == VCursorType::PLUGIN)
+    {
+        update();
+    }
 
     if(event->buttons()&Qt::LeftButton)
     {
@@ -468,6 +471,15 @@ void VectorgraphWidget::paintEvent(QPaintEvent *event)
         trans=shape->getTransform()*trans;
         shape->drawCR(&painter,trans,scale);
         //qDebug() << *it;
+        painter.restore();
+    }
+
+    if(cursorType==VCursorType::PLUGIN)
+    {
+        painter.save();
+        painter.scale(scale,scale);
+        painter.translate(locMove.toQPointF());
+        plugin->draw(&painter,plugin->getTransform());
         painter.restore();
     }
 
