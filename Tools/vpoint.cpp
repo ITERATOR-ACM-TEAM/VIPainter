@@ -100,6 +100,12 @@ VPoint VPoint::operator-(const VSize &size)const
     return VPoint(x-size.width,y-size.height);
 }
 
+
+bool VPoint::operator!=(const VPoint &point)const
+{
+    return std::abs(x-point.x)>=1e-9 || std::abs(y-point.y)>=1e-9;
+}
+
 VPoint::operator QJsonValue()const
 {
     QJsonObject jsonObject;

@@ -185,10 +185,9 @@ VShape * VShape::getParent()const
 QVector<VPoint> VShape::getRect()
 {
     QVector<VPoint> points;
-    VSize size=getSize()/VMagnification(2);
-    double x=size.width*crDis/(transform.map(VPoint(size.width,0))-transform.map(VPoint(0,0)));
-    double y=size.height*crDis/(transform.map(VPoint(0,size.height))-transform.map(VPoint(0,0)));
-    size = VSize(size.width+x, size.height+y);
+    double x=crDis/(transform.map(VPoint(1,0))-transform.map(VPoint(0,0)));
+    double y=crDis/(transform.map(VPoint(0,1))-transform.map(VPoint(0,0)));
+    VSize size = VSize(getSize().width/2+x, getSize().height/2+y);
 
     points.append(VPoint(size.width,size.height));
     points.append(VPoint(0, size.height));
@@ -226,7 +225,6 @@ void VShape::moveLoc(const VPoint & point)
 {
     //qDebug() << point;
     transform.translate(point);
-    if(parent == nullptr) return;
     VGroupShape *groupShape=dynamic_cast<VGroupShape*>(getParent());
     if(groupShape!=nullptr)groupShape->getCircumscribedRectangle();
 }
@@ -267,9 +265,8 @@ void VShape::drawCR(QPainter * painter, const VTransform &trans, double scale)
 int VShape::atCrPoints(const VPoint & point,double scale)
 {
     QVector<VPoint> points = this->getRect();
-    VSize size=getSize()/VMagnification(2);
-    double x=size.width*crDis/(transform.map(VPoint(size.width,0))-transform.map(VPoint(0,0)));
-    double y=size.height*crDis/(transform.map(VPoint(0,size.height))-transform.map(VPoint(0,0)));
+    double x=crDis/(transform.map(VPoint(1,0))-transform.map(VPoint(0,0)));
+    double y=crDis/(transform.map(VPoint(0,1))-transform.map(VPoint(0,0)));
 
     VSize siz(x/scale,y/scale);
     int cnt = 0;
@@ -286,49 +283,21 @@ int VShape::atCrPoints(const VPoint & point,double scale)
 
 void VShape::changeMag(int i, const VVector & vec)
 {
-    static const VMagnification mark[4] =
-    {
-      {1, 1}, {-1, 1},{-1,-1},{1,-1}
-    };
-    if(i<0 || i>=8) return;
-    QVector<VPoint> points = this->getRect();
-    VPoint crp = points[i];
-    VVector co(VPoint(0,0), crp);
-    VVector mov;
-
-    VSize size=getSize()/VMagnification(2);
-    double x=size.width*crDis/(transform.map(VPoint(size.width,0))-transform.map(VPoint(0,0)));
-    double y=size.height*crDis/(transform.map(VPoint(0,size.height))-transform.map(VPoint(0,0)));
-    if(i % 2)
-    {
-        double dis = (VVector(vec.x, vec.y)*co) / co.norm();
-        if(i % 4 == 1)
-        {
-            mov = VVector((this->getSize().width)/2, dis - y);
-        }
-        else
-        {
-            mov = VVector(dis - x, (this->getSize().height)/2);
-        }
-    }
-    else
-    {
-        mov = VVector(vec.x, vec.y) * mark[i/2] - VVector(x, y);
-    }
-    mov = mov*2;
-    //this->setLocation(this->reverseTransform((mov+VPoint(0,0))/mag));
-    if(std::abs(mov.x/(this->getSize().width)) < 1e-9)
-    {
-        mov.x = (this->getSize().width) * (points[i].x / std::abs(points[i].x)) *1e-9;
-    }
-    if(std::abs(mov.y/(this->getSize().height)) < 1e-9)
-    {
-        mov.y = (this->getSize().height) * (points[i].y / std::abs(points[i].y)) *1e-9;
-    }
-    this->transform.scale(VMagnification(mov.x/(this->getSize().width)
-                                        ,mov.y/(this->getSize().height)
-                                        )
-                          );
+    VMagnification mag;
+    VPoint point=getRect().at(i);
+    if(point.x==0)mag.horizontal=1;
+    else mag.horizontal=vec.x/point.x;
+    if(point.y==0)mag.vertical=1;
+    else mag.vertical=vec.y/point.y;
+    VSize size=getSize();
+    size=VSize((transform.map(VPoint(size.width,0))-transform.map(VPoint(0,0))),
+                (transform.map(VPoint(0,size.height))-transform.map(VPoint(0,0))))*mag;
+    if(std::abs(size.width)<1)mag.horizontal =size.width<0?-1:1;
+    if(std::abs(size.height)<1)mag.vertical =size.height<0?-1:1;
+    if(mag.horizontal==1&&mag.vertical==1)return;
+    point.x=-point.x;
+    point.y=-point.y;
+    this->transform.scale(mag);
 }
 
 void VShape::setPen(QPen pen)

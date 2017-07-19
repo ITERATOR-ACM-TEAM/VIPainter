@@ -214,7 +214,7 @@ void VectorgraphWidget::mousePressEvent(QMouseEvent *event)
         case VCursorType::PLUGIN:
         {
             VShape *shape=plugin->clone();
-            shape->moveLoc(getLoc(point));
+            shape->moveLoc(shape->transformPoint(getLoc(point)));
             groupShape.insertShape(shape);
             focusShapes.clear();
             focusShapes.append(shape);
@@ -256,9 +256,13 @@ void VectorgraphWidget::mouseReleaseEvent(QMouseEvent *event)
     VPoint pos=getLoc(VPoint(qpoint.x(),qpoint.y()));
     if(event->button()==Qt::LeftButton)
     {
-        if(cursorType == VCursorType::MOVE)
+        switch(cursorType)
+        {
+        case VCursorType::MOVE:
+        {
             this->setCursor(Qt::OpenHandCursor);
-        else if(cursorType==VCursorType::CHOOSE)
+        }break;
+        case VCursorType::CHOOSE:
         {
             if(crPos==-2)
             {
@@ -291,13 +295,16 @@ void VectorgraphWidget::mouseReleaseEvent(QMouseEvent *event)
             {
                 saveSwp();
             }
-        }
-        else if(cursorType==VCursorType::ROTATE)
+        }break;
+        case VCursorType::ROTATE:
         {
             if(focusShapes.size()==1&&(pos.x!=locPress.x||pos.y!=locPress.y))
             {
                 saveSwp();
             }
+        }break;
+        default:
+            break;
         }
         if(cursorType != VCursorType::DRAWBEZIERCURVE && cursorType != VCursorType::DRAWPOLYLINE)
             crPos = -1;
@@ -342,19 +349,19 @@ void VectorgraphWidget::mouseMoveEvent(QMouseEvent *event)
 
     if(event->buttons()&Qt::LeftButton)
     {
-        if(cursorType == VCursorType::MOVE)
+        switch(cursorType)
+        {
+        case VCursorType::MOVE:
         {
             canvasLocation.x+=(vpoint.x-lastMove.x);
             canvasLocation.y+=(vpoint.y-lastMove.y);
-            //qDebug()<<"canvasLocation: ("<<canvasLocation.x<<","<<canvasLocation.y<<")"<<endl;
             update();
-        }else if(cursorType == VCursorType::CHOOSE){
+        }break;
+        case VCursorType::CHOOSE:
+        {
             if(!focusShapes.empty())
             {
-                //VPoint loc = focusShapes.first()->getLocation();
                 VPoint lp = groupShape.transformPoint(locMove);
-                //qDebug() << pos << lp;
-                //qDebug() << loc;
                 VPoint v(pos.x-lp.x, pos.y-lp.y);
                 if(crPos == -1)
                 {
@@ -366,7 +373,6 @@ void VectorgraphWidget::mouseMoveEvent(QMouseEvent *event)
                 }
                 else if(crPos < 8)
                 {
-                    //qDebug()<<"move"<<crPos;
                     if(focusShapes.size()==1)
                     {
                         VShape *shape=focusShapes.first();
@@ -385,10 +391,9 @@ void VectorgraphWidget::mouseMoveEvent(QMouseEvent *event)
                     }
                 }
             }
-
             update();
-        }
-        else if(cursorType == VCursorType::ROTATE)
+        }break;
+        case VCursorType::ROTATE:
         {
             if(focusShapes.size()==1)
             {
@@ -407,8 +412,9 @@ void VectorgraphWidget::mouseMoveEvent(QMouseEvent *event)
                             );
                 update();
             }
-        }
-        else if(cursorType == VCursorType::DRAWBEZIERCURVE || cursorType == VCursorType::DRAWPOLYLINE)
+        }break;
+        case VCursorType::DRAWBEZIERCURVE:
+        case VCursorType::DRAWPOLYLINE:
         {
             if(crPos > -1)
             {
@@ -422,6 +428,9 @@ void VectorgraphWidget::mouseMoveEvent(QMouseEvent *event)
                 }
             }
 
+        }break;
+        default:
+            break;
         }
     }
     VPoint point(qpoint.x()-(this->width()/2+canvasLocation.x),qpoint.y()-(this->height()/2+canvasLocation.y));
