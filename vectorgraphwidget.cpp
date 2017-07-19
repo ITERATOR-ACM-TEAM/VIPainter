@@ -27,6 +27,7 @@
 #include "vroundedrectangle.h"
 #include "vbeziercurve.h"
 #include "canvassizedialog.h"
+#include "penstyledialog.h"
 #include <QPainter>
 #include <QSize>
 #include <QPen>
@@ -50,6 +51,7 @@
 #include <QClipboard>
 #include <QMimeData>
 #include <QModelIndex>
+#include <QColorDialog>
 
 VectorgraphWidget::VectorgraphWidget(QMainWindow *parent, bool antialiasing) :
     PaintWidget(parent,antialiasing),crPos(-1),canvasLocation(0,0),cursorType(VCursorType::CHOOSE)
@@ -884,4 +886,46 @@ void VectorgraphWidget::on_actionGroup_triggered()
 void VectorgraphWidget::changeModelData(const QModelIndex &index)
 {
     groupShape.getShapes().at(groupShape.getVectorSize()-index.row()-1)->setName(index.data().toString());
+}
+
+void VectorgraphWidget::on_actionSelectAll_triggered()
+{
+    focusShapes.clear();
+    for(auto &i:groupShape.getShapes())focusShapes.append(i);
+    update();
+    emitSelected();
+}
+
+void VectorgraphWidget::on_actionBrush_triggered()
+{
+    if(focusShapes.empty())return;
+    QColorDialog dialog(focusShapes.first()->getBrush().color(),this);
+    dialog.setOption(QColorDialog::ShowAlphaChannel);
+    if(dialog.exec()==QDialog::Accepted)
+    {
+        for(VShape *shape:focusShapes)shape->setBrush(dialog.selectedColor());
+        update();
+        saveSwp();
+    }
+}
+
+void VectorgraphWidget::on_actionPen_triggered()
+{
+    if(focusShapes.empty())return;
+    QColorDialog dialog(focusShapes.first()->getPen().color(),this);
+    dialog.setOption(QColorDialog::ShowAlphaChannel);
+    if(dialog.exec()==QDialog::Accepted)
+    {
+        for(VShape *shape:focusShapes)shape->setPen(dialog.selectedColor());
+        update();
+        saveSwp();
+    }
+}
+
+void VectorgraphWidget::on_actionPenStyle_triggered()
+{
+    if(focusShapes.empty())return;
+    PenStyleDialog::showDialog(tr("线条设置"),focusShapes);
+    update();
+    saveSwp();
 }

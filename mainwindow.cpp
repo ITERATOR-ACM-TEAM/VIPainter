@@ -21,7 +21,6 @@
 #include "canvassizedialog.h"
 #include "vtransform.h"
 #include "vtext.h"
-#include "penstyledialog.h"
 #include <QJsonDocument>
 #include <QApplication>
 #include <QJsonObject>
@@ -43,7 +42,6 @@
 #include <QPixmap>
 #include <QMessageBox>
 #include <QTimer>
-#include <QColorDialog>
 #include <QContextMenuEvent>
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -515,6 +513,10 @@ bool MainWindow::eventFilter(QObject * obj, QEvent * ev)
             KDISCONNECT(actionCut);
             KDISCONNECT(actionPaste);
             KDISCONNECT(actionGroup);
+            KDISCONNECT(actionSelectAll);
+            KDISCONNECT(actionBrush);
+            KDISCONNECT(actionPen);
+            KDISCONNECT(actionPenStyle);
 #undef KDISCONNECT
         }
         if(dock!=nullptr)
@@ -537,6 +539,10 @@ bool MainWindow::eventFilter(QObject * obj, QEvent * ev)
             KCONNECT(actionCut);
             KCONNECT(actionPaste);
             KCONNECT(actionGroup);
+            KCONNECT(actionSelectAll);
+            KCONNECT(actionBrush);
+            KCONNECT(actionPen);
+            KCONNECT(actionPenStyle);
 #undef KCONNECT
 
             focus = dock;
@@ -729,51 +735,26 @@ void MainWindow::on_actionGroup_triggered()
 
 void MainWindow::on_actionSelectAll_triggered()
 {
-    VectorgraphWidget *widget=qobject_cast<VectorgraphWidget *>(getPaintWidget());
-    if(widget==nullptr)return;
-    widget->focusShapes.clear();
-    for(auto &i:widget->groupShape.getShapes())widget->focusShapes.append(i);
-    widget->update();
+    //Do nothing
+    //Edit in PaintWidget
 }
 
 void MainWindow::on_actionBrush_triggered()
 {
-    VectorgraphWidget *widget=qobject_cast<VectorgraphWidget *>(getPaintWidget());
-    if(widget==nullptr)return;
-    if(widget->focusShapes.empty())return;
-    QColorDialog dialog(widget->focusShapes.first()->getBrush().color(),this);
-    dialog.setOption(QColorDialog::ShowAlphaChannel);
-    if(dialog.exec()==QDialog::Accepted)
-    {
-        for(VShape *shape:widget->focusShapes)shape->setBrush(dialog.selectedColor());
-        widget->update();
-        widget->saveSwp();
-    }
+    //Do nothing
+    //Edit in PaintWidget
 }
 
 void MainWindow::on_actionPen_triggered()
 {
-    VectorgraphWidget *widget=qobject_cast<VectorgraphWidget *>(getPaintWidget());
-    if(widget==nullptr)return;
-    if(widget->focusShapes.empty())return;
-    QColorDialog dialog(widget->focusShapes.first()->getPen().color(),this);
-    dialog.setOption(QColorDialog::ShowAlphaChannel);
-    if(dialog.exec()==QDialog::Accepted)
-    {
-        for(VShape *shape:widget->focusShapes)shape->setPen(dialog.selectedColor());
-        widget->update();
-        widget->saveSwp();
-    }
+    //Do nothing
+    //Edit in PaintWidget
 }
 
 void MainWindow::on_actionPenStyle_triggered()
 {
-    VectorgraphWidget *widget=qobject_cast<VectorgraphWidget *>(getPaintWidget());
-    if(widget==nullptr)return;
-    if(widget->focusShapes.empty())return;
-    PenStyleDialog::showDialog(tr("线条设置"),widget->focusShapes);
-    widget->update();
-    widget->saveSwp();
+    //Do nothing
+    //Edit in PaintWidget
 }
 
 void MainWindow::on_actionAbout_triggered()

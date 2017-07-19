@@ -99,6 +99,10 @@ public slots:
     void on_actionPaste_triggered()override;
     void on_actionGroup_triggered()override;
     void changeModelData(const QModelIndex &index)override;
+    void on_actionSelectAll_triggered()override;
+    void on_actionBrush_triggered()override;
+    void on_actionPen_triggered()override;
+    void on_actionPenStyle_triggered()override;
 
 signals:
     void selected(const QItemSelection &list,QItemSelectionModel::SelectionFlags command);
