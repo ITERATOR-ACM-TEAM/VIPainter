@@ -47,6 +47,8 @@
 #include <QJsonDocument>
 #include <QDockWidget>
 #include <QMessageBox>
+#include <QClipboard>
+#include <QMimeData>
 
 VectorgraphWidget::VectorgraphWidget(QMainWindow *parent, bool antialiasing) :
     PaintWidget(parent,antialiasing),crPos(-1),canvasLocation(0,0),cursorType(VCursorType::CHOOSE)
@@ -716,6 +718,164 @@ void VectorgraphWidget::on_actionBreakUp_triggered()
             focusShapes=std::move(shs);
         }
         update();
+        updateList();
         saveSwp();
     }
+}
+
+void VectorgraphWidget::on_actionDelete_triggered()
+{
+    for(VShape *shape:focusShapes)
+    {
+        groupShape.eraseShape(shape);
+    }
+    focusShapes.clear();
+    update();
+    updateList();
+    saveSwp();
+}
+
+void VectorgraphWidget::on_actionCopy_triggered()
+{
+    if(focusShapes.size()>0)
+    {
+        //  Get clipboard
+        QClipboard *cb = QApplication::clipboard();
+
+        // Ownership of the new data is transferred to the clipboard.
+        QMimeData* newMimeData = new QMimeData();
+
+        // Copy old mimedata
+        //            const QMimeData* oldMimeData = cb->mimeData();
+        //            for ( const QString &f : oldMimeData->formats())
+        //                newMimeData->setData(f, oldMimeData->data(f));
+
+        // Copy file (gnome)
+        ////////////////////////////////////////////////////////////////////////////////////////////////START
+        ////////////////////////////////////JSON
+        QJsonDocument doc;
+        if(focusShapes.size()>1)
+        {
+            QJsonArray arr;
+            for(VShape *shape:focusShapes)
+                arr.append(shape->toJsonObject());
+            doc.setArray(arr);
+        }
+        else doc.setObject(focusShapes.first()->toJsonObject());
+        newMimeData->setData("application/x-JavaScript", doc.toBinaryData());
+
+        // Copy file (gnome)
+        ////////////////////////////////////TEXT
+
+        VText *text=dynamic_cast<VText*>(focusShapes.first());
+        if(focusShapes.size()==1&&text!=nullptr)
+        {
+            newMimeData->setText(text->getText());
+        }
+        else
+        {
+
+            ////////////////////////////////////IMAGE
+            VGroupShape group;
+            for(const VShape*shape:groupShape.getShapes())
+            {
+                if(std::find(focusShapes.begin(),focusShapes.end(),shape)!=focusShapes.end())
+                {
+                    group.insertShape(shape->clone());
+                }
+            }
+            group.getCircumscribedRectangle(true);
+            VSize size=group.getSize()*group.getTransform();
+            QImage image(size.width+4,size.height+4,QImage::Format_ARGB32);
+            image.fill(0x00ffffff);
+            QPainter painter(&image);
+            if(antialiasing)painter.setRenderHint(QPainter::Antialiasing);
+            painter.translate(size.width/2+2,size.height/2+2);
+            //qDebug()<<*(group.getShapeVector().back());
+            group.draw(&painter,group.getTransform());
+            newMimeData->setImageData(image);
+        }
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////FI
+        // Set the mimedata
+        cb->setMimeData(newMimeData);
+    }
+}
+
+void VectorgraphWidget::on_actionCut_triggered()
+{
+    on_actionCopy_triggered();
+    on_actionDelete_triggered();
+}
+
+void VectorgraphWidget::on_actionPaste_triggered()
+{
+        //  Get clipboard
+        QClipboard *cb = QApplication::clipboard();
+        const QMimeData* mimeData = cb->mimeData();
+        if(mimeData->hasFormat("application/x-JavaScript"))
+        {
+//            qDebug()<<QJsonDocument::fromBinaryData(mimeData->data("application/x-JavaScript"));
+            QJsonDocument doc=QJsonDocument::fromBinaryData(mimeData->data("application/x-JavaScript"));
+            if(doc.isObject())
+            {
+                VShape *shape=VShape::fromJsonObject(doc.object());
+                //qDebug()<<*shape;
+                groupShape.insertShape(shape);
+                focusShapes.clear();
+                focusShapes.append(shape);
+                update();
+                updateList();
+                saveSwp();
+            }
+            else if(doc.isArray())
+            {
+                focusShapes.clear();
+                for(auto i:doc.array())
+                {
+                    VShape *shape=VShape::fromJsonObject(
+                                i.toObject()
+                                );
+                    groupShape.insertShape(shape);
+                    focusShapes.append(shape);
+                }
+                update();
+                updateList();
+                saveSwp();
+            }
+        }
+        else if(mimeData->hasText())
+        {
+            VText *text=new VText(mimeData->text());
+            text->setName(mimeData->text());
+            groupShape.insertShape(text);
+            update();
+            updateList();
+            saveSwp();
+        }
+}
+
+void VectorgraphWidget::on_actionGroup_triggered()
+{
+    if(focusShapes.empty())return;
+    VGroupShape *group=new VGroupShape;
+    QString name;
+    for(QVector<VShape*>::iterator it=const_cast<QVector<VShape*>::iterator>(groupShape.getShapes().begin());it!=groupShape.getShapes().end();)
+    {
+        if(focusShapes.contains(*it))
+        {
+            if(name!="")name.append(", ");
+            name.append((*it)->getName());
+            group->insertShape(groupShape.takeShape(it));
+        }
+        else it++;
+    }
+    groupShape.insertShape(group);
+    group->getCircumscribedRectangle();
+    focusShapes.clear();
+    group->setName(name);
+    focusShapes.append(group);
+    update();
+    updateList();
+    saveSwp();
 }

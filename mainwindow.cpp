@@ -24,7 +24,6 @@
 #include "penstyledialog.h"
 #include <QJsonDocument>
 #include <QApplication>
-#include <QClipboard>
 #include <QJsonObject>
 #include <QFile>
 #include <QScrollArea>
@@ -43,7 +42,6 @@
 #include <QList>
 #include <QPixmap>
 #include <QMessageBox>
-#include <QMimeData>
 #include <QTimer>
 #include <QColorDialog>
 #include <QContextMenuEvent>
@@ -192,6 +190,7 @@ QDockWidget* MainWindow::newDock(QString dockname)
     static int id = 0;
 
     VectorgraphWidget* widget=new VectorgraphWidget(this,ui->actionAntialiasing->isChecked());
+    connect(ui->actionAntialiasing,SIGNAL(triggered(bool)),widget,SLOT(on_actionAntialiasing_toggled(bool)));
     connect(this, SIGNAL(cursorChange(VCursorType)), widget, SLOT(changeCursor(VCursorType)));
     emit cursorChange(this->cursorState);
     widget->installEventFilter(this);
@@ -227,11 +226,6 @@ QDockWidget* MainWindow::newDock(QString dockname)
     this->focusDock(dockWidget);
 
     connect(dockWidget,SIGNAL(visibilityChanged(bool)),this,SLOT(focusDock(bool)));
-    connect(ui->actionBreakUp,SIGNAL(triggered()),widget,SLOT(updateList()));
-    connect(ui->actionCut,SIGNAL(triggered()),widget,SLOT(updateList()));
-    connect(ui->actionPaste,SIGNAL(triggered()),widget,SLOT(updateList()));
-    connect(ui->actionDelete,SIGNAL(triggered()),widget,SLOT(updateList()));
-    connect(ui->actionGroup,SIGNAL(triggered()),widget,SLOT(updateList()));
 
     if(dockname=="")dockWidget->setWindowTitle(QString("untitled %1").arg(id++));
     else dockWidget->setWindowTitle(dockname);
@@ -512,30 +506,46 @@ bool MainWindow::eventFilter(QObject * obj, QEvent * ev)
         if(focus!=nullptr)
         {
             PaintWidget *widget=getPaintWidget(focus);
-            disconnect(ui->actionZoomIn,SIGNAL(triggered()),widget,SLOT(on_actionZoomIn_triggered()));
-            disconnect(ui->actionZoomOut,SIGNAL(triggered()),widget,SLOT(on_actionZoomOut_triggered()));
-            disconnect(ui->actionResume,SIGNAL(triggered()),widget,SLOT(on_actionResume_triggered()));
-            disconnect(ui->actionSave,SIGNAL(triggered()),widget,SLOT(on_actionSave_triggered()));
-            disconnect(ui->actionSaveAs,SIGNAL(triggered()),widget,SLOT(on_actionSaveAs_triggered()));
-            disconnect(ui->actionCanvasSize,SIGNAL(triggered()),widget,SLOT(on_actionCanvasSize_triggered()));
-            disconnect(ui->actionShapeSize,SIGNAL(triggered()),widget,SLOT(on_actionShapeSize_triggered()));
-            disconnect(ui->actionBreakUp,SIGNAL(triggered()),widget,SLOT(on_actionBreakUp_triggered()));
-            disconnect(ui->actionRedo,SIGNAL(triggered()),widget,SLOT(on_actionRedo_triggered()));
-            disconnect(ui->actionUndo,SIGNAL(triggered()),widget,SLOT(on_actionUndo_triggered()));
+            Q_UNUSED(widget)//But it is really used...
+#define KDISCONNECT(action) disconnect(ui->action,SIGNAL(triggered()),widget,SLOT(on_##action##_triggered()))
+            KDISCONNECT(actionZoomIn);
+            KDISCONNECT(actionZoomOut);
+            KDISCONNECT(actionResume);
+            KDISCONNECT(actionSave);
+            KDISCONNECT(actionSaveAs);
+            KDISCONNECT(actionCanvasSize);
+            KDISCONNECT(actionShapeSize);
+            KDISCONNECT(actionBreakUp);
+            KDISCONNECT(actionRedo);
+            KDISCONNECT(actionUndo);
+            KDISCONNECT(actionDelete);
+            KDISCONNECT(actionCopy);
+            KDISCONNECT(actionCut);
+            KDISCONNECT(actionPaste);
+            KDISCONNECT(actionGroup);
+#undef KDISCONNECT
         }
         if(dock!=nullptr)
         {
             PaintWidget *widget=getPaintWidget(dock);
-            connect(ui->actionZoomIn,SIGNAL(triggered()),widget,SLOT(on_actionZoomIn_triggered()));
-            connect(ui->actionZoomOut,SIGNAL(triggered()),widget,SLOT(on_actionZoomOut_triggered()));
-            connect(ui->actionResume,SIGNAL(triggered()),widget,SLOT(on_actionResume_triggered()));
-            connect(ui->actionSave,SIGNAL(triggered()),widget,SLOT(on_actionSave_triggered()));
-            connect(ui->actionSaveAs,SIGNAL(triggered()),widget,SLOT(on_actionSaveAs_triggered()));
-            connect(ui->actionCanvasSize,SIGNAL(triggered()),widget,SLOT(on_actionCanvasSize_triggered()));
-            connect(ui->actionShapeSize,SIGNAL(triggered()),widget,SLOT(on_actionShapeSize_triggered()));
-            connect(ui->actionBreakUp,SIGNAL(triggered()),widget,SLOT(on_actionBreakUp_triggered()));
-            connect(ui->actionRedo,SIGNAL(triggered()),widget,SLOT(on_actionRedo_triggered()));
-            connect(ui->actionUndo,SIGNAL(triggered()),widget,SLOT(on_actionUndo_triggered()));
+            Q_UNUSED(widget)//But it is really used...
+#define KCONNECT(action) connect(ui->action,SIGNAL(triggered()),widget,SLOT(on_##action##_triggered()))
+            KCONNECT(actionZoomIn);
+            KCONNECT(actionZoomOut);
+            KCONNECT(actionResume);
+            KCONNECT(actionSave);
+            KCONNECT(actionSaveAs);
+            KCONNECT(actionCanvasSize);
+            KCONNECT(actionShapeSize);
+            KCONNECT(actionBreakUp);
+            KCONNECT(actionRedo);
+            KCONNECT(actionUndo);
+            KCONNECT(actionDelete);
+            KCONNECT(actionCopy);
+            KCONNECT(actionCut);
+            KCONNECT(actionPaste);
+            KCONNECT(actionGroup);
+#undef KCONNECT
 
             focus = dock;
             VectorgraphWidget *vectorgraphWidget=qobject_cast<VectorgraphWidget *>(widget);
@@ -685,22 +695,15 @@ void MainWindow::on_actionLoadExPlugin_triggered()
 
 void MainWindow::on_actionAntialiasing_toggled(bool antialiasing)
 {
-    for(auto &i:this->docks)getPaintWidget(i)->setAntialiasing(antialiasing);
+    Q_UNUSED(antialiasing);
+    //Do nothing
+    //Edit in PaintWidget
 }
 
 void MainWindow::on_actionDelete_triggered()
 {
-    VectorgraphWidget *widget=qobject_cast<VectorgraphWidget *>(getPaintWidget());
-    if(widget!=nullptr)
-    {
-        for(VShape *shape:widget->focusShapes)
-        {
-            widget->groupShape.eraseShape(shape);
-        }
-        widget->focusShapes.clear();
-        widget->update();
-        widget->saveSwp();
-    }
+    //Do nothing
+    //Edit in PaintWidget
 }
 
 void MainWindow::on_actionClose_triggered()
@@ -710,156 +713,26 @@ void MainWindow::on_actionClose_triggered()
 
 void MainWindow::on_actionCopy_triggered()
 {
-    VectorgraphWidget *widget=qobject_cast<VectorgraphWidget *>(getPaintWidget());
-    if(widget!=nullptr)
-    {
-        if(widget->focusShapes.size()>0)
-        {
-            //  Get clipboard
-            QClipboard *cb = QApplication::clipboard();
-
-            // Ownership of the new data is transferred to the clipboard.
-            QMimeData* newMimeData = new QMimeData();
-
-            // Copy old mimedata
-//            const QMimeData* oldMimeData = cb->mimeData();
-//            for ( const QString &f : oldMimeData->formats())
-//                newMimeData->setData(f, oldMimeData->data(f));
-
-            // Copy file (gnome)
-            ////////////////////////////////////////////////////////////////////////////////////////////////START
-            ////////////////////////////////////JSON
-            QJsonDocument doc;
-            if(widget->focusShapes.size()>1)
-            {
-                QJsonArray arr;
-                for(VShape *shape:widget->focusShapes)
-                    arr.append(shape->toJsonObject());
-                doc.setArray(arr);
-            }
-            else doc.setObject(widget->focusShapes.first()->toJsonObject());
-            newMimeData->setData("application/x-JavaScript", doc.toBinaryData());
-
-            // Copy file (gnome)
-            ////////////////////////////////////TEXT
-
-            VText *text=dynamic_cast<VText*>(widget->focusShapes.first());
-            if(widget->focusShapes.size()==1&&text!=nullptr)
-            {
-                newMimeData->setText(text->getText());
-            }
-            else
-            {
-
-                ////////////////////////////////////IMAGE
-                VGroupShape group;
-                for(const VShape*shape:widget->groupShape.getShapes())
-                {
-                    if(std::find(widget->focusShapes.begin(),widget->focusShapes.end(),shape)!=widget->focusShapes.end())
-                    {
-                        group.insertShape(shape->clone());
-                    }
-                }
-                group.getCircumscribedRectangle(true);
-                VSize size=group.getSize()*group.getTransform();
-                QImage image(size.width+4,size.height+4,QImage::Format_ARGB32);
-                image.fill(0x00ffffff);
-                QPainter painter(&image);
-                if(ui->actionAntialiasing->isChecked())painter.setRenderHint(QPainter::Antialiasing);
-                painter.translate(size.width/2+2,size.height/2+2);
-                //qDebug()<<*(group.getShapeVector().back());
-                group.draw(&painter,group.getTransform());
-                newMimeData->setImageData(image);
-            }
-
-            //////////////////////////////////////////////////////////////////////////////////////////////////FI
-            // Set the mimedata
-            cb->setMimeData(newMimeData);
-        }
-    }
+    //Do nothing
+    //Edit in PaintWidget
 }
 
 void MainWindow::on_actionCut_triggered()
 {
-    on_actionCopy_triggered();
-    on_actionDelete_triggered();
+    //Do nothing
+    //Edit in PaintWidget
 }
 
 void MainWindow::on_actionPaste_triggered()
 {
-    VectorgraphWidget *widget=qobject_cast<VectorgraphWidget *>(getPaintWidget());
-    if(widget!=nullptr)
-    {
-        //  Get clipboard
-        QClipboard *cb = QApplication::clipboard();
-        const QMimeData* mimeData = cb->mimeData();
-        if(mimeData->hasFormat("application/x-JavaScript"))
-        {
-//            qDebug()<<QJsonDocument::fromBinaryData(mimeData->data("application/x-JavaScript"));
-            QJsonDocument doc=QJsonDocument::fromBinaryData(mimeData->data("application/x-JavaScript"));
-            if(doc.isObject())
-            {
-                VShape *shape=VShape::fromJsonObject(
-                            doc.object()
-                            );
-                //qDebug()<<*shape;
-                widget->groupShape.insertShape(shape);
-                widget->focusShapes.clear();
-                widget->focusShapes.append(shape);
-                widget->update();
-                widget->saveSwp();
-            }
-            else if(doc.isArray())
-            {
-                widget->focusShapes.clear();
-                for(auto i:doc.array())
-                {
-                    VShape *shape=VShape::fromJsonObject(
-                                i.toObject()
-                                );
-                    widget->groupShape.insertShape(shape);
-                    widget->focusShapes.append(shape);
-                }
-                widget->update();
-                widget->saveSwp();
-            }
-        }
-        else if(mimeData->hasText())
-        {
-            VText *text=new VText(mimeData->text());
-            text->setName(mimeData->text());
-            widget->groupShape.insertShape(text);
-            widget->update();
-            widget->saveSwp();
-        }
-    }
-
+    //Do nothing
+    //Edit in PaintWidget
 }
 
 void MainWindow::on_actionGroup_triggered()
 {
-    VectorgraphWidget *widget=qobject_cast<VectorgraphWidget *>(getPaintWidget());
-    if(widget==nullptr)return;
-    if(widget->focusShapes.empty())return;
-    VGroupShape *group=new VGroupShape;
-    QString name;
-    for(QVector<VShape*>::iterator it=const_cast<QVector<VShape*>::iterator>(widget->groupShape.getShapes().begin());it!=widget->groupShape.getShapes().end();)
-    {
-        if(widget->focusShapes.contains(*it))
-        {
-            if(name!="")name.append(", ");
-            name.append((*it)->getName());
-            group->insertShape(widget->groupShape.takeShape(it));
-        }
-        else it++;
-    }
-    widget->groupShape.insertShape(group);
-    group->getCircumscribedRectangle();
-    widget->focusShapes.clear();
-    group->setName(name);
-    widget->focusShapes.append(group);
-    widget->update();
-    widget->saveSwp();
+    //Do nothing
+    //Edit in PaintWidget
 }
 
 void MainWindow::on_actionSelectAll_triggered()

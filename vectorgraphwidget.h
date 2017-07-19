@@ -93,6 +93,11 @@ public slots:
     void on_actionBreakUp_triggered()override;
     void on_actionUndo_triggered()override;
     void on_actionRedo_triggered()override;
+    void on_actionDelete_triggered()override;
+    void on_actionCopy_triggered()override;
+    void on_actionCut_triggered()override;
+    void on_actionPaste_triggered()override;
+    void on_actionGroup_triggered()override;
 
 signals:
     void selected(const QItemSelection &list,QItemSelectionModel::SelectionFlags command);

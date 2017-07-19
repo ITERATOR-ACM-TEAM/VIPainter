@@ -67,7 +67,7 @@ QString PaintWidget::getFileName() const
     return filename;
 }
 
-void PaintWidget::setAntialiasing(bool antialiasing)
+void PaintWidget::on_actionAntialiasing_toggled(bool antialiasing)
 {
     this->antialiasing=antialiasing;
     //qDebug()<<"antialiasing"<<antialiasing;
