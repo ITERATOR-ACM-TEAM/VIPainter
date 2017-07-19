@@ -44,7 +44,7 @@ public:
     ~MainWindow();
 
 signals:
-    void cursorChange(VCursorType type);
+    void cursorChange(VCursorType type,VShape *plugin=nullptr);
 
 protected:
     bool eventFilter(QObject * obj, QEvent * ev)override;
@@ -139,7 +139,7 @@ private:
 
     QMenu *contextMenu;
 
-    void changeMenuAction(VectorgraphWidget *widget,VPoint loc);
+    void changeMenuAction(VectorgraphWidget *widget, VPoint loc, bool flag=false);
 
     void loadPlugin(QString filename);
 

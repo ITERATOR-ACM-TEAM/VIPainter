@@ -22,7 +22,7 @@
 #include <QJsonDocument>
 #include <QFileDialog>
 
-PaintWidget::PaintWidget(QWidget *parent,bool antialiasing) : QWidget(parent),canvasSize(800,600),antialiasing(antialiasing)
+PaintWidget::PaintWidget(QWidget *parent,bool antialiasing) : QWidget(parent),canvasSize(800,600),antialiasing(antialiasing),cursorType(VCursorType::CHOOSE)
 {
 
 }
@@ -112,4 +112,38 @@ void PaintWidget::on_actionSaveAs_triggered()
                                             "jpg file (*.jpg);;"
                                             "bmp file (*.bmp)"));
     saveFile(filename);
+}
+
+void PaintWidget::changeCursor(VCursorType type,VShape *plugin)
+{
+    this->cursorType = type;
+    switch(type)
+    {
+    case VCursorType::CHOOSE:
+    {
+        this->setCursor(Qt::ArrowCursor);
+    }break;
+    case VCursorType::MOVE:
+    {
+        this->setCursor(Qt::OpenHandCursor);
+    }break;
+    case VCursorType::ROTATE:
+    {
+        this->setCursor(QCursor(VRotate, 15, 15));
+    }break;
+    case VCursorType::DRAWPOLYLINE: case VCursorType::DRAWBEZIERCURVE:
+    {
+        static QCursor pen = QCursor(QPixmap(":/icon/pen.png").scaled(20,20), 0, 19);
+        this->setCursor(pen);
+    }break;
+    case VCursorType::PLUGIN:
+    {
+        this->setCursor(Qt::ArrowCursor);
+        this->plugin=plugin;
+    }break;
+    default:
+    {
+        this->setCursor(Qt::ArrowCursor);
+    }
+    }
 }

@@ -21,11 +21,14 @@
 #include <QDockWidget>
 #include "vpoint.h"
 #include "vcursortype.h"
+#include "vshape.h"
 
 class PaintWidget : public QWidget
 {
     Q_OBJECT
 public:
+    QPixmap VSizeAll = QPixmap("://icon/mover.png").scaled(30,30);
+    QPixmap VRotate = QPixmap("://icon/undo.png").scaled(20,20);
     explicit PaintWidget(QWidget *parent = 0, bool antialiasing=true);
 
 protected:
@@ -34,6 +37,8 @@ protected:
     VSize canvasSize;
     bool antialiasing;
     QDockWidget *dock;
+    VCursorType cursorType;
+    VShape *plugin;
 
 public:
     void setScale(double scale);
@@ -50,7 +55,7 @@ public:
 signals:
 
 public slots:
-    virtual void changeCursor(VCursorType type)=0;
+    virtual void changeCursor(VCursorType type,VShape *plugin=nullptr);
     virtual void on_actionZoomIn_triggered();
     virtual void on_actionZoomOut_triggered();
     virtual void on_actionResume_triggered();

@@ -48,8 +48,6 @@ class VectorgraphWidget : public PaintWidget
     Q_OBJECT
 
 public:
-    QPixmap VSizeAll = QPixmap("://icon/mover.png").scaled(30,30);
-    QPixmap VRotate = QPixmap("://icon/undo.png").scaled(20,20);
     explicit VectorgraphWidget(QMainWindow *mainwindow, bool antialiasing);
     int crPos;
     QMainWindow *mainwindow;
@@ -75,7 +73,6 @@ protected:
     bool eventFilter(QObject * obj, QEvent * ev)override;
 
 private:
-    VCursorType cursorType;
     VShape * getShape(const VPoint &point);
     SwapQueue<QJsonArray,20> swapQueue;
     VPoint locMove;
@@ -88,7 +85,7 @@ public slots:
     void updateList();
     void changeFocus();
     void saveSwp();
-    void changeCursor(VCursorType type)override;
+    void changeCursor(VCursorType type, VShape *plugin)override;
     void on_actionResume_triggered()override;
     void on_actionCanvasSize_triggered()override;
     void on_actionShapeSize_triggered()override;

@@ -26,6 +26,7 @@ enum class VCursorType
     DRAWPOLYLINE,
     DRAWBEZIERCURVE,
     ROTATE,
+    PLUGIN,
 };
 
 #endif // VCURSORTYPE_H

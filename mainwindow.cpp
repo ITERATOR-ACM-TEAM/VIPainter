@@ -61,7 +61,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //菜单逻辑
     connect(ui->menuEdit,&QMenu::aboutToShow,[this]{
         VectorgraphWidget *widget=qobject_cast<VectorgraphWidget *>(getPaintWidget());
-        changeMenuAction(widget,VPoint(0,0));
+        changeMenuAction(widget,VPoint(0,0),true);
     });
 
     //工具栏编组 bar group
@@ -112,7 +112,7 @@ void MainWindow::loadPlugin(QString filename)
     if(!file.open(QFile::ReadOnly|QFile::Text))return;
     QJsonDocument doc=QJsonDocument::fromJson(file.readAll());
     file.close();
-    VShape *shape;
+    VShape *shape=nullptr;
     if(doc.isObject()&&doc.object().value("type")==QString("canvas"))
     {
         doc.setArray(doc.object().value("shapes").toArray());
@@ -127,7 +127,10 @@ void MainWindow::loadPlugin(QString filename)
     else return;
     if(shape==nullptr)return;
     if(shape->getName()==QString(""))shape->setName(filename.split('/').back().split('.').first());
+    plugins.append(shape);
     QAction *action=new QAction(ui->shapeBar);
+    action->setCheckable(true);
+    barGroup->addAction(action);
 
     const int SIZE=30;
     VSize size=shape->getSize();
@@ -148,17 +151,11 @@ void MainWindow::loadPlugin(QString filename)
     action->setToolTip(shape->getName());
     ui->shapeBar->addAction(action);
 
-    connect(action,&QAction::triggered,[this,shape]{
-        //qDebug()<<"add"<<*shape;
-        VectorgraphWidget *widget=qobject_cast<VectorgraphWidget*>(getPaintWidget());
-        if(widget==nullptr)return;
-        VShape *newShape=shape->clone();
-//        newShape->setPen(this->pen);
-//        newShape->setBrush(this->brush);
-        widget->groupShape.insertShape(newShape);
-        widget->updateList();
-        widget->update();
-        widget->saveSwp();
+    connect(action,&QAction::triggered,[this,action,shape]{
+        if(action->isChecked())
+            emit cursorChange(VCursorType::PLUGIN,shape);
+        else
+            emit cursorChange(VCursorType::DEFAULT);
     });
 }
 
@@ -182,7 +179,7 @@ QDockWidget* MainWindow::newDock(QString dockname)
 
     VectorgraphWidget* widget=new VectorgraphWidget(this,ui->actionAntialiasing->isChecked());
     connect(ui->actionAntialiasing,SIGNAL(triggered(bool)),widget,SLOT(on_actionAntialiasing_toggled(bool)));
-    connect(this, SIGNAL(cursorChange(VCursorType)), widget, SLOT(changeCursor(VCursorType)));
+    connect(this, SIGNAL(cursorChange(VCursorType,VShape*)), widget, SLOT(changeCursor(VCursorType,VShape*)));
     emit cursorChange(this->cursorState);
     widget->installEventFilter(this);
 
@@ -367,11 +364,6 @@ void MainWindow::changeCursor(VCursorType type)
         ui->actionSelectAll->setEnabled(false);
         //for(auto &i:docks)getPaintWidget(i)->saveSwp();
     }
-    for(auto &i:docks)
-    {
-        VectorgraphWidget *widget=qobject_cast<VectorgraphWidget*>(getPaintWidget(i));
-        widget->crPos=-1;
-    }
 
 }
 
@@ -379,14 +371,13 @@ void MainWindow::on_actionNew_triggered()
 {
     QDockWidget * dock = newDock();
     VectorgraphWidget *widget=qobject_cast<VectorgraphWidget*>(getPaintWidget(dock));
-    widget->saveSwp();
+    if(widget)widget->saveSwp();
 }
 
 //判断Action的显示状态
-void MainWindow::changeMenuAction(VectorgraphWidget *widget, VPoint loc)
+void MainWindow::changeMenuAction(VectorgraphWidget *widget, VPoint loc,bool flag)
 {
     if(cursorState == VCursorType::DRAWBEZIERCURVE || cursorState == VCursorType::DRAWPOLYLINE)return;
-    bool flag=false;
     if(widget==nullptr||widget->focusShapes.empty())
     {
         ui->actionCopy->setEnabled(false);
@@ -404,7 +395,7 @@ void MainWindow::changeMenuAction(VectorgraphWidget *widget, VPoint loc)
         ui->actionCopy->setEnabled(true);
         ui->actionCut->setEnabled(true);
         ui->actionDelete->setEnabled(true);
-        for(VShape *shape:widget->focusShapes)
+        if(!flag)for(VShape *shape:widget->focusShapes)
         {
             if(shape->contains(shape->transformPoint(loc)))
             {
@@ -616,7 +607,6 @@ void MainWindow::on_actionBreakUp_triggered()
 
 void MainWindow::on_actionRotate_triggered()
 {
-
     if(ui->actionRotate->isChecked())
         emit cursorChange(VCursorType::ROTATE);
     else
@@ -632,6 +622,7 @@ void MainWindow::on_actionRedo_triggered()
 
 void MainWindow::on_actionReloadPlugon_triggered()
 {
+    ui->actionChoose->trigger();
     for(auto &i:ui->shapeBar->actions())
     {
         delete i;

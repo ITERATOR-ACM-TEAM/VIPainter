@@ -52,7 +52,7 @@
 #include<QJsonDocument>
 
 VectorgraphWidget::VectorgraphWidget(QMainWindow *parent, bool antialiasing) :
-    PaintWidget(parent,antialiasing),crPos(-1),canvasLocation(0,0),cursorType(VCursorType::CHOOSE)
+    PaintWidget(parent,antialiasing),crPos(-1),canvasLocation(0,0)
 {
     mainwindow=parent;
     setMouseTracking(true);
@@ -97,9 +97,13 @@ void VectorgraphWidget::mousePressEvent(QMouseEvent *event)
     VPoint point(pressPoint.x(), pressPoint.y());
     if(event->button()==Qt::LeftButton)
     {
-        if(cursorType == VCursorType::MOVE)
+        switch(cursorType)
+        {
+        case VCursorType::MOVE:
+        {
             this->setCursor(Qt::ClosedHandCursor);
-        else if(cursorType == VCursorType::CHOOSE)
+        }break;
+        case VCursorType::CHOOSE:
         {
             if(!focusShapes.empty())
             {
@@ -166,8 +170,8 @@ void VectorgraphWidget::mousePressEvent(QMouseEvent *event)
             }
 
             update();
-        }
-        else if(cursorType == VCursorType::ROTATE)
+        }break;
+        case VCursorType::ROTATE:
         {
             if(!focusShapes.empty())
             {
@@ -177,8 +181,9 @@ void VectorgraphWidget::mousePressEvent(QMouseEvent *event)
                 emitSelected();
                 lastAngle = 0;
             }
-        }
-        else if(cursorType == VCursorType::DRAWPOLYLINE || cursorType == VCursorType::DRAWBEZIERCURVE)
+        }break;
+        case VCursorType::DRAWPOLYLINE:
+        case VCursorType::DRAWBEZIERCURVE:
         {
             VPointGroupShape * pl;
             if(crPos == -1)
@@ -205,6 +210,19 @@ void VectorgraphWidget::mousePressEvent(QMouseEvent *event)
             pl->addPoint(pl->transformPoint(getLoc((point))));
             crPos++;
             update();
+        }break;
+        case VCursorType::PLUGIN:
+        {
+            VShape *shape=plugin->clone();
+            shape->moveLoc(getLoc(point));
+            groupShape.insertShape(shape);
+            focusShapes.clear();
+            focusShapes.append(shape);
+            update();
+            updateList();
+        }break;
+        default:
+            break;
         }
     }
     lastMove=VPoint(pressPoint.x(),pressPoint.y());
@@ -510,40 +528,19 @@ bool VectorgraphWidget::eventFilter(QObject * obj, QEvent * ev)
     return false;
 }
 
-void VectorgraphWidget::changeCursor(VCursorType type)
+void VectorgraphWidget::changeCursor(VCursorType type,VShape *plugin)
 {
-    this->cursorType = type;
+    PaintWidget::changeCursor(type,plugin);
+    crPos=-1;
     switch(type)
     {
-    case VCursorType::CHOOSE:
+    case VCursorType::DRAWPOLYLINE:
+    case VCursorType::DRAWBEZIERCURVE:
     {
-        this->setCursor(Qt::ArrowCursor);
-        crPos = -1;
-    }break;
-    case VCursorType::MOVE:
-    {
-        this->setCursor(Qt::OpenHandCursor);
-        crPos = -1;
-    }break;
-    case VCursorType::ROTATE:
-    {
-        this->setCursor(QCursor(VRotate, 15, 15));
-        crPos = -1;
-    }break;
-    case VCursorType::DRAWPOLYLINE: case VCursorType::DRAWBEZIERCURVE:
-    {
-        crPos = -1;
         focusShapes.clear();
-        static QCursor pen = QCursor(QPixmap(":/icon/pen.png").scaled(20,20), 0, 19);
-        this->setCursor(pen);
-        update();
-        updateList();
     }break;
     default:
-    {
-        this->setCursor(Qt::ArrowCursor);
-        crPos = -1;
-    }
+        break;
     }
 }
 
