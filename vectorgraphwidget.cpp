@@ -49,6 +49,7 @@
 #include <QMessageBox>
 #include <QClipboard>
 #include <QMimeData>
+#include <QModelIndex>
 
 VectorgraphWidget::VectorgraphWidget(QMainWindow *parent, bool antialiasing) :
     PaintWidget(parent,antialiasing),crPos(-1),canvasLocation(0,0),cursorType(VCursorType::CHOOSE)
@@ -878,4 +879,9 @@ void VectorgraphWidget::on_actionGroup_triggered()
     update();
     updateList();
     saveSwp();
+}
+
+void VectorgraphWidget::changeModelData(const QModelIndex &index)
+{
+    groupShape.getShapes().at(groupShape.getVectorSize()-index.row()-1)->setName(index.data().toString());
 }

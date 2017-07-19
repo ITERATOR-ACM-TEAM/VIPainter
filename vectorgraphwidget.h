@@ -98,6 +98,7 @@ public slots:
     void on_actionCut_triggered()override;
     void on_actionPaste_triggered()override;
     void on_actionGroup_triggered()override;
+    void changeModelData(const QModelIndex &index)override;
 
 signals:
     void selected(const QItemSelection &list,QItemSelectionModel::SelectionFlags command);

@@ -103,8 +103,6 @@ private slots:
 
     void focusDock(bool checked);
 
-    void changeShapeName(const QModelIndex &index);
-
     void on_actionSelectAll_triggered();
 
     void on_actionBrush_triggered();

@@ -85,7 +85,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->shapesDock->setWidget(listView);
     delegate=new VDelegate(this);
     listView->setItemDelegate(delegate);
-    connect(delegate,SIGNAL(dataChanged(const QModelIndex &)),this,SLOT(changeShapeName(const QModelIndex &)));
 
     //contextMenu init
     contextMenu=new QMenu(this);
@@ -162,13 +161,6 @@ void MainWindow::loadPlugin(QString filename)
         widget->update();
         widget->saveSwp();
     });
-}
-
-void MainWindow::changeShapeName(const QModelIndex &index)
-{
-    VectorgraphWidget *widget=qobject_cast<VectorgraphWidget*>(getPaintWidget());
-    if(widget==nullptr)return;
-    widget->groupShape.getShapes().at(widget->groupShape.getVectorSize()-index.row()-1)->setName(index.data().toString());
 }
 
 void MainWindow::initAction(QDir dir)
@@ -506,7 +498,7 @@ bool MainWindow::eventFilter(QObject * obj, QEvent * ev)
         if(focus!=nullptr)
         {
             PaintWidget *widget=getPaintWidget(focus);
-            Q_UNUSED(widget)//But it is really used...
+            disconnect(delegate,SIGNAL(dataChanged(const QModelIndex &)),widget,SLOT(changeModelData(const QModelIndex &)));
 #define KDISCONNECT(action) disconnect(ui->action,SIGNAL(triggered()),widget,SLOT(on_##action##_triggered()))
             KDISCONNECT(actionZoomIn);
             KDISCONNECT(actionZoomOut);
@@ -528,7 +520,7 @@ bool MainWindow::eventFilter(QObject * obj, QEvent * ev)
         if(dock!=nullptr)
         {
             PaintWidget *widget=getPaintWidget(dock);
-            Q_UNUSED(widget)//But it is really used...
+            connect(delegate,SIGNAL(dataChanged(const QModelIndex &)),widget,SLOT(changeModelData(const QModelIndex &)));
 #define KCONNECT(action) connect(ui->action,SIGNAL(triggered()),widget,SLOT(on_##action##_triggered()))
             KCONNECT(actionZoomIn);
             KCONNECT(actionZoomOut);

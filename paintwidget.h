@@ -66,9 +66,7 @@ public slots:
     virtual void on_actionCut_triggered()=0;
     virtual void on_actionPaste_triggered()=0;
     virtual void on_actionGroup_triggered()=0;
-//    virtual void initAction(QDir dir=QDir("plugin"));
-//    virtual void focusDock(bool checked);
-//    virtual void changeShapeName(const QModelIndex &index);
+    virtual void changeModelData(const QModelIndex &index)=0;
 //    virtual void on_actionSelectAll_triggered();
 //    virtual void on_actionBrush_triggered();
 //    virtual void on_actionPen_triggered();
