@@ -21,25 +21,15 @@
 #include "vtype.h"
 
 VPolygon::VPolygon():VPointGroupShape(){
-    text = new VText("");
 }
 
 VPolygon::~VPolygon(){
-    delete text;
 }
 
 VPolygon::VPolygon(const VPolygon &shape):VPointGroupShape(shape){
-    text = new VText(*(shape.text));
-    this->text->setSize(getSize());
 }
 
 VPolygon::VPolygon(const QJsonObject &jsonObject):VPointGroupShape(jsonObject){
-    text = new VText(jsonObject.value("text").toObject());
-    this->text->setSize(getSize());
-}
-
-VText* VPolygon::getText()const{
-    return this->text;
 }
 
 bool VPolygon::contains(VPoint point)
@@ -66,22 +56,17 @@ bool VPolygon::contains(VPoint point)
 const VPolygon& VPolygon::operator=(const VPolygon &vpolygon){
     if(this==&vpolygon)return *this;
     VPointGroupShape::operator=(vpolygon);
-    delete text;
-    text = new VText(*(vpolygon.getText()));
     return *this;
 }
 
 QJsonObject VPolygon::toJsonObject()const
 {
     QJsonObject obj=VPointGroupShape::toJsonObject();
-    obj.insert("text",*text);
     return obj;
 }
 
 const VPolygon& VPolygon::operator=(const QJsonObject &jsonObject){
     VPointGroupShape::operator=(jsonObject);
-    delete text;
-    text = new VText(jsonObject.value("text").toObject());
     return *this;
 }
 
@@ -99,7 +84,6 @@ void VPolygon::draw(QPainter *painter, const VTransform &transform)
         qpf << (i*transform).toQPointF();
     }
     painter->drawPolygon(qpf);
-    text->draw(painter, transform);
 }
 
 //QImage VPolygon::toImage(){

@@ -146,7 +146,7 @@ private:
     void focusDock(QDockWidget * target);
     PaintWidget * getPaintWidget();
     PaintWidget * getPaintWidget(QDockWidget *target);
-    bool closeWidget(VectorgraphWidget *widget);
+    bool closeWidget(PaintWidget *widget);
 };
 
 #endif // MAINWINDOW_H

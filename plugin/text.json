@@ -1,25 +1,5 @@
 {
-    "shapes": [
-        {
-            "name": "text",
-            "text": "T",
-            "transform": [
-                0.625,
-                0,
-                0,
-                0,
-                1,
-                0,
-                0,
-                0,
-                1
-            ],
-            "type": "Text"
-        }
-    ],
-    "size": {
-        "height": 600,
-        "width": 800
-    },
-    "type": "canvas"
+    "name": "text",
+    "text": "T",
+    "type": "Text"
 }

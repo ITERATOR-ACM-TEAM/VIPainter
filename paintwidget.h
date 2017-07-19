@@ -45,6 +45,7 @@ public:
     void setFileName(QString filename);
     QString getFileName()const;
     virtual void saveFile(QString filename)=0;
+    virtual bool fileChanged()=0;
 
 signals:
 

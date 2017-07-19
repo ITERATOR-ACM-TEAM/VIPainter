@@ -33,6 +33,7 @@
 #include <QItemSelectionModel>
 #include <QList>
 #include <QString>
+#include <QJsonObject>
 #include "paintwidget.h"
 #include "vgroupshape.h"
 #include "vsize.h"
@@ -58,10 +59,11 @@ public:
     QStringListModel *listModel;
     QItemSelectionModel *selectionModel;
     QMenu *contextMenu;
-    bool fileChanged=false;
     ~VectorgraphWidget();
     VPoint getLoc(const VPoint & point);
     void saveFile(QString filename)override;
+    bool fileChanged()override;
+    QJsonObject toJsonObject();
 
 protected:
     void paintEvent(QPaintEvent *event)override;

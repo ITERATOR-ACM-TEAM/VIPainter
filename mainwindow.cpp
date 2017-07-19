@@ -433,37 +433,15 @@ void MainWindow::changeMenuAction(VectorgraphWidget *widget, VPoint loc)
     }
 }
 
-bool MainWindow::closeWidget(VectorgraphWidget *widget)
+bool MainWindow::closeWidget(PaintWidget *widget)
 {
-    bool flag=false;
-    QString filename=widget->getFileName();
-    if(filename=="")
-    {
-        if(!widget->groupShape.getShapes().empty())flag=true;
-    }
-    else
-    {
-        QFile file(filename);
-        if(file.open(QFile::ReadOnly|QFile::Text))
-        {
-            QJsonDocument doc=QJsonDocument::fromJson(file.readAll());
-            file.close();
-            QJsonDocument jsonDocument;
-            QJsonObject obj;
-            obj.insert("type",QString("canvas"));
-            obj.insert("size",widget->getCanvasSize());
-            obj.insert("shapes",widget->groupShape.toJsonArray());
-            jsonDocument.setObject(obj);
-            if(doc!=jsonDocument)flag=true;
-        }
-    }
-    if(flag)
+    if(widget->fileChanged())
     {
         int button
                 =QMessageBox::information(this,tr("退出"),
                                           widget->parentWidget()->windowTitle()+tr("已修改,是否在退出之前保存文件?"),
                                           QMessageBox::Cancel,QMessageBox::No,QMessageBox::Yes);
-        if(button==QMessageBox::Yes)on_actionSave_triggered();
+        if(button==QMessageBox::Yes)widget->on_actionSave_triggered();
         else if(button!=QMessageBox::No)
         {
             return false;
@@ -477,7 +455,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
     bool flag=true;
     for(auto &dock:docks)
     {
-        VectorgraphWidget *widget=qobject_cast<VectorgraphWidget*>(getPaintWidget(dock));
+        PaintWidget *widget=getPaintWidget(dock);
         if(!closeWidget(widget))flag=false;
     }
     if(!flag)
@@ -497,33 +475,34 @@ bool MainWindow::eventFilter(QObject * obj, QEvent * ev)
         {
             PaintWidget *widget=getPaintWidget(focus);
             disconnect(delegate,SIGNAL(dataChanged(const QModelIndex &)),widget,SLOT(changeModelData(const QModelIndex &)));
-#define KDISCONNECT(action) disconnect(ui->action,SIGNAL(triggered()),widget,SLOT(on_##action##_triggered()))
-            KDISCONNECT(actionZoomIn);
-            KDISCONNECT(actionZoomOut);
-            KDISCONNECT(actionResume);
-            KDISCONNECT(actionSave);
-            KDISCONNECT(actionSaveAs);
-            KDISCONNECT(actionCanvasSize);
-            KDISCONNECT(actionShapeSize);
-            KDISCONNECT(actionBreakUp);
-            KDISCONNECT(actionRedo);
-            KDISCONNECT(actionUndo);
-            KDISCONNECT(actionDelete);
-            KDISCONNECT(actionCopy);
-            KDISCONNECT(actionCut);
-            KDISCONNECT(actionPaste);
-            KDISCONNECT(actionGroup);
-            KDISCONNECT(actionSelectAll);
-            KDISCONNECT(actionBrush);
-            KDISCONNECT(actionPen);
-            KDISCONNECT(actionPenStyle);
-#undef KDISCONNECT
+//#define KDISCONNECT(action) disconnect(ui->action,SIGNAL(triggered()),widget,SLOT(on_##action##_triggered()))
+//            KDISCONNECT(actionZoomIn);
+//            KDISCONNECT(actionZoomOut);
+//            KDISCONNECT(actionResume);
+//            KDISCONNECT(actionSave);
+//            KDISCONNECT(actionSaveAs);
+//            KDISCONNECT(actionCanvasSize);
+//            KDISCONNECT(actionShapeSize);
+//            KDISCONNECT(actionBreakUp);
+//            KDISCONNECT(actionRedo);
+//            KDISCONNECT(actionUndo);
+//            KDISCONNECT(actionDelete);
+//            KDISCONNECT(actionCopy);
+//            KDISCONNECT(actionCut);
+//            KDISCONNECT(actionPaste);
+//            KDISCONNECT(actionGroup);
+//            KDISCONNECT(actionSelectAll);
+//            KDISCONNECT(actionBrush);
+//            KDISCONNECT(actionPen);
+//            KDISCONNECT(actionPenStyle);
+//#undef KDISCONNECT
         }
         if(dock!=nullptr)
         {
             PaintWidget *widget=getPaintWidget(dock);
             connect(delegate,SIGNAL(dataChanged(const QModelIndex &)),widget,SLOT(changeModelData(const QModelIndex &)));
-#define KCONNECT(action) connect(ui->action,SIGNAL(triggered()),widget,SLOT(on_##action##_triggered()))
+#define KCONNECT(action) disconnect(ui->action,0,0,0),\
+                            connect(ui->action,SIGNAL(triggered()),widget,SLOT(on_##action##_triggered()))
             KCONNECT(actionZoomIn);
             KCONNECT(actionZoomOut);
             KCONNECT(actionResume);
@@ -562,7 +541,7 @@ bool MainWindow::eventFilter(QObject * obj, QEvent * ev)
         auto it=std::find(docks.begin(),docks.end(),obj);
         if(it!=docks.end())
         {
-            VectorgraphWidget *widget=qobject_cast<VectorgraphWidget *>(getPaintWidget(*it));
+            PaintWidget *widget=getPaintWidget(*it);
             if(!closeWidget(widget))
             {
                 ev->ignore();
@@ -586,11 +565,11 @@ bool MainWindow::eventFilter(QObject * obj, QEvent * ev)
         {
             QContextMenuEvent *event=static_cast<QContextMenuEvent*>(ev);
             VectorgraphWidget *widget=qobject_cast<VectorgraphWidget*>(obj);
-            QPoint qpoint=event->pos();
-            VPoint point(qpoint.x(),qpoint.y());
-            VPoint loc=widget->getLoc(point);
             if(widget!=nullptr)
             {
+                QPoint qpoint=event->pos();
+                VPoint point(qpoint.x(),qpoint.y());
+                VPoint loc=widget->getLoc(point);
                 changeMenuAction(widget,loc);
                 contextMenu->exec(event->globalPos());
                 return true;

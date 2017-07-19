@@ -24,39 +24,27 @@
 
 VRoundedRectangle::VRoundedRectangle()
 {
-    text = new VText("");
-    this->text->setSize(getSize());
 }
 
 VRoundedRectangle::VRoundedRectangle(const VRoundedRectangle &roundedRectangle):VPolygon(roundedRectangle){
-    text = new VText(*(roundedRectangle.text));
-    this->text->setSize(getSize());
 }
 
 VRoundedRectangle::VRoundedRectangle(const QJsonObject &jsonObject):VPolygon(jsonObject){
     //qDebug()<<"ok gz"<<endl;
-    text = new VText(jsonObject.value("text").toObject());
-    this->text->setSize(getSize());
 }
 
 VRoundedRectangle::VRoundedRectangle(QVector<VPoint> vec){
     Q_UNUSED(vec);
-    text = new VText("");
-    this->text->setSize(getSize());
 }
 
 const VRoundedRectangle& VRoundedRectangle::operator=(const VRoundedRectangle &roundedRectangle){
     if(this==&roundedRectangle)return *this;
     VPointGroupShape::operator=(roundedRectangle);
-    delete text;
-    text = new VText(*(roundedRectangle.text));
     return *this;
 }
 
 const VRoundedRectangle& VRoundedRectangle::operator=(const QJsonObject &jsonObject){
     VPointGroupShape::operator=(jsonObject);
-    delete text;
-    text = new VText(jsonObject.value("text").toObject());
     return *this;
 }
 
@@ -79,7 +67,6 @@ void VRoundedRectangle::draw(QPainter *painter,const VTransform &transform)
     QRectF rec(-width/2, -height/2, width, height);
     painter->drawRoundRect(rec);
     painter->restore();
-    text->draw(painter, transform);
 }
 
 void VRoundedRectangle::drawCR(QPainter *painter,const VTransform &transform, double scale){
@@ -127,6 +114,5 @@ VShape* VRoundedRectangle::clone()const
 QJsonObject VRoundedRectangle::toJsonObject()const
 {
     QJsonObject jsonObject(VPointGroupShape::toJsonObject());
-    jsonObject.insert("text",*text);
     return jsonObject;
 }

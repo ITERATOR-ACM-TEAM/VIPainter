@@ -24,7 +24,6 @@
 
 class VPolygon : public VPointGroupShape{
 protected:
-    VText *text;
 public:
     VPolygon();
     VPolygon(const VPolygon &shape);
@@ -38,7 +37,6 @@ public:
     QJsonObject toJsonObject()const override;
     VShape* clone()const override;
     QString type()const override;
-    VText* getText() const;
 };
 
 #endif //#ifndef VPOLYGON

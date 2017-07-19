@@ -43,15 +43,13 @@
 #include <QColor>
 #include <QFile>
 #include <QImage>
-#include <QJsonObject>
-#include <QJsonArray>
-#include <QJsonDocument>
 #include <QDockWidget>
 #include <QMessageBox>
 #include <QClipboard>
 #include <QMimeData>
 #include <QModelIndex>
 #include <QColorDialog>
+#include<QJsonDocument>
 
 VectorgraphWidget::VectorgraphWidget(QMainWindow *parent, bool antialiasing) :
     PaintWidget(parent,antialiasing),crPos(-1),canvasLocation(0,0),cursorType(VCursorType::CHOOSE)
@@ -225,12 +223,6 @@ void VectorgraphWidget::mouseDoubleClickEvent(QMouseEvent* event)
         {
             //qDebug()<<point.x<<" "<<point.y<<endl;
             VText * vt = dynamic_cast<VText *>(shape);
-            VPolygon *vpg = dynamic_cast<VPolygon *>(shape);
-            if (vpg != nullptr)
-            {
-                ChangeTextDialog::showDialog(vpg->getText());
-                saveSwp();
-            }
             if(vt != nullptr)
             {
                 ChangeTextDialog::showDialog(vt);
@@ -652,12 +644,7 @@ void VectorgraphWidget::saveFile(QString filename)
     QString format=filename.split('.').back().toUpper();
     if(format==tr("JSON"))
     {
-        QJsonDocument jsonDocument;
-        QJsonObject obj;
-        obj.insert("type",QString("canvas"));
-        obj.insert("size",getCanvasSize());
-        obj.insert("shapes",groupShape.toJsonArray());
-        jsonDocument.setObject(obj);
+        QJsonDocument jsonDocument(toJsonObject());
         QFile file(filename);
         if(file.open(QFile::WriteOnly|QFile::Text))
         {
@@ -928,4 +915,32 @@ void VectorgraphWidget::on_actionPenStyle_triggered()
     PenStyleDialog::showDialog(tr("线条设置"),focusShapes);
     update();
     saveSwp();
+}
+
+bool VectorgraphWidget::fileChanged()
+{
+    if(filename=="")
+    {
+        if(!groupShape.getShapes().empty())return true;
+    }
+    else
+    {
+        QFile file(filename);
+        if(file.open(QFile::ReadOnly|QFile::Text))
+        {
+            QJsonDocument doc=QJsonDocument::fromJson(file.readAll());
+            file.close();
+            if(doc!=QJsonDocument(toJsonObject()))return true;
+        }
+    }
+    return false;
+}
+
+QJsonObject VectorgraphWidget::toJsonObject()
+{
+    QJsonObject obj;
+    obj.insert("type",QString("canvas"));
+    obj.insert("size",getCanvasSize());
+    obj.insert("shapes",groupShape.toJsonArray());
+    return obj;
 }
