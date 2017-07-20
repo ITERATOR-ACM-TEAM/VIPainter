@@ -94,6 +94,13 @@ MainWindow::MainWindow(QWidget *parent) :
     contextMenu->addAction(ui->actionForceGroup);
     contextMenu->addAction(ui->actionBreakUp);
 
+    //open file in arguments
+    QTimer::singleShot(0,[this]{
+        QStringList files=QApplication::arguments();
+        files.erase(files.begin());
+        for(QString filename:files)openFile(filename);
+    });
+
     update();
 }
 
@@ -117,7 +124,7 @@ void MainWindow::loadPlugin(QString filename)
         if(groupshape->getShapes().size()==1)shape=VGroupShape::breakUp(groupshape).first();
     }
     else if(doc.isObject())shape=VShape::fromJsonObject(doc.object());
-    else return;
+    else ui->statusBar->showMessage(tr("加载插件 ")+filename+" 失败");
     if(shape==nullptr)return;
     if(shape->getName()==QString(""))shape->setName(filename.split('/').back().split('.').first());
     plugins.append(shape);
@@ -264,6 +271,48 @@ void MainWindow::on_actionSaveAs_triggered()
     //Edit in PaintWidget
 }
 
+bool MainWindow::openFile(QString filename)
+{
+    if(filename=="")return false;
+    bool flag=false;
+    for(auto &dock:docks)
+    {
+        VectorgraphWidget *widget=qobject_cast<VectorgraphWidget*>(getPaintWidget(dock));
+        if(widget->getFileName()==filename)
+        {
+            focusDock(dock);
+            flag=true;
+        }
+    }
+    if(flag)return false;
+    ui->statusBar->showMessage(tr("打开文件 ")+filename);
+    QFile file(filename);
+    if(!file.open(QFile::ReadOnly|QFile::Text))return false;
+    QJsonDocument doc=QJsonDocument::fromJson(file.readAll());
+    file.close();
+    if(!doc.isArray()&&!doc.isObject())
+    {
+        QMessageBox::warning(this,tr("错误"),tr("打开文件 ")+filename+tr("失败"));
+        return false;
+    }
+    QDockWidget * newWidget = newDock(filename.split("/").back());
+    VectorgraphWidget *widget=qobject_cast<VectorgraphWidget*>(getPaintWidget(newWidget));
+    if(doc.isObject()&&doc.object().value("type")==QString("canvas"))
+    {
+        widget->setCanvasSize(doc.object().value("size").toObject());
+        doc.setArray(doc.object().value("shapes").toArray());
+    }
+    if(doc.isArray())widget->groupShape=doc.array();
+    else if(doc.isObject())
+    {
+        widget->groupShape.insertShape(VShape::fromJsonObject(doc.object()));
+    }
+    widget->setFileName(filename);
+    widget->saveSwp();
+    newWidget->update();
+    return true;
+}
+
 void MainWindow::on_actionOpen_triggered()
 {
     QStringList filenames=
@@ -272,46 +321,7 @@ void MainWindow::on_actionOpen_triggered()
                                          tr(""),
                                          tr("json file (*.json);;"
                                             "all (*)"));
-    for(auto &filename:filenames)
-    {
-        if(filename=="")return;
-        bool flag=false;
-        for(auto &dock:docks)
-        {
-            VectorgraphWidget *widget=qobject_cast<VectorgraphWidget*>(getPaintWidget(dock));
-            if(widget->getFileName()==filename)
-            {
-                focusDock(dock);
-                flag=true;
-            }
-        }
-        if(flag)continue;
-        ui->statusBar->showMessage(tr("打开文件 ")+filename);
-        QFile file(filename);
-        if(!file.open(QFile::ReadOnly|QFile::Text))return;
-        QJsonDocument doc=QJsonDocument::fromJson(file.readAll());
-        file.close();
-        if(!doc.isArray()&&!doc.isObject())
-        {
-            QMessageBox::warning(this,tr("错误"),tr("打开文件 ")+filename+tr("失败"));
-            continue;
-        }
-        QDockWidget * newWidget = newDock(filename.split("/").back());
-        VectorgraphWidget *widget=qobject_cast<VectorgraphWidget*>(getPaintWidget(newWidget));
-        if(doc.isObject()&&doc.object().value("type")==QString("canvas"))
-        {
-            widget->setCanvasSize(doc.object().value("size").toObject());
-            doc.setArray(doc.object().value("shapes").toArray());
-        }
-        if(doc.isArray())widget->groupShape=doc.array();
-        else if(doc.isObject())
-        {
-            widget->groupShape.insertShape(VShape::fromJsonObject(doc.object()));
-        }
-        widget->setFileName(filename);
-        widget->saveSwp();
-        newWidget->update();
-    }
+    for(auto &filename:filenames)openFile(filename);
 }
 
 void MainWindow::on_actionMove_triggered()

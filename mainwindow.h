@@ -148,6 +148,7 @@ private:
     PaintWidget * getPaintWidget();
     PaintWidget * getPaintWidget(QDockWidget *target);
     bool closeWidget(PaintWidget *widget);
+    bool openFile(QString filename);
 };
 
 #endif // MAINWINDOW_H
