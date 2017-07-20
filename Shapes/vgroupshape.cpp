@@ -424,6 +424,7 @@ QVector<VShape *> VGroupShape::breakUp (VGroupShape * group)
     for(VShape* it:tmp)
     {
         it->getTransform()=it->getTransform()*group->getTransform();
+        it->setParent(nullptr);
     }
 
     VGroupShape *parent=dynamic_cast<VGroupShape*>(group->getParent());

@@ -105,13 +105,13 @@ private slots:
 
     void on_actionSelectAll_triggered();
 
-    void on_actionBrush_triggered();
+    void on_actionBrushColor_triggered();
 
-    void on_actionPen_triggered();
+    void on_actionPenColor_triggered();
 
     void on_actionPenStyle_triggered();
 
-    void on_actionDraw_triggered();
+    void on_actionPen_triggered();
 
     void on_actionAbout_triggered();
 
@@ -139,7 +139,7 @@ private:
 
     QMenu *contextMenu;
 
-    void changeMenuAction(VectorgraphWidget *widget, VPoint loc, bool flag=false);
+    void changeMenuAction(VectorgraphWidget *widget, bool flag=false);
 
     void loadPlugin(QString filename);
 

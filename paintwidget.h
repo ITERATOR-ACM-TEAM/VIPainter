@@ -74,8 +74,8 @@ public slots:
     virtual void on_actionGroup_triggered()=0;
     virtual void changeModelData(const QModelIndex &index)=0;
     virtual void on_actionSelectAll_triggered()=0;
-    virtual void on_actionBrush_triggered()=0;
-    virtual void on_actionPen_triggered()=0;
+    virtual void on_actionBrushColor_triggered()=0;
+    virtual void on_actionPenColor_triggered()=0;
     virtual void on_actionPenStyle_triggered()=0;
     virtual void on_actionForceGroup_triggered()=0;
 };

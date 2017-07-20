@@ -132,7 +132,7 @@ void PaintWidget::changeCursor(VCursorType type,VShape *plugin)
     {
         this->setCursor(QCursor(VRotate, 15, 15));
     }break;
-    case VCursorType::DRAWPOLYLINE: case VCursorType::DRAWBEZIERCURVE:
+    case VCursorType::POLYLINE: case VCursorType::BEZIERCURVE:
     {
         static QCursor pen = QCursor(QPixmap(":/icon/pen.png").scaled(20,20), 0, 19);
         this->setCursor(pen);

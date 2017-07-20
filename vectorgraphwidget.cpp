@@ -182,16 +182,16 @@ void VectorgraphWidget::mousePressEvent(QMouseEvent *event)
                 lastAngle = 0;
             }
         }break;
-        case VCursorType::DRAWPOLYLINE:
-        case VCursorType::DRAWBEZIERCURVE:
+        case VCursorType::POLYLINE:
+        case VCursorType::BEZIERCURVE:
         {
             VPointGroupShape * pl;
             if(crPos == -1)
             {
 //                qDebug() << "!!!!!!";
-                if(cursorType == VCursorType::DRAWPOLYLINE)
+                if(cursorType == VCursorType::POLYLINE)
                     pl = new VPolyline();
-                else if (cursorType == VCursorType::DRAWBEZIERCURVE)
+                else if (cursorType == VCursorType::BEZIERCURVE)
                     pl = new VBezierCurve();
                 groupShape.insertShape(pl);
                 pl->moveLoc(pl->transformPoint(getLoc(point)));
@@ -307,7 +307,7 @@ void VectorgraphWidget::mouseReleaseEvent(QMouseEvent *event)
         default:
             break;
         }
-        if(cursorType != VCursorType::DRAWBEZIERCURVE && cursorType != VCursorType::DRAWPOLYLINE)
+        if(cursorType != VCursorType::BEZIERCURVE && cursorType != VCursorType::POLYLINE)
             crPos = -1;
     }
 }
@@ -366,7 +366,11 @@ void VectorgraphWidget::mouseMoveEvent(QMouseEvent *event)
             {
                 VPoint lp = groupShape.transformPoint(locMove);
                 VPoint v(pos.x-lp.x, pos.y-lp.y);
-                if(crPos == -1)
+                if(crPos == -2)
+                {
+                    //do nothing
+                }
+                else if(crPos == -1)
                 {
                     for(VShape *shape:focusShapes)
                     {
@@ -379,7 +383,7 @@ void VectorgraphWidget::mouseMoveEvent(QMouseEvent *event)
                     if(focusShapes.size()==1)
                     {
                         VShape *shape=focusShapes.first();
-                        shape->changeMag(crPos, shape->transformPoint(pos));
+                        shape->changeMag(crPos, shape->transformPoint(pos), QApplication::keyboardModifiers() == Qt::ControlModifier);
                     }
                 }
                 else if(crPos >= 8)
@@ -416,8 +420,8 @@ void VectorgraphWidget::mouseMoveEvent(QMouseEvent *event)
                 update();
             }
         }break;
-        case VCursorType::DRAWBEZIERCURVE:
-        case VCursorType::DRAWPOLYLINE:
+        case VCursorType::BEZIERCURVE:
+        case VCursorType::POLYLINE:
         {
             if(crPos > -1)
             {
@@ -534,7 +538,7 @@ bool VectorgraphWidget::eventFilter(QObject * obj, QEvent * ev)
         case Qt::Key_Return:
         case Qt::Key_Escape:
             {
-                if(cursorType == VCursorType::DRAWBEZIERCURVE || cursorType == VCursorType::DRAWPOLYLINE)
+                if(cursorType == VCursorType::BEZIERCURVE || cursorType == VCursorType::POLYLINE)
                 {
                     focusShapes.clear();
                     crPos = -1;
@@ -555,8 +559,8 @@ void VectorgraphWidget::changeCursor(VCursorType type,VShape *plugin)
     crPos=-1;
     switch(type)
     {
-    case VCursorType::DRAWPOLYLINE:
-    case VCursorType::DRAWBEZIERCURVE:
+    case VCursorType::POLYLINE:
+    case VCursorType::BEZIERCURVE:
     {
         focusShapes.clear();
     }break;
@@ -608,7 +612,7 @@ void VectorgraphWidget::updateList()
 
 void VectorgraphWidget::changeFocus()
 {
-    if(cursorType == VCursorType::DRAWBEZIERCURVE || cursorType == VCursorType::DRAWPOLYLINE) return;
+    if(cursorType == VCursorType::BEZIERCURVE || cursorType == VCursorType::POLYLINE) return;
     decltype(focusShapes) newFocus;
     for(auto &index:selectionModel->selectedRows())
         newFocus.append(groupShape.getShapes().at(groupShape.getVectorSize()-index.row()-1));
@@ -821,42 +825,41 @@ void VectorgraphWidget::on_actionPaste_triggered()
         //  Get clipboard
         QClipboard *cb = QApplication::clipboard();
         const QMimeData* mimeData = cb->mimeData();
+        QList<VShape*>shapes;
         if(mimeData->hasFormat("application/x-JavaScript"))
         {
 //            qDebug()<<QJsonDocument::fromBinaryData(mimeData->data("application/x-JavaScript"));
             QJsonDocument doc=QJsonDocument::fromBinaryData(mimeData->data("application/x-JavaScript"));
             if(doc.isObject())
             {
-                VShape *shape=VShape::fromJsonObject(doc.object());
+                shapes.append(VShape::fromJsonObject(doc.object()));
                 //qDebug()<<*shape;
-                groupShape.insertShape(shape);
-                focusShapes.clear();
-                focusShapes.append(shape);
-                update();
-                updateList();
-                saveSwp();
             }
             else if(doc.isArray())
             {
-                focusShapes.clear();
                 for(auto i:doc.array())
                 {
                     VShape *shape=VShape::fromJsonObject(
                                 i.toObject()
                                 );
-                    groupShape.insertShape(shape);
-                    focusShapes.append(shape);
+                    shapes.append(shape);
                 }
-                update();
-                updateList();
-                saveSwp();
             }
         }
         else if(mimeData->hasText())
         {
             VText *text=new VText(mimeData->text());
             text->setName(mimeData->text());
-            groupShape.insertShape(text);
+            shapes.append(text);
+        }
+        if(!shapes.empty())
+        {
+            focusShapes.clear();
+            for(VShape *shape:shapes)
+            {
+                groupShape.insertShape(shape);
+                focusShapes.append(shape);
+            }
             update();
             updateList();
             saveSwp();
@@ -927,7 +930,7 @@ void VectorgraphWidget::on_actionSelectAll_triggered()
     emitSelected();
 }
 
-void VectorgraphWidget::on_actionBrush_triggered()
+void VectorgraphWidget::on_actionBrushColor_triggered()
 {
     if(focusShapes.empty())return;
     QColorDialog dialog(focusShapes.first()->getBrush().color(),this);
@@ -940,7 +943,7 @@ void VectorgraphWidget::on_actionBrush_triggered()
     }
 }
 
-void VectorgraphWidget::on_actionPen_triggered()
+void VectorgraphWidget::on_actionPenColor_triggered()
 {
     if(focusShapes.empty())return;
     QColorDialog dialog(focusShapes.first()->getPen().color(),this);

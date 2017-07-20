@@ -23,8 +23,8 @@ enum class VCursorType
     CHOOSE,
     DEFAULT,
     SHAPE,
-    DRAWPOLYLINE,
-    DRAWBEZIERCURVE,
+    POLYLINE,
+    BEZIERCURVE,
     ROTATE,
     PLUGIN,
 };

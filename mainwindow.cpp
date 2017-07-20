@@ -58,18 +58,12 @@ MainWindow::MainWindow(QWidget *parent) :
     setWindowTitle("VIPainter");
     ui->shapesDock->hide();
 
-    //菜单逻辑
-    connect(ui->menuEdit,&QMenu::aboutToShow,[this]{
-        VectorgraphWidget *widget=qobject_cast<VectorgraphWidget *>(getPaintWidget());
-        changeMenuAction(widget,VPoint(0,0),true);
-    });
-
     //工具栏编组 bar group
     barGroup = new QActionGroup(this);
     barGroup->addAction(ui->actionChoose);
     barGroup->addAction(ui->actionMove);
     barGroup->addAction(ui->actionRotate);
-    barGroup->addAction(ui->actionDraw);
+    barGroup->addAction(ui->actionPen);
     connect(this, SIGNAL(cursorChange(VCursorType)), this, SLOT(changeCursor(VCursorType)));
     QTimer::singleShot(0,this,SLOT(initAction(QDir)));
 
@@ -94,9 +88,9 @@ MainWindow::MainWindow(QWidget *parent) :
     contextMenu->addAction(ui->actionPaste);
     contextMenu->addAction(ui->actionDelete);
     contextMenu->addSeparator();
-    contextMenu->addAction(ui->actionPen);
+    contextMenu->addAction(ui->actionPenColor);
     contextMenu->addAction(ui->actionPenStyle);
-    contextMenu->addAction(ui->actionBrush);
+    contextMenu->addAction(ui->actionBrushColor);
     contextMenu->addSeparator();
     contextMenu->addAction(ui->actionGroup);
     contextMenu->addAction(ui->actionForceGroup);
@@ -122,6 +116,7 @@ void MainWindow::loadPlugin(QString filename)
         VGroupShape *groupshape=new VGroupShape(doc.array());
         groupshape->getCircumscribedRectangle(true);
         shape=groupshape;
+        if(groupshape->getShapes().size()==1)shape=VGroupShape::breakUp(groupshape).first();
     }
     else if(doc.isObject())shape=VShape::fromJsonObject(doc.object());
     else return;
@@ -214,6 +209,12 @@ QDockWidget* MainWindow::newDock(QString dockname)
     this->focusDock(dockWidget);
 
     connect(dockWidget,SIGNAL(visibilityChanged(bool)),this,SLOT(focusDock(bool)));
+    connect(widget,&VectorgraphWidget::selected,[this,widget]{
+        if(widget==getPaintWidget())
+        {
+            changeMenuAction(widget,true);
+        }
+    });
 
     if(dockname=="")dockWidget->setWindowTitle(QString("untitled %1").arg(id++));
     else dockWidget->setWindowTitle(dockname);
@@ -333,7 +334,7 @@ void MainWindow::on_actionChoose_triggered()
 
 void MainWindow::changeCursor(VCursorType type)
 {
-    if(cursorState == VCursorType::DRAWBEZIERCURVE || cursorState == VCursorType::DRAWPOLYLINE)
+    if(cursorState == VCursorType::BEZIERCURVE || cursorState == VCursorType::POLYLINE)
     {
         ui->actionDelete->setEnabled(true);
         ui->actionCopy->setEnabled(true);
@@ -351,7 +352,7 @@ void MainWindow::changeCursor(VCursorType type)
         }
     }
     cursorState = type;
-    if(type == VCursorType::DRAWBEZIERCURVE || type == VCursorType::DRAWPOLYLINE)
+    if(type == VCursorType::BEZIERCURVE || type == VCursorType::POLYLINE)
     {
         ui->actionDelete->setEnabled(false);
         ui->actionCopy->setEnabled(false);
@@ -362,7 +363,6 @@ void MainWindow::changeCursor(VCursorType type)
         ui->actionForceGroup->setEnabled(false);
         ui->actionBreakUp->setEnabled(false);
         ui->actionSelectAll->setEnabled(false);
-        //for(auto &i:docks)getPaintWidget(i)->saveSwp();
     }
 
 }
@@ -375,17 +375,17 @@ void MainWindow::on_actionNew_triggered()
 }
 
 //判断Action的显示状态
-void MainWindow::changeMenuAction(VectorgraphWidget *widget, VPoint loc,bool flag)
+void MainWindow::changeMenuAction(VectorgraphWidget *widget,bool flag)
 {
-    if(cursorState == VCursorType::DRAWBEZIERCURVE || cursorState == VCursorType::DRAWPOLYLINE)return;
+    if(cursorState == VCursorType::BEZIERCURVE || cursorState == VCursorType::POLYLINE)return;
     if(widget==nullptr||widget->focusShapes.empty())
     {
         ui->actionCopy->setEnabled(false);
         ui->actionCut->setEnabled(false);
         ui->actionDelete->setEnabled(false);
-        ui->actionPen->setVisible(false);
+        ui->actionPenColor->setVisible(false);
         ui->actionPenStyle->setVisible(false);
-        ui->actionBrush->setVisible(false);
+        ui->actionBrushColor->setVisible(false);
         ui->actionGroup->setVisible(false);
         ui->actionForceGroup->setVisible(false);
         ui->actionBreakUp->setVisible(false);
@@ -395,19 +395,11 @@ void MainWindow::changeMenuAction(VectorgraphWidget *widget, VPoint loc,bool fla
         ui->actionCopy->setEnabled(true);
         ui->actionCut->setEnabled(true);
         ui->actionDelete->setEnabled(true);
-        if(!flag)for(VShape *shape:widget->focusShapes)
-        {
-            if(shape->contains(shape->transformPoint(loc)))
-            {
-                flag=true;
-                break;
-            }
-        }
         if(flag)
         {
-            ui->actionPen->setVisible(true);
+            ui->actionPenColor->setVisible(true);
             ui->actionPenStyle->setVisible(true);
-            ui->actionBrush->setVisible(true);
+            ui->actionBrushColor->setVisible(true);
             ui->actionGroup->setVisible(true);
             ui->actionForceGroup->setVisible(true);
             ui->actionBreakUp->setVisible(true);
@@ -420,9 +412,9 @@ void MainWindow::changeMenuAction(VectorgraphWidget *widget, VPoint loc,bool fla
         }
         else
         {
-            ui->actionPen->setVisible(false);
+            ui->actionPenColor->setVisible(false);
             ui->actionPenStyle->setVisible(false);
-            ui->actionBrush->setVisible(false);
+            ui->actionBrushColor->setVisible(false);
             ui->actionGroup->setVisible(false);
             ui->actionForceGroup->setVisible(false);
             ui->actionBreakUp->setVisible(false);
@@ -491,8 +483,8 @@ bool MainWindow::eventFilter(QObject * obj, QEvent * ev)
             KCONNECT(actionPaste);
             KCONNECT(actionGroup);
             KCONNECT(actionSelectAll);
-            KCONNECT(actionBrush);
-            KCONNECT(actionPen);
+            KCONNECT(actionBrushColor);
+            KCONNECT(actionPenColor);
             KCONNECT(actionPenStyle);
             KCONNECT(actionForceGroup);
 #undef KCONNECT
@@ -534,16 +526,12 @@ bool MainWindow::eventFilter(QObject * obj, QEvent * ev)
         break;
     case QEvent::ContextMenu:
     {
-        if(cursorState != VCursorType::DRAWBEZIERCURVE && cursorState != VCursorType::DRAWPOLYLINE)
+        if(cursorState != VCursorType::BEZIERCURVE && cursorState != VCursorType::POLYLINE)
         {
             QContextMenuEvent *event=static_cast<QContextMenuEvent*>(ev);
             VectorgraphWidget *widget=qobject_cast<VectorgraphWidget*>(obj);
             if(widget!=nullptr)
             {
-                QPoint qpoint=event->pos();
-                VPoint point(qpoint.x(),qpoint.y());
-                VPoint loc=widget->getLoc(point);
-                changeMenuAction(widget,loc);
                 contextMenu->exec(event->globalPos());
                 return true;
             }
@@ -691,13 +679,13 @@ void MainWindow::on_actionSelectAll_triggered()
     //Edit in PaintWidget
 }
 
-void MainWindow::on_actionBrush_triggered()
+void MainWindow::on_actionBrushColor_triggered()
 {
     //Do nothing
     //Edit in PaintWidget
 }
 
-void MainWindow::on_actionPen_triggered()
+void MainWindow::on_actionPenColor_triggered()
 {
     //Do nothing
     //Edit in PaintWidget
@@ -721,17 +709,17 @@ void MainWindow::on_actionAbout_triggered()
                                  "<http://www.gnu.org/licenses/>.\n"));
 }
 
-void MainWindow::on_actionDraw_triggered()
+void MainWindow::on_actionPen_triggered()
 {
-    if(ui->actionDraw->isChecked())
+    if(ui->actionPen->isChecked())
     {
         if(ui->actionCurveLine->isChecked())
         {
-            emit cursorChange(VCursorType::DRAWBEZIERCURVE);
+            emit cursorChange(VCursorType::BEZIERCURVE);
         }
         else if(ui->actionPolyLine->isChecked())
         {
-            emit cursorChange(VCursorType::DRAWPOLYLINE);
+            emit cursorChange(VCursorType::POLYLINE);
         }
     }
 
@@ -745,12 +733,12 @@ void MainWindow::on_actionUndo_triggered()
 
 void MainWindow::on_actionCurveLine_triggered()
 {
-    on_actionDraw_triggered();
+    on_actionPen_triggered();
 }
 
 void MainWindow::on_actionPolyLine_triggered()
 {
-    on_actionDraw_triggered();
+    on_actionPen_triggered();
 }
 
 void MainWindow::on_actionForceGroup_triggered()

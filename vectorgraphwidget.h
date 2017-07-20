@@ -99,8 +99,8 @@ public slots:
     void on_actionGroup_triggered()override;
     void changeModelData(const QModelIndex &index)override;
     void on_actionSelectAll_triggered()override;
-    void on_actionBrush_triggered()override;
-    void on_actionPen_triggered()override;
+    void on_actionBrushColor_triggered()override;
+    void on_actionPenColor_triggered()override;
     void on_actionPenStyle_triggered()override;
     void on_actionForceGroup_triggered()override;
 

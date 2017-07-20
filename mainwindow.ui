@@ -113,7 +113,7 @@
    <addaction name="actionChoose"/>
    <addaction name="actionMove"/>
    <addaction name="actionRotate"/>
-   <addaction name="actionDraw"/>
+   <addaction name="actionPen"/>
    <addaction name="actionZoomIn"/>
    <addaction name="actionZoomOut"/>
    <addaction name="actionResume"/>
@@ -196,7 +196,7 @@
     </layout>
    </widget>
   </widget>
-  <action name="actionDraw">
+  <action name="actionPen">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -482,7 +482,7 @@
     <string>Ctrl+A</string>
    </property>
   </action>
-  <action name="actionPen">
+  <action name="actionPenColor">
    <property name="text">
     <string>线条颜色</string>
    </property>
@@ -490,7 +490,7 @@
     <string>线条颜色</string>
    </property>
   </action>
-  <action name="actionBrush">
+  <action name="actionBrushColor">
    <property name="text">
     <string>填充颜色</string>
    </property>

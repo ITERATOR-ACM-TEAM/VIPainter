@@ -281,13 +281,15 @@ int VShape::atCrPoints(const VPoint & point,double scale)
     return -1;
 }
 
-void VShape::changeMag(int i, const VVector & vec)
+void VShape::changeMag(int i, const VVector & vec, bool center)
 {
     VMagnification mag;
     VPoint point=getRect().at(i);
     if(point.x==0)mag.horizontal=1;
+    else if(center)mag.horizontal=vec.x/point.x;
     else mag.horizontal=vec.x/point.x/2+0.5;
     if(point.y==0)mag.vertical=1;
+    else if(center)mag.vertical=vec.y/point.y;
     else mag.vertical=vec.y/point.y/2+0.5;
     VSize size=getSize();
     size=VSize((transform.map(VPoint(size.width,0))-transform.map(VPoint(0,0))),
@@ -295,12 +297,19 @@ void VShape::changeMag(int i, const VVector & vec)
     if(std::abs(size.width)<1)mag.horizontal =size.width<0?-1:1;
     if(std::abs(size.height)<1)mag.vertical =size.height<0?-1:1;
     if(mag.horizontal==1&&mag.vertical==1)return;
-    VPoint old=transform.map(getRect().at((i+4)%8));
-    this->transform.scale(mag);
-    VPoint now=transform.map(getRect().at((i+4)%8));
-    VPoint location=getLocation();
-    moveLoc(this->transformPoint(VPoint(location.x+old.x-now.x,
-                                                    location.y+old.y-now.y)));
+    if(center)
+    {
+        this->transform.scale(mag);
+    }
+    else
+    {
+        VPoint old=transform.map(getRect().at((i+4)%8));
+        this->transform.scale(mag);
+        VPoint now=transform.map(getRect().at((i+4)%8));
+        VPoint location=getLocation();
+        moveLoc(this->transformPoint(VPoint(location.x+old.x-now.x,
+                                            location.y+old.y-now.y)));
+    }
 }
 
 void VShape::setPen(QPen pen)
