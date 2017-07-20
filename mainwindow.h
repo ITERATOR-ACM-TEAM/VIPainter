@@ -132,7 +132,6 @@ private:
     QVector<QDockWidget *> docks;
 
     QActionGroup  *barGroup;
-    QActionGroup  *menuGroup;
     VCursorType cursorState;
     VDelegate *delegate;
     VListView *listView;

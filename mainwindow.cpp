@@ -64,13 +64,11 @@ MainWindow::MainWindow(QWidget *parent) :
     barGroup->addAction(ui->actionMove);
     barGroup->addAction(ui->actionRotate);
     barGroup->addAction(ui->actionPen);
+    barGroup->addAction(ui->actionCurveLine);
+    barGroup->addAction(ui->actionPolyLine);
     connect(this, SIGNAL(cursorChange(VCursorType)), this, SLOT(changeCursor(VCursorType)));
     QTimer::singleShot(0,this,SLOT(initAction(QDir)));
 
-    //菜单编组 menu group
-    menuGroup = new QActionGroup(this);
-    menuGroup->addAction(ui->actionCurveLine);
-    menuGroup->addAction(ui->actionPolyLine);
 
     //List View init
     listView=new VListView(this);
@@ -711,18 +709,7 @@ void MainWindow::on_actionAbout_triggered()
 
 void MainWindow::on_actionPen_triggered()
 {
-    if(ui->actionPen->isChecked())
-    {
-        if(ui->actionCurveLine->isChecked())
-        {
-            emit cursorChange(VCursorType::BEZIERCURVE);
-        }
-        else if(ui->actionPolyLine->isChecked())
-        {
-            emit cursorChange(VCursorType::POLYLINE);
-        }
-    }
-
+    ui->actionPolyLine->trigger();
 }
 
 void MainWindow::on_actionUndo_triggered()
@@ -733,12 +720,18 @@ void MainWindow::on_actionUndo_triggered()
 
 void MainWindow::on_actionCurveLine_triggered()
 {
-    on_actionPen_triggered();
+    if(ui->actionCurveLine->isChecked())
+        emit cursorChange(VCursorType::BEZIERCURVE);
+    else
+        emit cursorChange(VCursorType::DEFAULT);
 }
 
 void MainWindow::on_actionPolyLine_triggered()
 {
-    on_actionPen_triggered();
+    if(ui->actionPolyLine->isChecked())
+        emit cursorChange(VCursorType::POLYLINE);
+    else
+        emit cursorChange(VCursorType::DEFAULT);
 }
 
 void MainWindow::on_actionForceGroup_triggered()

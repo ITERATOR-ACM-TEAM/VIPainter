@@ -114,6 +114,8 @@
    <addaction name="actionMove"/>
    <addaction name="actionRotate"/>
    <addaction name="actionPen"/>
+   <addaction name="actionPolyLine"/>
+   <addaction name="actionCurveLine"/>
    <addaction name="actionZoomIn"/>
    <addaction name="actionZoomOut"/>
    <addaction name="actionResume"/>
@@ -510,6 +512,10 @@
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="icon">
+    <iconset resource="resourse.qrc">
+     <normaloff>:/icon/Bezier.png</normaloff>:/icon/Bezier.png</iconset>
+   </property>
    <property name="text">
     <string>曲线</string>
    </property>
@@ -519,7 +525,11 @@
     <bool>true</bool>
    </property>
    <property name="checked">
-    <bool>true</bool>
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resourse.qrc">
+     <normaloff>:/icon/PolyLine.png</normaloff>:/icon/PolyLine.png</iconset>
    </property>
    <property name="text">
     <string>直线</string>
