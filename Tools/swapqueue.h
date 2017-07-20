@@ -33,6 +33,7 @@ public:
     TN undo();
     bool atFirst();
     bool atLast();
+    bool changed();
 };
 
 template<class TN,int SWAPSIZE>
@@ -80,6 +81,12 @@ template<class TN,int SWAPSIZE>
 bool SwapQueue<TN,SWAPSIZE>::atLast()
 {
     return now>=right;
+}
+
+template<class TN,int SWAPSIZE>
+bool SwapQueue<TN,SWAPSIZE>::changed()
+{
+    return now>1;
 }
 
 

@@ -43,6 +43,9 @@
 #include <QMessageBox>
 #include <QTimer>
 #include <QContextMenuEvent>
+#include <QMimeData>
+#include <QUrl>
+#include <QToolButton>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -51,6 +54,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     delete takeCentralWidget();//去掉中心控件
     setDockNestingEnabled(true);//设置DOCK可随意移动
+    //shapeBar
+    ui->shapeBar->installEventFilter(this);//注册过滤器
+
     this->setContextMenuPolicy(Qt::NoContextMenu);//取消右键菜单
     ui->menuTools->addAction(ui->mainToolBar->toggleViewAction());
     ui->menuTools->addAction(ui->shapeBar->toggleViewAction());
@@ -66,7 +72,7 @@ MainWindow::MainWindow(QWidget *parent) :
     barGroup->addAction(ui->actionPen);
     barGroup->addAction(ui->actionCurveLine);
     barGroup->addAction(ui->actionPolyLine);
-    connect(this, SIGNAL(cursorChange(VCursorType)), this, SLOT(changeCursor(VCursorType)));
+    connect(this, SIGNAL(cursorChange(VCursorType,VShape*)), this, SLOT(changeCursor(VCursorType,VShape*)));
     QTimer::singleShot(0,this,SLOT(initAction(QDir)));
 
 
@@ -180,7 +186,7 @@ QDockWidget* MainWindow::newDock(QString dockname)
     VectorgraphWidget* widget=new VectorgraphWidget(this,ui->actionAntialiasing->isChecked());
     connect(ui->actionAntialiasing,SIGNAL(triggered(bool)),widget,SLOT(on_actionAntialiasing_toggled(bool)));
     connect(this, SIGNAL(cursorChange(VCursorType,VShape*)), widget, SLOT(changeCursor(VCursorType,VShape*)));
-    emit cursorChange(this->cursorState);
+    widget->changeCursor(this->cursorState,this->plugin);
     widget->installEventFilter(this);
 
     QDockWidget *dockWidget=new QDockWidget;
@@ -231,7 +237,6 @@ QDockWidget* MainWindow::newDock(QString dockname)
         ui->shapesDock->show();
         splitDockWidget(dockWidget,ui->shapesDock,Qt::Horizontal);
     }
-
     return dockWidget;
 }
 
@@ -340,8 +345,9 @@ void MainWindow::on_actionChoose_triggered()
         emit cursorChange(VCursorType::DEFAULT);
 }
 
-void MainWindow::changeCursor(VCursorType type)
+void MainWindow::changeCursor(VCursorType type, VShape *plugin)
 {
+    this->plugin=plugin;
     if(cursorState == VCursorType::BEZIERCURVE || cursorState == VCursorType::POLYLINE)
     {
         ui->actionDelete->setEnabled(true);
@@ -461,6 +467,34 @@ void MainWindow::closeEvent(QCloseEvent *event)
     }
 }
 
+void MainWindow::dragEnterEvent(QDragEnterEvent *event)
+{
+    if(event->mimeData()->hasUrls())
+        event->acceptProposedAction(); //可以在这个窗口部件上拖放对象
+}
+
+void MainWindow::dropEvent(QDropEvent *event)
+{
+    if(event->mimeData()->hasUrls())
+    {
+        QList<QUrl> files(event->mimeData()->urls());
+        if(ui->shapeBar->rect().contains(event->pos()))
+        {
+            for(QUrl fileurl:files)
+            {
+                loadPlugin(fileurl.toLocalFile());
+            }
+        }
+        else
+        {
+            for(QUrl fileurl:files)
+            {
+                openFile(fileurl.toLocalFile());
+            }
+        }
+    }
+}
+
 bool MainWindow::eventFilter(QObject * obj, QEvent * ev)
 {
     switch(ev->type())
@@ -507,8 +541,7 @@ bool MainWindow::eventFilter(QObject * obj, QEvent * ev)
             }
             return false;
         }
-    }
-        break;
+    }break;
     case QEvent::Close:
     {
         auto it=std::find(docks.begin(),docks.end(),obj);
@@ -530,8 +563,7 @@ bool MainWindow::eventFilter(QObject * obj, QEvent * ev)
             focus = nullptr;
             return true;
         }
-    }
-        break;
+    }break;
     case QEvent::ContextMenu:
     {
         if(cursorState != VCursorType::BEZIERCURVE && cursorState != VCursorType::POLYLINE)
@@ -544,8 +576,17 @@ bool MainWindow::eventFilter(QObject * obj, QEvent * ev)
                 return true;
             }
         }
-    }
-        break;
+    }break;
+    case QEvent::Drop:
+    {
+        dropEvent(static_cast<QDropEvent*>(ev));
+        return false;
+    }break;
+    case QEvent::DragEnter:
+    {
+        dragEnterEvent(static_cast<QDragEnterEvent*>(ev));
+        return false;
+    }break;
     default:
         break;
     }
@@ -748,4 +789,11 @@ void MainWindow::on_actionForceGroup_triggered()
 {
     //Do nothing
     //Edit in PaintWidget
+}
+
+void MainWindow::on_actionTest_triggered()
+{
+    //this is used to test
+    //do whatever you want
+    ui->shapeBar->show();
 }

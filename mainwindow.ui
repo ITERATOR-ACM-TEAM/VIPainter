@@ -10,6 +10,9 @@
     <height>786</height>
    </rect>
   </property>
+  <property name="acceptDrops">
+   <bool>true</bool>
+  </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
@@ -128,6 +131,9 @@
      <height>0</height>
     </size>
    </property>
+   <property name="acceptDrops">
+    <bool>true</bool>
+   </property>
    <property name="windowTitle">
     <string>插件栏</string>
    </property>
@@ -137,12 +143,16 @@
    <property name="allowedAreas">
     <set>Qt::AllToolBarAreas</set>
    </property>
+   <property name="orientation">
+    <enum>Qt::Vertical</enum>
+   </property>
    <attribute name="toolBarArea">
     <enum>LeftToolBarArea</enum>
    </attribute>
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionTest"/>
   </widget>
   <widget class="QDockWidget" name="shapesDock">
    <property name="enabled">
@@ -560,6 +570,11 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Alt+G</string>
+   </property>
+  </action>
+  <action name="actionTest">
+   <property name="text">
+    <string>test</string>
    </property>
   </action>
  </widget>

@@ -24,6 +24,8 @@
 #include <QDir>
 #include <QMenu>
 #include <QCloseEvent>
+#include <QDropEvent>
+#include <QDragEnterEvent>
 #include <vcursortype.h>
 #include "vectorgraphwidget.h"
 #include "paintwidget.h"
@@ -49,6 +51,8 @@ signals:
 protected:
     bool eventFilter(QObject * obj, QEvent * ev)override;
     void closeEvent(QCloseEvent *event)override;
+    void dropEvent(QDropEvent *event)override;
+    void dragEnterEvent(QDragEnterEvent *event)override;
 
 private slots:
     void on_actionZoomIn_triggered();
@@ -67,7 +71,7 @@ private slots:
 
     void on_actionChoose_triggered();
 
-    void changeCursor(VCursorType type);
+    void changeCursor(VCursorType type,VShape *plugin=nullptr);
 
     void on_actionNew_triggered();
 
@@ -123,6 +127,8 @@ private slots:
 
     void on_actionForceGroup_triggered();
 
+    void on_actionTest_triggered();
+
 private:
     QVector<VShape*>plugins;
     Ui::MainWindow *ui;
@@ -133,6 +139,7 @@ private:
 
     QActionGroup  *barGroup;
     VCursorType cursorState;
+    VShape *plugin;
     VDelegate *delegate;
     VListView *listView;
 

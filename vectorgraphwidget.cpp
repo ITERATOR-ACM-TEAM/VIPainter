@@ -966,6 +966,7 @@ void VectorgraphWidget::on_actionPenStyle_triggered()
 
 bool VectorgraphWidget::fileChanged()
 {
+    if(!swapQueue.changed())return false;
     if(filename=="")
     {
         if(!groupShape.getShapes().empty())return true;
