@@ -47,9 +47,9 @@ mkdir build
 cd build
 qmake ..
 make
+sudo make install
 ```
 
 ## LICENSE
 
 VIPainter is licensed under *GPLv3*
-j
