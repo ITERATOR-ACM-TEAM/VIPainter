@@ -23,10 +23,21 @@ Then run it to install
 ```
 ### Linux
 
+#### Deb
+```
+Download VIPainter_(version)_amd64.deb
+Then run it to install
+下载安装包 VIPainter_(version)_amd64.deb 然后运行安装
+```
+
 #### Build dependencies
 
-* c++11
-* qmake >= 5.2
+* libqt5widgets5 (>= 5.6.1)
+* libqt5gui5 (>= 5.6.1)
+* libqt5core5a (>= 5.6.1)
+* qt5-qmake (>= 5.6.1)
+* qt5-default (>= 5.6.1)
+* g++
 
 #### Build
 ```
@@ -41,4 +52,4 @@ make
 ## LICENSE
 
 VIPainter is licensed under *GPLv3*
-
+j
