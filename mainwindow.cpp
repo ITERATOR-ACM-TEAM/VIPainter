@@ -73,8 +73,12 @@ MainWindow::MainWindow(QWidget *parent) :
     barGroup->addAction(ui->actionCurveLine);
     barGroup->addAction(ui->actionPolyLine);
     connect(this, SIGNAL(cursorChange(VCursorType,VShape*)), this, SLOT(changeCursor(VCursorType,VShape*)));
-    QTimer::singleShot(0,this,SLOT(initAction(QDir)));
-
+    QTimer::singleShot(0,this,[this]{
+#if defined(Q_OS_LINUX)
+        initAction(QDir("/usr/share/VIPainter/plugin"));
+#endif
+        initAction();
+    });
 
     //List View init
     listView=new VListView(this);
@@ -167,6 +171,7 @@ void MainWindow::loadPlugin(QString filename)
 
 void MainWindow::initAction(QDir dir)
 {
+    if(!dir.exists())return;
     dir.setFilter(QDir::Files|QDir::Readable);
     dir.setNameFilters(QStringList()<<"*.json"<<"*.JSON");
     QStringList files=dir.entryList();

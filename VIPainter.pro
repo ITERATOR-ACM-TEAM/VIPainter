@@ -88,3 +88,9 @@ RESOURCES += \
 TRANSLATIONS+=translate/zh_CN.ts
 
 RC_ICONS = icon/VIPainter.ico
+
+inst.files += VIPainter
+inst.path = /usr/bin
+
+INSTALLS += inst
+

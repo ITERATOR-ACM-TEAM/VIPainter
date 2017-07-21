@@ -152,7 +152,6 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actionTest"/>
   </widget>
   <widget class="QDockWidget" name="shapesDock">
    <property name="enabled">

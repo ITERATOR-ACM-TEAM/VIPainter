@@ -32,8 +32,7 @@ int main(int argc, char *argv[])
     QTranslator translate;
     if(translate.load("zh_CN.qm",":/translate/"))a.installTranslator(&translate);
 
-#if defined(Q_OS_WIN32)
-#elif defined(Q_OS_LINUX)
+#if defined(Q_OS_LINUX)
     QDir home(QDir::home());
     QString workdir=".VIPainter";
     if(!QDir(home.filePath(workdir)).exists())home.mkdir(workdir);
