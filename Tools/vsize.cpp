@@ -28,6 +28,11 @@ const VSize& VSize::operator=(const VSize &size){
     return *this;
 }
 
+QSizeF VSize::toQSizeF()const
+{
+    return QSizeF(width,height);
+}
+
 const VSize& VSize::operator=(const QJsonObject &jsonObject)
 {
     this->width=jsonObject.value("width").toDouble();

@@ -108,6 +108,7 @@ void PaintWidget::on_actionSaveAs_triggered()
                                          tr("保存文件"),
                                          filename,
                                          tr("json file (*.json);;"
+                                            "svg file (*.svg);;"
                                             "png file (*.png);;"
                                             "jpg file (*.jpg);;"
                                             "bmp file (*.bmp)"));

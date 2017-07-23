@@ -49,7 +49,9 @@
 #include <QMimeData>
 #include <QModelIndex>
 #include <QColorDialog>
-#include<QJsonDocument>
+#include <QJsonDocument>
+#include <QSvgGenerator>
+#include <QBuffer>
 
 VectorgraphWidget::VectorgraphWidget(QMainWindow *parent, bool antialiasing) :
     PaintWidget(parent,antialiasing),crPos(-1),canvasLocation(0,0)
@@ -687,6 +689,17 @@ void VectorgraphWidget::saveFile(QString filename)
         groupShape.draw(&painter,groupShape.getTransform());
         if(!image.save(filename,format.toStdString().c_str(),100))QMessageBox::warning(this,tr("错误"),tr("保存文件")+filename+tr("失败"));
     }
+    else if(format=="SVG")
+    {
+        QSvgGenerator svgGenerator;
+        svgGenerator.setSize(getCanvasSize().toQSizeF().toSize());
+        svgGenerator.setTitle(this->dock->windowTitle());
+        svgGenerator.setFileName(filename);
+        VSize size=getCanvasSize();
+        svgGenerator.setViewBox(QRectF(QPointF(-size.width/2,-size.height/2),size.toQSizeF()));
+        QPainter painter(&svgGenerator);
+        groupShape.draw(&painter,groupShape.getTransform());
+    }
     else QMessageBox::warning(this,tr("错误"),format+tr("不能识别的文件格式"));
 }
 
@@ -798,14 +811,34 @@ void VectorgraphWidget::on_actionCopy_triggered()
             }
             group.getCircumscribedRectangle(true);
             VSize size=group.getSize()*group.getTransform();
-            QImage image(size.width+4,size.height+4,QImage::Format_ARGB32);
-            image.fill(0x00ffffff);
-            QPainter painter(&image);
-            if(antialiasing)painter.setRenderHint(QPainter::Antialiasing);
-            painter.translate(size.width/2+2,size.height/2+2);
-            //qDebug()<<*(group.getShapeVector().back());
-            group.draw(&painter,group.getTransform());
-            newMimeData->setImageData(image);
+            size.width+=4;size.height+=4;
+            {
+                QImage image(size.width,size.height,QImage::Format_ARGB32);
+                image.fill(0x00ffffff);
+                QPainter painter;
+                painter.begin(&image);
+                if(antialiasing)painter.setRenderHint(QPainter::Antialiasing);
+                painter.translate(size.width/2,size.height/2);
+                //qDebug()<<*(group.getShapeVector().back());
+                group.draw(&painter,group.getTransform());
+                painter.end();
+                //newMimeData->setImageData(image);
+            }
+
+            ////////////////////////////////////SVG
+            {
+                QBuffer buffer;
+                //qDebug()<<buffer.open(QIODevice::ReadWrite);
+                QSvgGenerator svgGenerator;
+                svgGenerator.setOutputDevice(&buffer);
+                svgGenerator.setSize(size.toQSizeF().toSize());
+                svgGenerator.setViewBox(QRectF(QPointF(-size.width/2,-size.height/2),size.toQSizeF()));
+                QPainter painter;
+                painter.begin(&svgGenerator);
+                group.draw(&painter,group.getTransform());
+                painter.end();
+                newMimeData->setData("image/svg+xml", buffer.data());
+            }
         }
 
         //////////////////////////////////////////////////////////////////////////////////////////////////FI

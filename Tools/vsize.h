@@ -19,6 +19,7 @@
 
 #include <QJsonObject>
 #include <QJsonValue>
+#include <QSizeF>
 #include <vmagnification.h>
 
 class VSize
@@ -30,6 +31,7 @@ public:
     VSize(double width,double height);
     VSize(const QJsonObject &jsonObject);
 
+    QSizeF toQSizeF()const;
     const VSize& operator=(const VSize &size);
     const VSize& operator=(const QJsonObject &jsonObject);
     VSize operator +(const VSize & Right)const;
