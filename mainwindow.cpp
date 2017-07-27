@@ -46,6 +46,7 @@
 #include <QMimeData>
 #include <QUrl>
 #include <QToolButton>
+#include <QScrollArea>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -182,22 +183,44 @@ void MainWindow::initAction(QDir dir)
 
 }
 
-QDockWidget* MainWindow::newDock(QString dockname)
+ImageWidget *MainWindow::newImageWidget()
 {
-    QDockWidget *old = focus;
+    ImageWidget* widget=new ImageWidget(this,ui->actionAntialiasing->isChecked());
+    connect(ui->actionAntialiasing,SIGNAL(triggered(bool)),widget,SLOT(on_actionAntialiasing_toggled(bool)));
+    connect(this, SIGNAL(cursorChange(VCursorType,VShape*)), widget, SLOT(changeCursor(VCursorType,VShape*)));
+    widget->changeCursor(this->cursorState,this->plugin);
+    widget->installEventFilter(this);
 
-    static int id = 0;
+    return widget;
+}
 
+VectorgraphWidget* MainWindow::newVectorgraphWidget()
+{
     VectorgraphWidget* widget=new VectorgraphWidget(this,ui->actionAntialiasing->isChecked());
     connect(ui->actionAntialiasing,SIGNAL(triggered(bool)),widget,SLOT(on_actionAntialiasing_toggled(bool)));
     connect(this, SIGNAL(cursorChange(VCursorType,VShape*)), widget, SLOT(changeCursor(VCursorType,VShape*)));
     widget->changeCursor(this->cursorState,this->plugin);
     widget->installEventFilter(this);
 
+    connect(widget,&VectorgraphWidget::selected,[this,widget]{
+        if(widget==getPaintWidget())
+        {
+            changeMenuAction(widget,true);
+        }
+    });
+
+    return widget;
+}
+
+QDockWidget* MainWindow::newDock(QWidget *widget, QString dockname)
+{
+    QDockWidget *old = focus;
+
+    static int id = 0;
+
     QDockWidget *dockWidget=new QDockWidget;
     dockWidget->installEventFilter(widget);
     dockWidget->setWidget(widget);
-    widget->setDock(dockWidget);
     //dockWidget->setAttribute(Qt::WA_DeleteOnClose);
     this->addDockWidget(Qt::TopDockWidgetArea,dockWidget);
 
@@ -219,24 +242,15 @@ QDockWidget* MainWindow::newDock(QString dockname)
             }
         }
     }
-    //dockWidget->setTitleBarWidget(new VDockTitleBar());
-    dockWidget->setBaseSize(400,300);
 
     this->focusDock(dockWidget);
 
     connect(dockWidget,SIGNAL(visibilityChanged(bool)),this,SLOT(focusDock(bool)));
-    connect(widget,&VectorgraphWidget::selected,[this,widget]{
-        if(widget==getPaintWidget())
-        {
-            changeMenuAction(widget,true);
-        }
-    });
 
-    if(dockname=="")dockWidget->setWindowTitle(QString("untitled %1").arg(id++));
+    if(dockname=="")dockWidget->setWindowTitle(QString("untitled %1 - ").arg(id++) + widget->windowTitle());
     else dockWidget->setWindowTitle(dockname);
     docks.push_back(dockWidget);
 
-    //ui->shapesDock->show();
     if(!ui->shapesDock->isVisible())
     {
         ui->shapesDock->show();
@@ -305,8 +319,8 @@ bool MainWindow::openFile(QString filename)
         QMessageBox::warning(this,tr("错误"),tr("打开文件 ")+filename+tr("失败"));
         return false;
     }
-    QDockWidget * newWidget = newDock(filename.split("/").back());
-    VectorgraphWidget *widget=qobject_cast<VectorgraphWidget*>(getPaintWidget(newWidget));
+    VectorgraphWidget *widget=newVectorgraphWidget();
+    QDockWidget * newWidget = newDock(widget,filename.split("/").back() + " - " + widget->windowTitle());
     if(doc.isObject()&&doc.object().value("type")==QString("canvas"))
     {
         widget->setCanvasSize(doc.object().value("size").toObject());
@@ -353,50 +367,64 @@ void MainWindow::on_actionChoose_triggered()
 void MainWindow::changeCursor(VCursorType type, VShape *plugin)
 {
     this->plugin=plugin;
-    if(cursorState == VCursorType::BEZIERCURVE || cursorState == VCursorType::POLYLINE)
+    //if(qobject_cast<VectorgraphWidget*>(getPaintWidget())!=nullptr)
     {
-        ui->actionDelete->setEnabled(true);
-        ui->actionCopy->setEnabled(true);
-        ui->actionCut->setEnabled(true);
-        ui->actionRedo->setEnabled(true);
-        ui->actionUndo->setEnabled(true);
-        ui->actionGroup->setEnabled(true);
-        ui->actionForceGroup->setEnabled(true);
-        ui->actionBreakUp->setEnabled(true);
-        ui->actionSelectAll->setEnabled(true);
-        for(auto &i:docks)
+        if(type == VCursorType::BEZIERCURVE || type == VCursorType::POLYLINE)
         {
-            VectorgraphWidget *widget=qobject_cast<VectorgraphWidget*>(getPaintWidget(i));
-            if(widget->crPos!=-1)widget->saveSwp();
+            ui->actionDelete->setEnabled(false);
+            ui->actionPaste->setEnabled(false);
+            ui->actionCopy->setEnabled(false);
+            ui->actionCut->setEnabled(false);
+            ui->actionRedo->setEnabled(false);
+            ui->actionUndo->setEnabled(false);
+            ui->actionGroup->setEnabled(false);
+            ui->actionForceGroup->setEnabled(false);
+            ui->actionBreakUp->setEnabled(false);
+            ui->actionSelectAll->setEnabled(false);
+        }
+        else if(cursorState == VCursorType::BEZIERCURVE || cursorState == VCursorType::POLYLINE)
+        {
+            ui->actionDelete->setEnabled(true);
+            ui->actionPaste->setEnabled(true);
+            ui->actionCopy->setEnabled(true);
+            ui->actionCut->setEnabled(true);
+            ui->actionRedo->setEnabled(true);
+            ui->actionUndo->setEnabled(true);
+            ui->actionGroup->setEnabled(true);
+            ui->actionForceGroup->setEnabled(true);
+            ui->actionBreakUp->setEnabled(true);
+            ui->actionSelectAll->setEnabled(true);
+            for(auto &i:docks)
+            {
+                VectorgraphWidget *widget=qobject_cast<VectorgraphWidget*>(getPaintWidget(i));
+                if(widget==nullptr)continue;
+                if(widget->crPos!=-1)widget->saveSwp();
+            }
         }
     }
     cursorState = type;
-    if(type == VCursorType::BEZIERCURVE || type == VCursorType::POLYLINE)
-    {
-        ui->actionDelete->setEnabled(false);
-        ui->actionCopy->setEnabled(false);
-        ui->actionCut->setEnabled(false);
-        ui->actionRedo->setEnabled(false);
-        ui->actionUndo->setEnabled(false);
-        ui->actionGroup->setEnabled(false);
-        ui->actionForceGroup->setEnabled(false);
-        ui->actionBreakUp->setEnabled(false);
-        ui->actionSelectAll->setEnabled(false);
-    }
 
 }
 
 void MainWindow::on_actionNew_triggered()
 {
-    QDockWidget * dock = newDock();
-    VectorgraphWidget *widget=qobject_cast<VectorgraphWidget*>(getPaintWidget(dock));
+    VectorgraphWidget *widget=newVectorgraphWidget();
+    widget->setDock(newDock(widget));
     if(widget)widget->saveSwp();
+    widget->update();
 }
 
 //判断Action的显示状态
 void MainWindow::changeMenuAction(VectorgraphWidget *widget,bool flag)
 {
     if(cursorState == VCursorType::BEZIERCURVE || cursorState == VCursorType::POLYLINE)return;
+    ui->actionResume->setVisible(true);
+    ui->actionSave->setVisible(true);
+    ui->actionSaveAs->setVisible(true);
+    ui->actionCanvasSize->setVisible(true);
+    ui->actionShapeSize->setVisible(true);
+    ui->actionBreakUp->setVisible(true);
+    ui->actionSelectAll->setVisible(true);
     if(widget==nullptr||widget->focusShapes.empty())
     {
         ui->actionCopy->setEnabled(false);
@@ -543,6 +571,7 @@ bool MainWindow::eventFilter(QObject * obj, QEvent * ev)
                 listView->setModel(vectorgraphWidget->listModel);
                 listView->setSelectionModel(vectorgraphWidget->selectionModel);
                 vectorgraphWidget->updateList();
+                changeMenuAction(vectorgraphWidget,true);
             }
             return false;
         }
@@ -632,12 +661,13 @@ void MainWindow::on_actionShapeSize_triggered()
 
 PaintWidget * MainWindow::getPaintWidget()
 {
-    if(focus==nullptr)return nullptr;
-    return qobject_cast<PaintWidget *>(focus->widget());
+    return getPaintWidget(focus);
 }
 
 PaintWidget * MainWindow::getPaintWidget(QDockWidget *target)
 {
+    QScrollArea *scrollArea=qobject_cast<QScrollArea *>(target->widget());
+    if(scrollArea!=nullptr)return qobject_cast<PaintWidget *>(scrollArea->widget());
     return qobject_cast<PaintWidget *>(target->widget());
 }
 
@@ -801,4 +831,15 @@ void MainWindow::on_actionTest_triggered()
     //this is used to test
     //do whatever you want
     ui->shapeBar->show();
+}
+
+void MainWindow::on_actionNewImage_triggered()
+{
+    ImageWidget *widget=newImageWidget();
+    QImage image(800,600,QImage::Format_ARGB32_Premultiplied);
+    image.fill(Qt::white);
+    widget->setCanvas(std::move(image));
+    widget->setDock(newDock(widget->getScrollArea()));
+    //widget->getScrollArea()->update();
+    widget->update();
 }

@@ -52,11 +52,12 @@
 #include <QJsonDocument>
 #include <QSvgGenerator>
 #include <QBuffer>
+#include <QFileDialog>
 
 VectorgraphWidget::VectorgraphWidget(QMainWindow *parent, bool antialiasing) :
-    PaintWidget(parent,antialiasing),crPos(-1),canvasLocation(0,0)
+    PaintWidget(parent,antialiasing),crPos(-1),canvasSize(800,600),canvasLocation(0,0)
 {
-    mainwindow=parent;
+    setWindowTitle(tr("矢量图"));
     setMouseTracking(true);
 //    groupShape.setName("main shape");
 //    groupShape.setLocation(VPoint(0,0));
@@ -67,7 +68,6 @@ VectorgraphWidget::VectorgraphWidget(QMainWindow *parent, bool antialiasing) :
             ,this,SLOT(changeFocus()));
     connect(this,SIGNAL(selected(const QItemSelection&,QItemSelectionModel::SelectionFlags)),
             selectionModel,SLOT(select(const QItemSelection&,QItemSelectionModel::SelectionFlags)));
-    update();
 }
 
 VectorgraphWidget::~VectorgraphWidget()
@@ -77,9 +77,8 @@ VectorgraphWidget::~VectorgraphWidget()
 void VectorgraphWidget::wheelEvent(QWheelEvent * event)
 {
     QPoint qpoint=event->pos();
-    VPoint point(qpoint.x()-(this->width()/2+canvasLocation.x),qpoint.y()-(this->height()/2+canvasLocation.y));
-    VPoint oldp(point.x/scale,point.y/scale);
-    update();
+    VPoint vpoint(qpoint);
+    VPoint oldp(getLoc(vpoint));
     if(event->delta() > 0){
         scale*=1.1;
         if(scale>10)scale=10;
@@ -87,7 +86,7 @@ void VectorgraphWidget::wheelEvent(QWheelEvent * event)
         scale/=1.1;
         if(scale<0.05)scale=0.05;
     }
-    VPoint newp(point.x/scale,point.y/scale);
+    VPoint newp(getLoc(vpoint));
     canvasLocation.x+=(newp.x-oldp.x)*scale;
     canvasLocation.y+=(newp.y-oldp.y)*scale;
     update();
@@ -318,13 +317,13 @@ void VectorgraphWidget::mouseMoveEvent(QMouseEvent *event)
 {
     QPoint qpoint=event->pos();
     VPoint vpoint(qpoint.x(), qpoint.y());
-    VPoint pos = getLoc(vpoint);
+    VPoint loc = getLoc(vpoint);
     if(cursorType == VCursorType::CHOOSE)
     {
         bool flag=true;
         for(int i=focusShapes.size()-1;i>=0;i--)
         {
-            if(crPos < 8 && (crPos >= 0 || (focusShapes[i]->atCrPoints(focusShapes[i]->transformPoint(pos),scale) != -1)))
+            if(crPos < 8 && (crPos >= 0 || (focusShapes[i]->atCrPoints(focusShapes[i]->transformPoint(loc),scale) != -1)))
             {
                 this->setCursor(QCursor(VSizeAll, 15, 15));
                 flag=false;
@@ -337,7 +336,7 @@ void VectorgraphWidget::mouseMoveEvent(QMouseEvent *event)
             {
                 VPointGroupShape * pgs = dynamic_cast<VPointGroupShape *>(groupShape.getShapes().at(i));
 
-                if((crPos == -1 && groupShape.contains(pos)) && (pgs == nullptr || pgs->atPoints(pgs->transformPoint(pos),scale) == -1))
+                if((crPos == -1 && groupShape.contains(loc)) && (pgs == nullptr || pgs->atPoints(pgs->transformPoint(loc),scale) == -1))
                 {
                     this->setCursor(Qt::SizeAllCursor);
                     flag=false;
@@ -367,7 +366,7 @@ void VectorgraphWidget::mouseMoveEvent(QMouseEvent *event)
             if(!focusShapes.empty())
             {
                 VPoint lp = groupShape.transformPoint(locMove);
-                VPoint v(pos.x-lp.x, pos.y-lp.y);
+                VPoint v(loc.x-lp.x, loc.y-lp.y);
                 if(crPos == -2)
                 {
                     //do nothing
@@ -385,7 +384,7 @@ void VectorgraphWidget::mouseMoveEvent(QMouseEvent *event)
                     if(focusShapes.size()==1)
                     {
                         VShape *shape=focusShapes.first();
-                        shape->changeMag(crPos, shape->transformPoint(pos), QApplication::keyboardModifiers() == Qt::ControlModifier);
+                        shape->changeMag(crPos, shape->transformPoint(loc), QApplication::keyboardModifiers() == Qt::ControlModifier);
                     }
                 }
                 else if(crPos >= 8)
@@ -395,7 +394,7 @@ void VectorgraphWidget::mouseMoveEvent(QMouseEvent *event)
                         VPointGroupShape * shape=dynamic_cast<VPointGroupShape *>(focusShapes.first());
                         if(shape!=nullptr)
                         {
-                            shape->changePoint(crPos - 8, shape->transformPoint(pos));
+                            shape->changePoint(crPos - 8, shape->transformPoint(loc));
                         }
                     }
                 }
@@ -408,7 +407,7 @@ void VectorgraphWidget::mouseMoveEvent(QMouseEvent *event)
             {
                 VShape *shape=focusShapes.first();
                 VVector vlp(shape->getLocation(), locMove),
-                        vnow(shape->getLocation(), pos);
+                        vnow(shape->getLocation(), loc);
                 VPoint loc=shape->getLocation();
                 shape->getTransform().translate(
                             shape->getTransform().inverted().map(VPoint(0,0))
@@ -432,7 +431,7 @@ void VectorgraphWidget::mouseMoveEvent(QMouseEvent *event)
                 {
                     int index = shape->getPointList().size() - 1;
                     if(index >= 0)
-                        shape->changePoint(index, shape->transformPoint(pos));
+                        shape->changePoint(index, shape->transformPoint(loc));
                     update();
                 }
             }
@@ -442,9 +441,8 @@ void VectorgraphWidget::mouseMoveEvent(QMouseEvent *event)
             break;
         }
     }
-    VPoint point(qpoint.x()-(this->width()/2+canvasLocation.x),qpoint.y()-(this->height()/2+canvasLocation.y));
-    mainwindow->statusBar()->showMessage(QString("%1,%2").arg(floor(point.x/scale+0.5)).arg(floor(point.y/scale+0.5)));
-    locMove = pos;
+    mainwindow->statusBar()->showMessage(QString("%1,%2").arg(floor(loc.x+0.5)).arg(floor(loc.y+0.5)));
+    locMove = loc;
     lastMove=vpoint;
 }
 
@@ -644,6 +642,22 @@ void VectorgraphWidget::saveSwp()
     swapQueue.push(groupShape.toJsonArray());
 }
 
+void VectorgraphWidget::on_actionSaveAs_triggered()
+{
+    QString filename=getFileName();
+    if(filename=="")filename="image.json";
+    filename=
+            QFileDialog::getSaveFileName(this,
+                                         tr("保存文件"),
+                                         filename,
+                                         tr("json file (*.json);;"
+                                            "svg file (*.svg);;"
+                                            "png file (*.png);;"
+                                            "jpg file (*.jpg);;"
+                                            "bmp file (*.bmp)"));
+    saveFile(filename);
+}
+
 void VectorgraphWidget::on_actionUndo_triggered()
 {
     if(swapQueue.atFirst())return;
@@ -674,7 +688,7 @@ void VectorgraphWidget::saveFile(QString filename)
         {
             file.write(jsonDocument.toJson());
             file.close();
-            dock->setWindowTitle(filename.split("/").back());
+            dock->setWindowTitle(filename.split("/").back()+" - "+this->windowTitle());
             setFileName(filename);
         }
         else QMessageBox::warning(this,tr("错误"),tr("保存文件")+filename+tr("失败"));
@@ -712,6 +726,17 @@ void VectorgraphWidget::on_actionResume_triggered()
 void VectorgraphWidget::on_actionCanvasSize_triggered()
 {
     setCanvasSize(CanvasSizeDialog::showDialog(tr("画布大小"),getCanvasSize()));
+}
+
+
+void VectorgraphWidget::setCanvasSize(VSize canvasSize)
+{
+    this->canvasSize=canvasSize;
+}
+
+VSize VectorgraphWidget::getCanvasSize()
+{
+    return canvasSize;
 }
 
 void VectorgraphWidget::on_actionShapeSize_triggered()

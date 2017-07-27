@@ -33,6 +33,7 @@
     <property name="title">
      <string>文件</string>
     </property>
+    <addaction name="actionNewImage"/>
     <addaction name="actionNew"/>
     <addaction name="actionOpen"/>
     <addaction name="actionSave"/>
@@ -238,10 +239,10 @@
   </action>
   <action name="actionNew">
    <property name="text">
-    <string>新建</string>
+    <string>新建矢量图</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+N</string>
+    <string>Ctrl+Shift+N</string>
    </property>
   </action>
   <action name="actionClose">
@@ -574,6 +575,17 @@
   <action name="actionTest">
    <property name="text">
     <string>test</string>
+   </property>
+  </action>
+  <action name="actionNewImage">
+   <property name="text">
+    <string>新建画图</string>
+   </property>
+   <property name="toolTip">
+    <string>新建画图</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
    </property>
   </action>
  </widget>

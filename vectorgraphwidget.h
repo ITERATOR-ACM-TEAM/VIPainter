@@ -50,9 +50,9 @@ class VectorgraphWidget : public PaintWidget
 public:
     explicit VectorgraphWidget(QMainWindow *mainwindow, bool antialiasing);
     int crPos;
-    QMainWindow *mainwindow;
     VGroupShape groupShape;
     QVector<VShape*> focusShapes;
+    VSize canvasSize;
     VPoint canvasLocation;
     QStringListModel *listModel;
     QItemSelectionModel *selectionModel;
@@ -62,6 +62,8 @@ public:
     void saveFile(QString filename)override;
     bool fileChanged()override;
     QJsonObject toJsonObject();
+    void setCanvasSize(VSize canvasSize);
+    VSize getCanvasSize();
 
 protected:
     void paintEvent(QPaintEvent *event)override;
@@ -86,6 +88,7 @@ public slots:
     void changeFocus();
     void saveSwp();
     void changeCursor(VCursorType type, VShape *plugin)override;
+    void on_actionSaveAs_triggered()override;
     void on_actionResume_triggered()override;
     void on_actionCanvasSize_triggered()override;
     void on_actionShapeSize_triggered()override;

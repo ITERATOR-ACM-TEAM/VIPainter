@@ -29,6 +29,8 @@ public:
     double width;
     double height;
     VSize(double width,double height);
+    VSize(QSizeF size);
+    VSize(QSize size);
     VSize(const QJsonObject &jsonObject);
 
     QSizeF toQSizeF()const;

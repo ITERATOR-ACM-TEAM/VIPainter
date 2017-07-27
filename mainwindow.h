@@ -26,8 +26,10 @@
 #include <QCloseEvent>
 #include <QDropEvent>
 #include <QDragEnterEvent>
+#include <QScrollArea>
 #include <vcursortype.h>
 #include "vectorgraphwidget.h"
+#include "imagewidget.h"
 #include "paintwidget.h"
 #include "vshape.h"
 #include "vdelegate.h"
@@ -129,6 +131,8 @@ private slots:
 
     void on_actionTest_triggered();
 
+    void on_actionNewImage_triggered();
+
 private:
     QVector<VShape*>plugins;
     Ui::MainWindow *ui;
@@ -149,7 +153,9 @@ private:
 
     void loadPlugin(QString filename);
 
-    QDockWidget * newDock(QString dockname="");
+    QDockWidget * newDock(QWidget *widget, QString dockname="" );
+    VectorgraphWidget* newVectorgraphWidget();
+    ImageWidget *newImageWidget();
 
     void focusDock(QDockWidget * target);
     PaintWidget * getPaintWidget();

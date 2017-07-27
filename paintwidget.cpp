@@ -22,9 +22,91 @@
 #include <QJsonDocument>
 #include <QFileDialog>
 
-PaintWidget::PaintWidget(QWidget *parent,bool antialiasing) : QWidget(parent),canvasSize(800,600),antialiasing(antialiasing),cursorType(VCursorType::CHOOSE)
+PaintWidget::PaintWidget(QMainWindow *mainwindow, bool antialiasing) : QWidget(mainwindow),antialiasing(antialiasing),cursorType(VCursorType::CHOOSE),mainwindow(mainwindow)
 {
 
+}
+
+
+void PaintWidget::changeModelData(const QModelIndex &index)
+{
+    Q_UNUSED(index);
+    //do nothing
+}
+
+void PaintWidget::on_actionCanvasSize_triggered()
+{
+//do nothing
+}
+
+void PaintWidget::on_actionShapeSize_triggered()
+{
+//do nothing
+}
+
+void PaintWidget::on_actionBreakUp_triggered()
+{
+//do nothing
+}
+
+void PaintWidget::on_actionRedo_triggered()
+{
+//do nothing
+}
+
+void PaintWidget::on_actionUndo_triggered()
+{
+//do nothing
+}
+
+void PaintWidget::on_actionDelete_triggered()
+{
+//do nothing
+}
+
+void PaintWidget::on_actionCopy_triggered()
+{
+//do nothing
+}
+
+void PaintWidget::on_actionCut_triggered()
+{
+//do nothing
+}
+
+void PaintWidget::on_actionPaste_triggered()
+{
+//do nothing
+}
+
+void PaintWidget::on_actionGroup_triggered()
+{
+//do nothing
+}
+
+void PaintWidget::on_actionSelectAll_triggered()
+{
+//do nothing
+}
+
+void PaintWidget::on_actionBrushColor_triggered()
+{
+//do nothing
+}
+
+void PaintWidget::on_actionPenColor_triggered()
+{
+//do nothing
+}
+
+void PaintWidget::on_actionPenStyle_triggered()
+{
+//do nothing
+}
+
+void PaintWidget::on_actionForceGroup_triggered()
+{
+//do nothing
 }
 
 void PaintWidget::setScale(double scale)
@@ -45,16 +127,6 @@ void PaintWidget::setDock(QDockWidget * dock)
 QDockWidget* PaintWidget::getDock()
 {
     return dock;
-}
-
-void PaintWidget::setCanvasSize(VSize canvasSize)
-{
-    this->canvasSize=canvasSize;
-}
-
-VSize PaintWidget::getCanvasSize()
-{
-    return canvasSize;
 }
 
 void PaintWidget::setFileName(QString filename)
@@ -97,22 +169,6 @@ void PaintWidget::on_actionSave_triggered()
     QString filename = getFileName();
     if(filename=="")on_actionSaveAs_triggered();
     else saveFile(filename);
-}
-
-void PaintWidget::on_actionSaveAs_triggered()
-{
-    QString filename=getFileName();
-    if(filename=="")filename="image.json";
-    filename=
-            QFileDialog::getSaveFileName(this,
-                                         tr("保存文件"),
-                                         filename,
-                                         tr("json file (*.json);;"
-                                            "svg file (*.svg);;"
-                                            "png file (*.png);;"
-                                            "jpg file (*.jpg);;"
-                                            "bmp file (*.bmp)"));
-    saveFile(filename);
 }
 
 void PaintWidget::changeCursor(VCursorType type,VShape *plugin)

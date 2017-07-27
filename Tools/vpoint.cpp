@@ -45,6 +45,10 @@ VPoint::VPoint(const QPointF &pointf):x(pointf.x()),y(pointf.y())
 {
 }
 
+VPoint::VPoint(const QPoint &point):x(point.x()),y(point.y())
+{
+}
+
 QPointF VPoint::toQPointF()const
 {
     return QPointF(x,y);

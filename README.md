@@ -32,6 +32,7 @@ Then run it to install
 
 #### Build dependencies
 
+* libqt5svg5-dev (>= 5.6.1)
 * libqt5widgets5 (>= 5.6.1)
 * libqt5gui5 (>= 5.6.1)
 * libqt5core5a (>= 5.6.1)

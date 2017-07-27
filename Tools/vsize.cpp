@@ -28,6 +28,18 @@ const VSize& VSize::operator=(const VSize &size){
     return *this;
 }
 
+VSize::VSize(QSizeF size)
+{
+    this->width = size.width();
+    this->height = size.height();
+}
+
+VSize::VSize(QSize size)
+{
+    this->width = size.width();
+    this->height = size.height();
+}
+
 QSizeF VSize::toQSizeF()const
 {
     return QSizeF(width,height);
