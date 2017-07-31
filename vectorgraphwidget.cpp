@@ -184,13 +184,14 @@ void VectorgraphWidget::mousePressEvent(QMouseEvent *event)
             }
         }break;
         case VCursorType::POLYLINE:
+        case VCursorType::PEN:
         case VCursorType::BEZIERCURVE:
         {
             VPointGroupShape * pl;
             if(crPos == -1)
             {
 //                qDebug() << "!!!!!!";
-                if(cursorType == VCursorType::POLYLINE)
+                if(cursorType == VCursorType::POLYLINE || cursorType == VCursorType::PEN || cursorType == VCursorType::PEN)
                     pl = new VPolyline();
                 else if (cursorType == VCursorType::BEZIERCURVE)
                     pl = new VBezierCurve();
@@ -308,7 +309,7 @@ void VectorgraphWidget::mouseReleaseEvent(QMouseEvent *event)
         default:
             break;
         }
-        if(cursorType != VCursorType::BEZIERCURVE && cursorType != VCursorType::POLYLINE)
+        if(cursorType != VCursorType::BEZIERCURVE && cursorType != VCursorType::POLYLINE && cursorType != VCursorType::PEN)
             crPos = -1;
     }
 }
@@ -423,6 +424,7 @@ void VectorgraphWidget::mouseMoveEvent(QMouseEvent *event)
         }break;
         case VCursorType::BEZIERCURVE:
         case VCursorType::POLYLINE:
+        case VCursorType::PEN:
         {
             if(crPos > -1)
             {
@@ -538,7 +540,7 @@ bool VectorgraphWidget::eventFilter(QObject * obj, QEvent * ev)
         case Qt::Key_Return:
         case Qt::Key_Escape:
             {
-                if(cursorType == VCursorType::BEZIERCURVE || cursorType == VCursorType::POLYLINE)
+                if(cursorType == VCursorType::BEZIERCURVE || cursorType == VCursorType::POLYLINE || cursorType == VCursorType::PEN)
                 {
                     focusShapes.clear();
                     crPos = -1;
@@ -560,6 +562,7 @@ void VectorgraphWidget::changeCursor(VCursorType type,VShape *plugin)
     switch(type)
     {
     case VCursorType::POLYLINE:
+    case VCursorType::PEN:
     case VCursorType::BEZIERCURVE:
     {
         focusShapes.clear();
@@ -612,7 +615,7 @@ void VectorgraphWidget::updateList()
 
 void VectorgraphWidget::changeFocus()
 {
-    if(cursorType == VCursorType::BEZIERCURVE || cursorType == VCursorType::POLYLINE) return;
+    if(cursorType == VCursorType::BEZIERCURVE || cursorType == VCursorType::POLYLINE || cursorType == VCursorType::PEN) return;
     decltype(focusShapes) newFocus;
     for(auto &index:selectionModel->selectedRows())
         newFocus.append(groupShape.getShapes().at(groupShape.getVectorSize()-index.row()-1));

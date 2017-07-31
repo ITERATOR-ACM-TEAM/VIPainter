@@ -4,6 +4,7 @@
 #include <QDebug>
 #include <QRect>
 #include <QStatusBar>
+#include <QScrollBar>
 #include <QBrush>
 #include <QPen>
 #include <cmath>
@@ -21,6 +22,8 @@ ImageWidget::ImageWidget(QMainWindow *mainwindow, bool antialiasing):PaintWidget
     scrollArea->setWindowTitle(this->windowTitle());
     scrollArea->installEventFilter(this);
     scrollArea->setMouseTracking(true);
+    scrollArea->verticalScrollBar()->installEventFilter(this);
+    scrollArea->horizontalScrollBar()->installEventFilter(this);
     this->move(1,1);
 }
 
@@ -49,17 +52,19 @@ void ImageWidget::setCanvasSize(VSize canvasSize)
     painter.drawImage(0,0,canvas);
     painter.end();
     canvas=std::move(tmp);
+    this->resize(canvas.width()*scale,canvas.height()*scale);
 }
 
 void ImageWidget::setImageSize(VSize size)
 {
-    canvas=canvas.scaled(size.toQSizeF().toSize(),Qt::IgnoreAspectRatio,Qt::SmoothTransformation);
+    canvas=canvas.scaled(size.toQSizeF().toSize());
+    this->resize(canvas.width()*scale,canvas.height()*scale);
 }
 
 void ImageWidget::setScale(double scale)
 {
     PaintWidget::setScale(scale);
-    this->resize(canvas.size().width()*scale,canvas.size().height()*scale);
+    this->resize(canvas.width()*scale,canvas.height()*scale);
 }
 
 VSize ImageWidget::getCanvasSize()
@@ -70,16 +75,18 @@ VSize ImageWidget::getCanvasSize()
 void ImageWidget::on_actionCanvasSize_triggered()
 {
     setCanvasSize(CanvasSizeDialog::showDialog(tr("画布大小"),getCanvasSize()));
+    update();
 }
 
 void ImageWidget::on_actionShapeSize_triggered()
 {
     setImageSize(CanvasSizeDialog::showDialog(tr("图像大小"),getCanvasSize()));
+    update();
 }
 
 VPoint ImageWidget::getLoc(const VPoint & point)
 {
-    return VPoint((point.x)/scale,(point.y)/scale);
+    return VPoint(floor(point.x*canvas.width()/this->width()),floor(point.y*canvas.height()/this->height()));
 }
 
 QScrollArea* ImageWidget::getScrollArea()
@@ -92,28 +99,70 @@ void ImageWidget::paintEvent(QPaintEvent *event)
     Q_UNUSED(event);
     QPainter painter(this);
     if(antialiasing)painter.setRenderHint(QPainter::Antialiasing);
-    painter.drawRect(10,10,10,10);
 
     painter.save();
-    painter.scale(scale,scale);
+    painter.scale((qreal)this->width()/canvas.width(),(qreal)this->height()/canvas.height());
     painter.drawImage(0,0,canvas);
     painter.restore();
 
-    painter.setPen(QPen(QBrush(Qt::lightGray),1,Qt::SolidLine,Qt::RoundCap,Qt::RoundJoin));
-    painter.drawRect(0,0,width()-1,height()-1);
+    painter.setPen(QPen(QBrush(Qt::lightGray),0,Qt::SolidLine,Qt::RoundCap,Qt::RoundJoin));
+    painter.drawRect(0,0,width(),height());
 }
 
 void ImageWidget::wheelEvent(QWheelEvent * event)
 {
+    QPoint point=event->pos();
+    double oldScale=scale;
     if(event->delta() > 0){
         scale*=1.1;
-        if(scale>10)scale=10;
+        if(scale>20)scale=20;
     }else{
         scale/=1.1;
         if(scale<0.05)scale=0.05;
     }
-    this->resize(canvas.size().width()*scale,canvas.size().height()*scale);
+    this->resize(canvas.width()*scale,canvas.height()*scale);
+    scrollArea->horizontalScrollBar()->setValue(point.x()*scale/oldScale-(point.x()-scrollArea->horizontalScrollBar()->value()));
+    scrollArea->verticalScrollBar()->setValue(point.y()*scale/oldScale-(point.y()-scrollArea->verticalScrollBar()->value()));
     update();
+}
+
+void ImageWidget::on_actionZoomIn_triggered()
+{
+    scale*=1.1;
+    if(scale>20)scale=20;
+    this->resize(canvas.width()*scale,canvas.height()*scale);
+    update();
+}
+
+void ImageWidget::on_actionZoomOut_triggered()
+{
+    scale/=1.1;
+    if(scale<0.05)scale=0.05;
+    this->resize(canvas.width()*scale,canvas.height()*scale);
+    update();
+}
+
+void ImageWidget::on_actionResume_triggered()
+{
+    scale=1.0;
+    this->resize(canvas.size());
+    update();
+}
+
+void ImageWidget::mousePressEvent(QMouseEvent *event)
+{
+    QPoint qpoint=event->pos();
+    VPoint vpoint(qpoint.x(), qpoint.y());
+    VPoint loc = getLoc(vpoint);
+    if(cursorType == VCursorType::PEN)
+    {
+        if(event->button()==Qt::LeftButton)
+        {
+            QPainter painter(&canvas);
+            painter.drawPoint(loc.toQPointF());
+            update();
+        }
+    }
 }
 
 void ImageWidget::mouseMoveEvent(QMouseEvent *event)
@@ -121,7 +170,7 @@ void ImageWidget::mouseMoveEvent(QMouseEvent *event)
     QPoint qpoint=event->pos();
     VPoint vpoint(qpoint.x(), qpoint.y());
     VPoint loc = getLoc(vpoint);
-    mainwindow->statusBar()->showMessage(QString("%1,%2").arg(floor(loc.x+0.5)).arg(floor(loc.y+0.5)));
+    mainwindow->statusBar()->showMessage(QString("%1,%2").arg(loc.x).arg(loc.y));
     if(cursorType == VCursorType::CHOOSE)
     {
     }
@@ -142,6 +191,15 @@ void ImageWidget::mouseMoveEvent(QMouseEvent *event)
         case VCursorType::ROTATE:
         {
 
+        }break;
+        case VCursorType::PEN:
+        {
+            if(loc!=locMove)
+            {
+                QPainter painter(&canvas);
+                painter.drawLine(locMove.toQPointF(),loc.toQPointF());
+                update();
+            }
         }break;
         case VCursorType::BEZIERCURVE:
         case VCursorType::POLYLINE:
@@ -177,7 +235,7 @@ bool ImageWidget::eventFilter(QObject * obj, QEvent * ev)
             delete newEvent;
         }break;
         case QEvent::Wheel:
-        {return true;
+        {
             QWheelEvent *event=static_cast<QWheelEvent*>(ev);
             QWheelEvent *newEvent=new QWheelEvent(QPointF(this->mapFrom(scrollArea,event->pos())),
                                            event->globalPosF(),
@@ -190,15 +248,15 @@ bool ImageWidget::eventFilter(QObject * obj, QEvent * ev)
                                            event->phase(),
                                            event->source()
                                );
-            wheelEvent(newEvent);
+            if(!this->rect().contains(newEvent->pos())&&this->mapToGlobal(newEvent->pos())==newEvent->globalPos())wheelEvent(newEvent);
             delete newEvent;
-            if(this->rect().contains(this->mapFrom(scrollArea,event->pos())))return true;
         }break;
         default:
             break;
         }
         return false;
     }
+    if(qobject_cast<QScrollBar*>(obj)!=nullptr&&ev->type()==QEvent::Wheel)return true;
     return false;
 }
 

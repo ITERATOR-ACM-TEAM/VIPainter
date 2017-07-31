@@ -369,7 +369,7 @@ void MainWindow::changeCursor(VCursorType type, VShape *plugin)
     this->plugin=plugin;
     //if(qobject_cast<VectorgraphWidget*>(getPaintWidget())!=nullptr)
     {
-        if(type == VCursorType::BEZIERCURVE || type == VCursorType::POLYLINE)
+        if(type == VCursorType::BEZIERCURVE || type == VCursorType::POLYLINE || type == VCursorType::PEN)
         {
             ui->actionDelete->setEnabled(false);
             ui->actionPaste->setEnabled(false);
@@ -382,7 +382,7 @@ void MainWindow::changeCursor(VCursorType type, VShape *plugin)
             ui->actionBreakUp->setEnabled(false);
             ui->actionSelectAll->setEnabled(false);
         }
-        else if(cursorState == VCursorType::BEZIERCURVE || cursorState == VCursorType::POLYLINE)
+        else if(cursorState == VCursorType::BEZIERCURVE || cursorState == VCursorType::POLYLINE || type == VCursorType::PEN)
         {
             ui->actionDelete->setEnabled(true);
             ui->actionPaste->setEnabled(true);
@@ -600,7 +600,7 @@ bool MainWindow::eventFilter(QObject * obj, QEvent * ev)
     }break;
     case QEvent::ContextMenu:
     {
-        if(cursorState != VCursorType::BEZIERCURVE && cursorState != VCursorType::POLYLINE)
+        if(cursorState != VCursorType::BEZIERCURVE && cursorState != VCursorType::POLYLINE && cursorState != VCursorType::PEN)
         {
             QContextMenuEvent *event=static_cast<QContextMenuEvent*>(ev);
             VectorgraphWidget *widget=qobject_cast<VectorgraphWidget*>(obj);
@@ -795,7 +795,10 @@ void MainWindow::on_actionAbout_triggered()
 
 void MainWindow::on_actionPen_triggered()
 {
-    ui->actionPolyLine->trigger();
+    if(ui->actionPen->isChecked())
+        emit cursorChange(VCursorType::PEN);
+    else
+        emit cursorChange(VCursorType::DEFAULT);
 }
 
 void MainWindow::on_actionUndo_triggered()

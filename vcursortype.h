@@ -23,6 +23,7 @@ enum class VCursorType
     CHOOSE,
     DEFAULT,
     SHAPE,
+    PEN,
     POLYLINE,
     BEZIERCURVE,
     ROTATE,

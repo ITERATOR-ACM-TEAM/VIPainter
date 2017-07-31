@@ -7,6 +7,7 @@
 #include <QPaintEvent>
 #include <QDebug>
 #include <QScrollArea>
+#include <QResizeEvent>
 
 class ImageWidget : public PaintWidget
 {
@@ -36,10 +37,14 @@ public:
 private:
     void paintEvent(QPaintEvent *event)override;
     void mouseMoveEvent(QMouseEvent *event)override;
+    void mousePressEvent(QMouseEvent *event)override;
     void wheelEvent(QWheelEvent * event)override;
     bool eventFilter(QObject * obj, QEvent * ev)override;
 
 public slots:
+    void on_actionZoomIn_triggered()override;
+    void on_actionZoomOut_triggered()override;
+    void on_actionResume_triggered()override;
     void on_actionSaveAs_triggered()override;
     void on_actionCanvasSize_triggered()override;
     void on_actionShapeSize_triggered()override;
@@ -61,7 +66,7 @@ public slots:
 template<class IMAGE>void ImageWidget::setCanvas(IMAGE &&canvas)
 {
     this->canvas=std::forward<IMAGE>(canvas);
-    this->resize(this->canvas.size().width()*scale,this->canvas.size().height()*scale);
+    this->resize(this->canvas.width()*scale,this->canvas.height()*scale);
 }
 
 #endif // IMAGEWIDGET_H
