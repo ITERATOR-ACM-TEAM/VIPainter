@@ -7,6 +7,7 @@
 #include <QScrollBar>
 #include <QBrush>
 #include <QPen>
+#include <QMessageBox>
 #include <cmath>
 #include "canvassizedialog.h"
 
@@ -29,7 +30,13 @@ ImageWidget::ImageWidget(QMainWindow *mainwindow, bool antialiasing):PaintWidget
 
 void ImageWidget::saveFile(QString filename)
 {
-    //TODO:
+    if(filename=="")return;
+    QString format=filename.split('.').back().toUpper();
+    if(format=="JPG"||format=="PNG"||format=="BMP")
+    {
+        if(!canvas.save(filename,format.toStdString().c_str(),100))QMessageBox::warning(this,tr("错误"),tr("保存文件")+filename+tr("失败"));
+    }
+    else QMessageBox::warning(this,tr("错误"),format+tr("不能识别的文件格式"));
 }
 
 bool ImageWidget::fileChanged()
@@ -46,7 +53,7 @@ QImage& ImageWidget::getCanvas()
 void ImageWidget::setCanvasSize(VSize canvasSize)
 {
     QImage tmp(canvasSize.toQSizeF().toSize(),QImage::Format_ARGB32_Premultiplied);
-    tmp.fill(Qt::white);
+    tmp.fill(Qt::transparent);
     QPainter painter;
     painter.begin(&tmp);
     painter.drawImage(0,0,canvas);

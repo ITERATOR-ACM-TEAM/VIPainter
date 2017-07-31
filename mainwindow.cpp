@@ -301,7 +301,7 @@ bool MainWindow::openFile(QString filename)
     bool flag=false;
     for(auto &dock:docks)
     {
-        VectorgraphWidget *widget=qobject_cast<VectorgraphWidget*>(getPaintWidget(dock));
+        PaintWidget *widget=getPaintWidget(dock);
         if(widget->getFileName()==filename)
         {
             focusDock(dock);
@@ -310,31 +310,45 @@ bool MainWindow::openFile(QString filename)
     }
     if(flag)return false;
     ui->statusBar->showMessage(tr("打开文件 ")+filename);
-    QFile file(filename);
-    if(!file.open(QFile::ReadOnly|QFile::Text))return false;
-    QJsonDocument doc=QJsonDocument::fromJson(file.readAll());
-    file.close();
-    if(!doc.isArray()&&!doc.isObject())
+    QString format=filename.split('.').back().toUpper();
+    if(format=="JPG"||format=="PNG"||format=="BMP")
     {
-        QMessageBox::warning(this,tr("错误"),tr("打开文件 ")+filename+tr("失败"));
-        return false;
+        ImageWidget *widget=newImageWidget();
+        widget->setFileName(filename);
+        widget->setCanvas(QImage(filename));
+        widget->setDock(newDock(widget->getScrollArea(),filename.split("/").back() + " - " + widget->windowTitle()));
+        //widget->getScrollArea()->update();
+        widget->update();
     }
-    VectorgraphWidget *widget=newVectorgraphWidget();
-    QDockWidget * newWidget = newDock(widget,filename.split("/").back() + " - " + widget->windowTitle());
-    if(doc.isObject()&&doc.object().value("type")==QString("canvas"))
+    else
     {
-        widget->setCanvasSize(doc.object().value("size").toObject());
-        doc.setArray(doc.object().value("shapes").toArray());
+        QFile file(filename);
+        if(!file.open(QFile::ReadOnly|QFile::Text))return false;
+        QJsonDocument doc=QJsonDocument::fromJson(file.readAll());
+        file.close();
+        if(!doc.isArray()&&!doc.isObject())
+        {
+            QMessageBox::warning(this,tr("错误"),tr("打开文件 ")+filename+tr("失败"));
+            return false;
+        }
+        VectorgraphWidget *widget=newVectorgraphWidget();
+        widget->setDock(newDock(widget,filename.split("/").back() + " - " + widget->windowTitle()));
+        if(doc.isObject()&&doc.object().value("type")==QString("canvas"))
+        {
+            widget->setCanvasSize(doc.object().value("size").toObject());
+            doc.setArray(doc.object().value("shapes").toArray());
+        }
+        if(doc.isArray())widget->groupShape=doc.array();
+        else if(doc.isObject())
+        {
+            widget->groupShape.insertShape(VShape::fromJsonObject(doc.object()));
+        }
+        widget->setFileName(filename);
+        widget->saveSwp();
+        widget->update();
+        return true;
     }
-    if(doc.isArray())widget->groupShape=doc.array();
-    else if(doc.isObject())
-    {
-        widget->groupShape.insertShape(VShape::fromJsonObject(doc.object()));
-    }
-    widget->setFileName(filename);
-    widget->saveSwp();
-    newWidget->update();
-    return true;
+    return false;
 }
 
 void MainWindow::on_actionOpen_triggered()
@@ -344,6 +358,9 @@ void MainWindow::on_actionOpen_triggered()
                                          tr("打开文件"),
                                          tr(""),
                                          tr("json file (*.json);;"
+                                            "jpg file (*.jpg);;"
+                                            "bmp file (*.bmp);;"
+                                            "png file (*.png);;"
                                             "all (*)"));
     for(auto &filename:filenames)openFile(filename);
 }
