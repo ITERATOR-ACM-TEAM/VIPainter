@@ -138,7 +138,7 @@ private:
     Ui::MainWindow *ui;
 
     VShape *chooseShape;
-    QDockWidget *focus;
+    QDockWidget *focus=nullptr;
     QVector<QDockWidget *> docks;
 
     QActionGroup  *barGroup;

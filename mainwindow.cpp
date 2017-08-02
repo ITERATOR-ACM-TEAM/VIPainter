@@ -696,6 +696,7 @@ PaintWidget * MainWindow::getPaintWidget()
 
 PaintWidget * MainWindow::getPaintWidget(QDockWidget *target)
 {
+    if(target==nullptr)return nullptr;
     QScrollArea *scrollArea=qobject_cast<QScrollArea *>(target->widget());
     if(scrollArea!=nullptr)return qobject_cast<PaintWidget *>(scrollArea->widget());
     return qobject_cast<PaintWidget *>(target->widget());
