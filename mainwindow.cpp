@@ -384,42 +384,8 @@ void MainWindow::on_actionChoose_triggered()
 void MainWindow::changeCursor(VCursorType type, VShape *plugin)
 {
     this->plugin=plugin;
-    //if(qobject_cast<VectorgraphWidget*>(getPaintWidget())!=nullptr)
-    {
-        if(type == VCursorType::BEZIERCURVE || type == VCursorType::POLYLINE || type == VCursorType::PEN)
-        {
-            ui->actionDelete->setEnabled(false);
-            ui->actionPaste->setEnabled(false);
-            ui->actionCopy->setEnabled(false);
-            ui->actionCut->setEnabled(false);
-            ui->actionRedo->setEnabled(false);
-            ui->actionUndo->setEnabled(false);
-            ui->actionGroup->setEnabled(false);
-            ui->actionForceGroup->setEnabled(false);
-            ui->actionBreakUp->setEnabled(false);
-            ui->actionSelectAll->setEnabled(false);
-        }
-        else if(cursorState == VCursorType::BEZIERCURVE || cursorState == VCursorType::POLYLINE || type == VCursorType::PEN)
-        {
-            ui->actionDelete->setEnabled(true);
-            ui->actionPaste->setEnabled(true);
-            ui->actionCopy->setEnabled(true);
-            ui->actionCut->setEnabled(true);
-            ui->actionRedo->setEnabled(true);
-            ui->actionUndo->setEnabled(true);
-            ui->actionGroup->setEnabled(true);
-            ui->actionForceGroup->setEnabled(true);
-            ui->actionBreakUp->setEnabled(true);
-            ui->actionSelectAll->setEnabled(true);
-            for(auto &i:docks)
-            {
-                VectorgraphWidget *widget=qobject_cast<VectorgraphWidget*>(getPaintWidget(i));
-                if(widget==nullptr)continue;
-                if(widget->crPos!=-1)widget->saveSwp();
-            }
-        }
-    }
     cursorState = type;
+    if(qobject_cast<VectorgraphWidget*>(getPaintWidget())!=nullptr)changeMenuAction(qobject_cast<VectorgraphWidget*>(getPaintWidget()),true);
 
 }
 
@@ -434,7 +400,6 @@ void MainWindow::on_actionNew_triggered()
 //判断Action的显示状态
 void MainWindow::changeMenuAction(VectorgraphWidget *widget,bool flag)
 {
-    if(cursorState == VCursorType::BEZIERCURVE || cursorState == VCursorType::POLYLINE)return;
     ui->actionResume->setVisible(true);
     ui->actionSave->setVisible(true);
     ui->actionSaveAs->setVisible(true);
@@ -444,9 +409,6 @@ void MainWindow::changeMenuAction(VectorgraphWidget *widget,bool flag)
     ui->actionSelectAll->setVisible(true);
     if(widget==nullptr||widget->focusShapes.empty())
     {
-        ui->actionCopy->setEnabled(false);
-        ui->actionCut->setEnabled(false);
-        ui->actionDelete->setEnabled(false);
         ui->actionPenColor->setVisible(false);
         ui->actionPenStyle->setVisible(false);
         ui->actionBrushColor->setVisible(false);
@@ -456,9 +418,6 @@ void MainWindow::changeMenuAction(VectorgraphWidget *widget,bool flag)
     }
     else
     {
-        ui->actionCopy->setEnabled(true);
-        ui->actionCut->setEnabled(true);
-        ui->actionDelete->setEnabled(true);
         if(flag)
         {
             ui->actionPenColor->setVisible(true);
@@ -467,12 +426,6 @@ void MainWindow::changeMenuAction(VectorgraphWidget *widget,bool flag)
             ui->actionGroup->setVisible(true);
             ui->actionForceGroup->setVisible(true);
             ui->actionBreakUp->setVisible(true);
-            if(widget->focusShapes.size()==1
-                    &&widget->focusShapes.first()->type()==VType::GroupShape)
-            {
-                ui->actionBreakUp->setEnabled(true);
-            }
-            else ui->actionBreakUp->setEnabled(false);
         }
         else
         {
@@ -482,6 +435,55 @@ void MainWindow::changeMenuAction(VectorgraphWidget *widget,bool flag)
             ui->actionGroup->setVisible(false);
             ui->actionForceGroup->setVisible(false);
             ui->actionBreakUp->setVisible(false);
+        }
+    }
+    ////////////////////////////////////////////////////
+    if(cursorState == VCursorType::BEZIERCURVE || cursorState == VCursorType::POLYLINE || cursorState == VCursorType::PEN)
+    {
+        ui->actionDelete->setEnabled(false);
+        ui->actionPaste->setEnabled(false);
+        ui->actionCopy->setEnabled(false);
+        ui->actionCut->setEnabled(false);
+        ui->actionRedo->setEnabled(false);
+        ui->actionUndo->setEnabled(false);
+        ui->actionGroup->setEnabled(false);
+        ui->actionForceGroup->setEnabled(false);
+        ui->actionBreakUp->setEnabled(false);
+        ui->actionSelectAll->setEnabled(false);
+    }
+    else
+    {
+        ui->actionDelete->setEnabled(true);
+        ui->actionPaste->setEnabled(true);
+        ui->actionCopy->setEnabled(true);
+        ui->actionCut->setEnabled(true);
+        ui->actionRedo->setEnabled(true);
+        ui->actionUndo->setEnabled(true);
+        ui->actionGroup->setEnabled(true);
+        ui->actionForceGroup->setEnabled(true);
+        ui->actionBreakUp->setEnabled(true);
+        ui->actionSelectAll->setEnabled(true);
+    }
+    ////////////////////////////////////////////////////
+    if(widget==nullptr||widget->focusShapes.empty())
+    {
+        ui->actionCopy->setEnabled(false);
+        ui->actionCut->setEnabled(false);
+        ui->actionDelete->setEnabled(false);
+    }
+    else
+    {
+        ui->actionCopy->setEnabled(true);
+        ui->actionCut->setEnabled(true);
+        ui->actionDelete->setEnabled(true);
+        if(flag)
+        {
+            if(widget->focusShapes.size()==1
+                    &&widget->focusShapes.first()->type()==VType::GroupShape)
+            {
+                ui->actionBreakUp->setEnabled(true);
+            }
+            else ui->actionBreakUp->setEnabled(false);
         }
     }
 }
@@ -589,6 +591,17 @@ bool MainWindow::eventFilter(QObject * obj, QEvent * ev)
                 listView->setSelectionModel(vectorgraphWidget->selectionModel);
                 vectorgraphWidget->updateList();
                 changeMenuAction(vectorgraphWidget,true);
+            }
+            else
+            {
+                //TODO::
+                ui->actionDelete->setEnabled(true);
+                ui->actionPaste->setEnabled(true);
+                ui->actionCopy->setEnabled(true);
+                ui->actionCut->setEnabled(true);
+                ui->actionRedo->setEnabled(true);
+                ui->actionUndo->setEnabled(true);
+                ui->actionSelectAll->setEnabled(true);
             }
             return false;
         }

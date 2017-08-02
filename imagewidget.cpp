@@ -156,6 +156,13 @@ void ImageWidget::on_actionResume_triggered()
     update();
 }
 
+void ImageWidget::on_actionDelete_triggered()
+{
+    //TODO::
+    canvas.fill(Qt::transparent);
+    update();
+}
+
 void ImageWidget::mousePressEvent(QMouseEvent *event)
 {
     QPoint qpoint=event->pos();
