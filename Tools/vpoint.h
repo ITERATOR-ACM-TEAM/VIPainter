@@ -48,6 +48,7 @@ public:
     bool operator!=(const VPoint &point)const;
 
     VPoint rotate(const VPoint & center, double a);
+    VPoint floor();
     VPoint centralTransformation();//中心变换
 };
 

@@ -79,6 +79,11 @@ VSize ImageWidget::getCanvasSize()
     return canvas.size();
 }
 
+VMagnification ImageWidget::getScale()
+{
+    return VSize(this->width(),this->height())/getCanvasSize();
+}
+
 void ImageWidget::on_actionCanvasSize_triggered()
 {
     setCanvasSize(CanvasSizeDialog::showDialog(tr("画布大小"),getCanvasSize()));
@@ -93,7 +98,7 @@ void ImageWidget::on_actionShapeSize_triggered()
 
 VPoint ImageWidget::getLoc(const VPoint & point)
 {
-    return VPoint(floor(point.x*canvas.width()/this->width()),floor(point.y*canvas.height()/this->height()));
+    return (point/getScale()).floor();
 }
 
 QScrollArea* ImageWidget::getScrollArea()
@@ -168,15 +173,39 @@ void ImageWidget::mousePressEvent(QMouseEvent *event)
     QPoint qpoint=event->pos();
     VPoint vpoint(qpoint.x(), qpoint.y());
     VPoint loc = getLoc(vpoint);
-    if(cursorType == VCursorType::PEN)
+    if(event->button()==Qt::LeftButton)
     {
-        if(event->button()==Qt::LeftButton)
+        switch(cursorType)
         {
-            QPainter painter(&canvas);
-            painter.drawPoint(loc.toQPointF());
-            update();
+        case VCursorType::MOVE:
+        {
+            this->setCursor(Qt::ClosedHandCursor);
+        }break;
+        case VCursorType::CHOOSE:
+        {
+        }break;
+        case VCursorType::ROTATE:
+        {
+        }break;
+        case VCursorType::PEN:
+        {
+            if(event->button()==Qt::LeftButton)
+            {
+                QPainter painter(&canvas);
+                painter.drawPoint(loc.toQPointF());
+                update();
+            }
+        }break;
+        case VCursorType::PLUGIN:
+        {
+        }break;
+        default:
+            break;
         }
     }
+    lastMove=vpoint;
+    locMove=locPress=loc;
+    globalMove=event->globalPos();
 }
 
 void ImageWidget::mouseMoveEvent(QMouseEvent *event)
@@ -184,6 +213,7 @@ void ImageWidget::mouseMoveEvent(QMouseEvent *event)
     QPoint qpoint=event->pos();
     VPoint vpoint(qpoint.x(), qpoint.y());
     VPoint loc = getLoc(vpoint);
+    VPoint globalPoint(event->globalPos());
     mainwindow->statusBar()->showMessage(QString("%1,%2").arg(loc.x).arg(loc.y));
     if(cursorType == VCursorType::CHOOSE)
     {
@@ -198,6 +228,8 @@ void ImageWidget::mouseMoveEvent(QMouseEvent *event)
         {
         case VCursorType::MOVE:
         {
+            scrollArea->horizontalScrollBar()->setValue(scrollArea->horizontalScrollBar()->value()+globalMove.x-globalPoint.x);
+            scrollArea->verticalScrollBar()->setValue(scrollArea->verticalScrollBar()->value()+globalMove.y-globalPoint.y);
         }break;
         case VCursorType::CHOOSE:
         {
@@ -225,6 +257,31 @@ void ImageWidget::mouseMoveEvent(QMouseEvent *event)
     }
     locMove = loc;
     lastMove=vpoint;
+    globalMove=globalPoint;
+}
+
+void ImageWidget::mouseReleaseEvent(QMouseEvent *event)
+{
+//    QPoint qpoint=event->pos();
+//    VPoint loc=getLoc(VPoint(qpoint.x(),qpoint.y()));
+    if(event->button()==Qt::LeftButton)
+    {
+        switch(cursorType)
+        {
+        case VCursorType::MOVE:
+        {
+            this->setCursor(Qt::OpenHandCursor);
+        }break;
+        case VCursorType::CHOOSE:
+        {
+        }break;
+        case VCursorType::ROTATE:
+        {
+        }break;
+        default:
+            break;
+        }
+    }
 }
 
 bool ImageWidget::eventFilter(QObject * obj, QEvent * ev)

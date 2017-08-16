@@ -183,7 +183,7 @@
     <set>Qt::AllDockWidgetAreas</set>
    </property>
    <property name="windowTitle">
-    <string>形状</string>
+    <string>多功能栏</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>2</number>

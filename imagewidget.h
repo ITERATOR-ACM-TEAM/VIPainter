@@ -4,6 +4,7 @@
 #include "paintwidget.h"
 #include "vpoint.h"
 #include "vsize.h"
+#include "vmagnification.h"
 #include <QPaintEvent>
 #include <QDebug>
 #include <QScrollArea>
@@ -16,6 +17,7 @@ private:
     QImage canvas;
     VPoint locMove;
     VPoint lastMove;
+    VPoint globalMove;
     VPoint locPress;
     QScrollArea *scrollArea;
 
@@ -34,10 +36,12 @@ public:
     QImage &getCanvas();
     VPoint getLoc(const VPoint &point);
     void setScale(double scale)override;
+    VMagnification getScale();
 private:
     void paintEvent(QPaintEvent *event)override;
     void mouseMoveEvent(QMouseEvent *event)override;
     void mousePressEvent(QMouseEvent *event)override;
+    void mouseReleaseEvent(QMouseEvent *event)override;
     void wheelEvent(QWheelEvent * event)override;
     bool eventFilter(QObject * obj, QEvent * ev)override;
 

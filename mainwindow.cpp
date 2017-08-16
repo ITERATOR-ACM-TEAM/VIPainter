@@ -732,6 +732,9 @@ void MainWindow::on_actionReloadPlugon_triggered()
     }
     for(auto &i:plugins)delete i;
     plugins.clear();
+#if defined(Q_OS_LINUX)
+        initAction(QDir("/usr/share/VIPainter/plugin"));
+#endif
     this->initAction();
 }
 
