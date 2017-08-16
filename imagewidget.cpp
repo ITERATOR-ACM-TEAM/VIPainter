@@ -278,6 +278,10 @@ void ImageWidget::mouseReleaseEvent(QMouseEvent *event)
         case VCursorType::ROTATE:
         {
         }break;
+        case VCursorType::PEN:
+        {
+            saveSwp();
+        }break;
         default:
             break;
         }
@@ -331,6 +335,11 @@ bool ImageWidget::eventFilter(QObject * obj, QEvent * ev)
     return false;
 }
 
+void ImageWidget::saveSwp()
+{
+    swapQueue.push(canvas);
+}
+
 void ImageWidget::on_actionSaveAs_triggered()
 {
     QString filename=getFileName();
@@ -344,4 +353,20 @@ void ImageWidget::on_actionSaveAs_triggered()
                                             "png file (*.png);;"
                                             "bmp file (*.bmp)"));
     saveFile(filename);
+}
+
+void ImageWidget::on_actionUndo_triggered()
+{
+    if(swapQueue.atFirst())return;
+    canvas=swapQueue.undo();
+    setScale(scale);
+    update();
+}
+
+void ImageWidget::on_actionRedo_triggered()
+{
+    if(swapQueue.atLast())return;
+    canvas=swapQueue.redo();
+    setScale(scale);
+    update();
 }

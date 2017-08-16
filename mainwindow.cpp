@@ -318,6 +318,7 @@ bool MainWindow::openFile(QString filename)
         widget->setCanvas(QImage(filename));
         widget->setDock(newDock(widget->getScrollArea(),filename.split("/").back() + " - " + widget->windowTitle()));
         //widget->getScrollArea()->update();
+        widget->saveSwp();
         widget->update();
     }
     else
@@ -878,5 +879,6 @@ void MainWindow::on_actionNewImage_triggered()
     widget->setCanvas(std::move(image));
     widget->setDock(newDock(widget->getScrollArea()));
     //widget->getScrollArea()->update();
+    widget->saveSwp();
     widget->update();
 }
