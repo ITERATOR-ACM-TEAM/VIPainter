@@ -14,25 +14,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
-#ifndef VTYPE_H
-#define VTYPE_H
+#ifndef VIMAGESHAPE_H
+#define VIMAGESHAPE_H
+#include "vshape.h"
+#include <QImage>
 
-#include <QString>
-#include <QJsonValue>
-
-class VType
+class VImageShape:public VShape
 {
+private:
+    QImage image;
 public:
-    static QString Polygon;
-    static QString Polyline;
-    static QString Ellipse;
-    static QString Curveline;
-    static QString Group;
-    static QString BezierCurve;
-    static QString Text;
-    static QString RoundedRectangle;
-    static QString Image;
-    VType()=delete;
+    QJsonObject toJsonObject()const override;
+
+    void draw(QPainter *painter,const VTransform & transform)override;
+    VSize getSize()override;
+    virtual bool contains(VPoint point)override;
+    virtual QString type()const override;
+    VShape* clone()const override;
+    ~VImageShape()override;
 };
 
-#endif // VTYPE_H
+#endif // VIMAGESHAPE_H

@@ -10,6 +10,7 @@
 #include <QMessageBox>
 #include <cmath>
 #include "canvassizedialog.h"
+#include "vtransform.h"
 
 ImageWidget::ImageWidget(QMainWindow *mainwindow, bool antialiasing):PaintWidget(mainwindow,antialiasing)
 {
@@ -41,8 +42,7 @@ void ImageWidget::saveFile(QString filename)
 
 bool ImageWidget::fileChanged()
 {
-    //TODO:
-    return false;
+    return swapQueue.changed();
 }
 
 QImage& ImageWidget::getCanvas()
@@ -111,11 +111,27 @@ void ImageWidget::paintEvent(QPaintEvent *event)
     Q_UNUSED(event);
     QPainter painter(this);
     if(antialiasing)painter.setRenderHint(QPainter::Antialiasing);
+    QImage tmp(canvas);
+    if(focusShape!=nullptr)
+    {
+        QPainter tmpPainter;
+        tmpPainter.begin(&tmp);
+        if(antialiasing)tmpPainter.setRenderHint(QPainter::Antialiasing);
+        focusShape->draw(&tmpPainter,focusShape->getTransform());
+        tmpPainter.end();
+    }
 
     painter.save();
-    painter.scale((qreal)this->width()/canvas.width(),(qreal)this->height()/canvas.height());
-    painter.drawImage(0,0,canvas);
+    VMagnification mag=getScale();
+    painter.scale(mag.horizontal,mag.vertical);
+    painter.drawImage(0,0,tmp);
     painter.restore();
+    if(focusShape!=nullptr)
+    {
+        VTransform trans;
+        trans.scale(mag);
+        focusShape->drawCR(&painter,focusShape->getTransform()*trans,mag.horizontal);
+    }
 
     painter.setPen(QPen(QBrush(Qt::lightGray),0,Qt::SolidLine,Qt::RoundCap,Qt::RoundJoin));
     painter.drawRect(0,0,width(),height());
@@ -189,19 +205,24 @@ void ImageWidget::mousePressEvent(QMouseEvent *event)
         }break;
         case VCursorType::PEN:
         {
-            if(event->button()==Qt::LeftButton)
-            {
-                QPainter painter(&canvas);
-                painter.drawPoint(loc.toQPointF());
-                update();
-            }
+            finishFocusShape();
+            QPainter painter(&canvas);
+            if(antialiasing)painter.setRenderHint(QPainter::Antialiasing);
+            painter.drawPoint(loc.toQPointF());
+            update();
         }break;
         case VCursorType::PLUGIN:
         {
+            finishFocusShape();
+            focusShape=plugin->clone();
+            focusShape->moveLoc(focusShape->transformPoint(loc));
+            focusShape->changeMag(0,focusShape->transformPoint(loc+VPoint(1,1)),true);
+            update();
         }break;
         default:
             break;
         }
+        isPressing=true;
     }
     lastMove=vpoint;
     locMove=locPress=loc;
@@ -243,6 +264,7 @@ void ImageWidget::mouseMoveEvent(QMouseEvent *event)
             if(loc!=locMove)
             {
                 QPainter painter(&canvas);
+                if(antialiasing)painter.setRenderHint(QPainter::Antialiasing);
                 painter.drawLine(locMove.toQPointF(),loc.toQPointF());
                 update();
             }
@@ -250,6 +272,11 @@ void ImageWidget::mouseMoveEvent(QMouseEvent *event)
         case VCursorType::BEZIERCURVE:
         case VCursorType::POLYLINE:
         {
+        }break;
+        case VCursorType::PLUGIN:
+        {
+            focusShape->changeMag(0,focusShape->transformPoint(loc));
+            update();
         }break;
         default:
             break;
@@ -266,6 +293,7 @@ void ImageWidget::mouseReleaseEvent(QMouseEvent *event)
 //    VPoint loc=getLoc(VPoint(qpoint.x(),qpoint.y()));
     if(event->button()==Qt::LeftButton)
     {
+        isPressing=false;
         switch(cursorType)
         {
         case VCursorType::MOVE:
@@ -282,10 +310,32 @@ void ImageWidget::mouseReleaseEvent(QMouseEvent *event)
         {
             saveSwp();
         }break;
+        case VCursorType::PLUGIN:
+        {
+        }break;
         default:
             break;
         }
     }
+}
+
+void ImageWidget::finishFocusShape()
+{
+    if(focusShape==nullptr)return;
+    QPainter painter(&canvas);
+    if(antialiasing)painter.setRenderHint(QPainter::Antialiasing);
+    focusShape->draw(&painter,focusShape->getTransform());
+    delete focusShape;
+    focusShape=nullptr;
+    saveSwp();
+}
+
+
+void ImageWidget::clearFocusShape()
+{
+    if(focusShape==nullptr)return;
+    delete focusShape;
+    focusShape=nullptr;
 }
 
 bool ImageWidget::eventFilter(QObject * obj, QEvent * ev)
@@ -358,6 +408,7 @@ void ImageWidget::on_actionSaveAs_triggered()
 void ImageWidget::on_actionUndo_triggered()
 {
     if(swapQueue.atFirst())return;
+    clearFocusShape();
     canvas=swapQueue.undo();
     setScale(scale);
     update();
@@ -366,6 +417,7 @@ void ImageWidget::on_actionUndo_triggered()
 void ImageWidget::on_actionRedo_triggered()
 {
     if(swapQueue.atLast())return;
+    clearFocusShape();
     canvas=swapQueue.redo();
     setScale(scale);
     update();

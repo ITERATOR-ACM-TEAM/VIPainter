@@ -179,6 +179,7 @@ void VPointGroupShape::drawCR(QPainter *painter, const VTransform &trans, double
 {
     QBrush bru;
     QPen pen;
+    painter->save();
     bru.setColor(Qt::black);
     pen.setColor(Qt::white);
     pen.setWidth(0);
@@ -192,6 +193,7 @@ void VPointGroupShape::drawCR(QPainter *painter, const VTransform &trans, double
     {
         painter->drawEllipse((it*trans).toQPointF(), crDis*1.5, crDis*1.5);
     }
+    painter->restore();
     VShape::drawCR(painter,trans,scale);
 }
 

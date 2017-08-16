@@ -16,10 +16,12 @@ class ImageWidget : public PaintWidget
     Q_OBJECT
 private:
     QImage canvas;
+    VShape *focusShape=nullptr;
     VPoint locMove;
     VPoint lastMove;
     VPoint globalMove;
     VPoint locPress;
+    bool isPressing=false;
     QScrollArea *scrollArea;
     SwapQueue<QImage,20>swapQueue;
 
@@ -41,6 +43,9 @@ public:
     VMagnification getScale();
     void saveSwp();
 private:
+    void finishFocusShape();
+    void clearFocusShape();
+protected:
     void paintEvent(QPaintEvent *event)override;
     void mouseMoveEvent(QMouseEvent *event)override;
     void mousePressEvent(QMouseEvent *event)override;

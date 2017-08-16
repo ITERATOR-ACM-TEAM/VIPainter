@@ -109,6 +109,7 @@ QString VBezierCurve::type() const{
 void VBezierCurve::drawCR(QPainter * painter, const VTransform &transform, double scale)
 {
     VPointGroupShape::drawCR(painter,transform,scale);
+    painter->save();
     QPen pen;
     //pen.setColor(Qt::gray);
     QColor color=this->pen.color();
@@ -123,4 +124,5 @@ void VBezierCurve::drawCR(QPainter * painter, const VTransform &transform, doubl
         if(i+1<points.size())
             painter->drawLine((points[i+1]*transform).toQPointF(), (points[i]*transform).toQPointF());
     }
+    painter->restore();
 }

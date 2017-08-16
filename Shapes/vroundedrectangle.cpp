@@ -69,22 +69,6 @@ void VRoundedRectangle::draw(QPainter *painter,const VTransform &transform)
     painter->restore();
 }
 
-void VRoundedRectangle::drawCR(QPainter *painter,const VTransform &transform, double scale){
-    QBrush bru;
-    QPen pen;
-    bru.setColor(Qt::black);
-    pen.setColor(Qt::black);
-    pen.setWidth(0);
-    bru.setStyle(Qt::SolidPattern);
-    pen.setStyle(Qt::SolidLine);
-
-    painter->setPen(pen);
-    painter->setBrush(bru);
-
-
-    VShape::drawCR(painter,transform,  scale);
-}
-
 QString VRoundedRectangle::type() const{
     return VType::RoundedRectangle;
 }

@@ -52,7 +52,7 @@ VShape* VShape::fromJsonObject(const QJsonObject &jsonObject)
     if(type==VType::Ellipse)return new VEllipse(jsonObject);
     else if(type==VType::Polyline)return new VPolyline(jsonObject);
     else if(type==VType::Polygon)return new VPolygon(jsonObject);
-    else if(type==VType::GroupShape)return new VGroupShape(jsonObject);
+    else if(type==VType::Group)return new VGroupShape(jsonObject);
     else if(type==VType::Curveline)return new VCurveline(jsonObject);
     else if(type==VType::BezierCurve)return new VBezierCurve(jsonObject);
     else if(type==VType::Text)return new VText(jsonObject);
@@ -232,6 +232,7 @@ void VShape::moveLoc(const VPoint & point)
 void VShape::drawCR(QPainter * painter, const VTransform &trans, double scale)
 {
     Q_UNUSED(scale);
+    painter->save();
     QVector<VPoint> points = this->getRect();
     QList<QPointF> qpoints;
     QPolygonF qpf;
@@ -259,6 +260,7 @@ void VShape::drawCR(QPainter * painter, const VTransform &trans, double scale)
     for(auto &i : qpoints){
         painter->drawEllipse(i, crDis, crDis);
     }
+    painter->restore();
 
 }
 

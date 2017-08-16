@@ -46,7 +46,8 @@ SOURCES += \
     vectorgraphwidget.cpp \
     paintwidget.cpp \
     Tools/swapqueue.cpp \
-    imagewidget.cpp
+    imagewidget.cpp \
+    Shapes/vimageshape.cpp
 
 HEADERS  += \
     canvassizedialog.h \
@@ -77,7 +78,8 @@ HEADERS  += \
     vectorgraphwidget.h \
     paintwidget.h \
     Tools/swapqueue.h \
-    imagewidget.h
+    imagewidget.h \
+    Shapes/vimageshape.h
 
 FORMS    += mainwindow.ui \
     canvassizedialog.ui \

@@ -480,7 +480,7 @@ void MainWindow::changeMenuAction(VectorgraphWidget *widget,bool flag)
         if(flag)
         {
             if(widget->focusShapes.size()==1
-                    &&widget->focusShapes.first()->type()==VType::GroupShape)
+                    &&widget->focusShapes.first()->type()==VType::Group)
             {
                 ui->actionBreakUp->setEnabled(true);
             }
