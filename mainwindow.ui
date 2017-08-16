@@ -115,6 +115,7 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionChoose"/>
+   <addaction name="actionMarquee"/>
    <addaction name="actionMove"/>
    <addaction name="actionRotate"/>
    <addaction name="actionPen"/>
@@ -223,7 +224,7 @@
     <string>画笔</string>
    </property>
    <property name="shortcut">
-    <string>4</string>
+    <string>5</string>
    </property>
   </action>
   <action name="actionOpen">
@@ -314,7 +315,7 @@
     <string>旋转</string>
    </property>
    <property name="shortcut">
-    <string>3</string>
+    <string>4</string>
    </property>
   </action>
   <action name="actionRedo">
@@ -368,7 +369,7 @@
     <string>移动</string>
    </property>
    <property name="shortcut">
-    <string>2</string>
+    <string>3</string>
    </property>
   </action>
   <action name="actionResume">
@@ -586,6 +587,17 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+N</string>
+   </property>
+  </action>
+  <action name="actionMarquee">
+   <property name="text">
+    <string>选框</string>
+   </property>
+   <property name="toolTip">
+    <string>选框</string>
+   </property>
+   <property name="shortcut">
+    <string>2</string>
    </property>
   </action>
  </widget>

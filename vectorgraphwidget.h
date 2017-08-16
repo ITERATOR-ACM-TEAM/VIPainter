@@ -49,7 +49,7 @@ class VectorgraphWidget : public PaintWidget
 
 public:
     explicit VectorgraphWidget(QMainWindow *mainwindow, bool antialiasing);
-    int crPos;
+    int crPos=-1;
     VGroupShape groupShape;
     QVector<VShape*> focusShapes;
     VSize canvasSize;

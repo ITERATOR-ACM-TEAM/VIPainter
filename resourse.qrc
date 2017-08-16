@@ -14,5 +14,6 @@
         <file>translate/qtbase_zh_CN.qm</file>
         <file>icon/PolyLine.png</file>
         <file>icon/Bezier.png</file>
+        <file>icon/marquee.png</file>
     </qresource>
 </RCC>

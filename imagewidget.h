@@ -21,6 +21,7 @@ private:
     VPoint lastMove;
     VPoint globalMove;
     VPoint locPress;
+    int crPos=-1;
     bool isPressing=false;
     QScrollArea *scrollArea;
     SwapQueue<QImage,20>swapQueue;
@@ -54,6 +55,7 @@ protected:
     bool eventFilter(QObject * obj, QEvent * ev)override;
 
 public slots:
+    void changeCursor(VCursorType type, VShape *plugin)override;
     void on_actionZoomIn_triggered()override;
     void on_actionZoomOut_triggered()override;
     void on_actionResume_triggered()override;

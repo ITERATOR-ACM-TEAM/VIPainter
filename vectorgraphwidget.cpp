@@ -333,19 +333,23 @@ void VectorgraphWidget::mouseMoveEvent(QMouseEvent *event)
         }
         if(flag)
         {
-            for(int i=groupShape.getVectorSize()-1;i>=0;i--)
+            for(int i=focusShapes.size()-1;i>=0;i--)
             {
-                VPointGroupShape * pgs = dynamic_cast<VPointGroupShape *>(groupShape.getShapes().at(i));
-
-                if((crPos == -1 && groupShape.contains(loc)) && (pgs == nullptr || pgs->atPoints(pgs->transformPoint(loc),scale) == -1))
+                VPointGroupShape * pgs = dynamic_cast<VPointGroupShape *>(focusShapes.at(i));
+                if(crPos>=8||(pgs != nullptr && pgs->atPoints(pgs->transformPoint(loc),scale) != -1))
                 {
-                    this->setCursor(Qt::SizeAllCursor);
+                    this->setCursor(Qt::ArrowCursor);
                     flag=false;
                     break;
                 }
             }
         }
-        if(flag)this->setCursor(Qt::ArrowCursor);
+        if(flag)
+        {
+            if(groupShape.contains(groupShape.transformPoint(loc)))
+                this->setCursor(Qt::SizeAllCursor);
+            else this->setCursor(Qt::ArrowCursor);
+        }
     }
     else if(cursorType == VCursorType::PLUGIN)
     {

@@ -8,9 +8,12 @@
 #include <QBrush>
 #include <QPen>
 #include <QMessageBox>
+#include <QKeyEvent>
 #include <cmath>
+#include <QApplication>
 #include "canvassizedialog.h"
 #include "vtransform.h"
+#include "vpointgroupshape.h"
 
 ImageWidget::ImageWidget(QMainWindow *mainwindow, bool antialiasing):PaintWidget(mainwindow,antialiasing)
 {
@@ -36,6 +39,11 @@ void ImageWidget::saveFile(QString filename)
     if(format=="JPG"||format=="PNG"||format=="BMP")
     {
         if(!canvas.save(filename,format.toStdString().c_str(),100))QMessageBox::warning(this,tr("错误"),tr("保存文件")+filename+tr("失败"));
+        else if(getFileName()=="")
+        {
+            dock->setWindowTitle(filename.split("/").back()+" - "+windowTitle());
+            setFileName(filename);
+        }
     }
     else QMessageBox::warning(this,tr("错误"),format+tr("不能识别的文件格式"));
 }
@@ -179,8 +187,7 @@ void ImageWidget::on_actionResume_triggered()
 
 void ImageWidget::on_actionDelete_triggered()
 {
-    //TODO::
-    canvas.fill(Qt::transparent);
+    clearFocusShape();
     update();
 }
 
@@ -199,6 +206,30 @@ void ImageWidget::mousePressEvent(QMouseEvent *event)
         }break;
         case VCursorType::CHOOSE:
         {
+            if(focusShape!=nullptr)
+            {
+                crPos = focusShape->atCrPoints(focusShape->transformPoint(loc),scale);
+                if(crPos == -1)
+                {
+                    VPointGroupShape * pgs = dynamic_cast<VPointGroupShape *>(focusShape);
+                    if (pgs != nullptr)
+                    {
+                        int tmp = pgs->atPoints(focusShape->transformPoint(loc),scale);
+                        if(tmp != -1)
+                        {
+                            crPos = tmp+8;
+                            break;
+                        }
+                    }
+                }
+
+                if(crPos == -1)
+                {
+                    //if(!focusShape->contains(focusShape->transformPoint(loc)))finishFocusShape();
+                }
+            }
+
+            update();
         }break;
         case VCursorType::ROTATE:
         {
@@ -229,6 +260,12 @@ void ImageWidget::mousePressEvent(QMouseEvent *event)
     globalMove=event->globalPos();
 }
 
+void ImageWidget::changeCursor(VCursorType type,VShape *plugin)
+{
+    PaintWidget::changeCursor(type,plugin);
+    crPos=-1;
+}
+
 void ImageWidget::mouseMoveEvent(QMouseEvent *event)
 {
     QPoint qpoint=event->pos();
@@ -236,11 +273,34 @@ void ImageWidget::mouseMoveEvent(QMouseEvent *event)
     VPoint loc = getLoc(vpoint);
     VPoint globalPoint(event->globalPos());
     mainwindow->statusBar()->showMessage(QString("%1,%2").arg(loc.x).arg(loc.y));
+
     if(cursorType == VCursorType::CHOOSE)
     {
-    }
-    else if(cursorType == VCursorType::PLUGIN)
-    {
+        if(focusShape!=nullptr)
+        {
+            bool flag=true;
+            if(crPos < 8 && (crPos >= 0 || (focusShape->atCrPoints(focusShape->transformPoint(loc),scale) != -1)))
+            {
+                this->setCursor(QCursor(VSizeAll, 15, 15));
+                flag=false;
+            }
+            if(flag)
+            {
+                VPointGroupShape * pgs = dynamic_cast<VPointGroupShape *>(focusShape);
+                if(crPos>=8||(pgs != nullptr && pgs->atPoints(pgs->transformPoint(loc),scale) != -1))
+                {
+                    this->setCursor(Qt::ArrowCursor);
+                    flag=false;
+                }
+            }
+            if(flag)
+            {
+                if((event->buttons()&Qt::LeftButton)||focusShape->contains(focusShape->transformPoint(loc)))
+                    this->setCursor(Qt::SizeAllCursor);
+                else this->setCursor(Qt::ArrowCursor);
+            }
+        }
+        else this->setCursor(Qt::ArrowCursor);
     }
 
     if(event->buttons()&Qt::LeftButton)
@@ -254,10 +314,52 @@ void ImageWidget::mouseMoveEvent(QMouseEvent *event)
         }break;
         case VCursorType::CHOOSE:
         {
+            if(focusShape!=nullptr)
+            {
+                VPoint lp = locMove;
+                VPoint v(loc.x-lp.x, loc.y-lp.y);
+                if(crPos == -2)
+                {
+                    //do nothing
+                }
+                else if(crPos == -1)
+                {
+                    focusShape->moveLoc(focusShape->transformPoint(v+focusShape->getLocation()));
+                    this->setCursor(Qt::SizeAllCursor);
+                }
+                else if(crPos < 8)
+                {
+                    focusShape->changeMag(crPos, focusShape->transformPoint(loc), QApplication::keyboardModifiers() == Qt::ControlModifier);
+                }
+                else if(crPos >= 8)
+                {
+                    VPointGroupShape * shape=dynamic_cast<VPointGroupShape *>(focusShape);
+                    if(shape!=nullptr)
+                    {
+                        shape->changePoint(crPos - 8, shape->transformPoint(loc));
+                    }
+                }
+            }
+            update();
         }break;
         case VCursorType::ROTATE:
         {
-
+            if(focusShape!=nullptr)
+            {
+                VVector vlp(focusShape->getLocation(), locMove),
+                        vnow(focusShape->getLocation(), loc);
+                VPoint loc=focusShape->getLocation();
+                focusShape->getTransform().translate(
+                            focusShape->getTransform().inverted().map(VPoint(0,0))
+                            );
+                VTransform trans;
+                trans.rotate(VVector::rotationAngle(vlp, vnow));
+                focusShape->getTransform()*=trans;
+                focusShape->getTransform().translate(
+                            focusShape->getTransform().inverted().map(loc)
+                            );
+                update();
+            }
         }break;
         case VCursorType::PEN:
         {
@@ -275,8 +377,11 @@ void ImageWidget::mouseMoveEvent(QMouseEvent *event)
         }break;
         case VCursorType::PLUGIN:
         {
-            focusShape->changeMag(0,focusShape->transformPoint(loc));
-            update();
+            if(focusShape!=nullptr)
+            {
+                focusShape->changeMag(0,focusShape->transformPoint(loc));
+                update();
+            }
         }break;
         default:
             break;
@@ -317,6 +422,7 @@ void ImageWidget::mouseReleaseEvent(QMouseEvent *event)
             break;
         }
     }
+    crPos = -1;
 }
 
 void ImageWidget::finishFocusShape()
@@ -375,6 +481,22 @@ bool ImageWidget::eventFilter(QObject * obj, QEvent * ev)
                                );
             if(!this->rect().contains(newEvent->pos())&&this->mapToGlobal(newEvent->pos())==newEvent->globalPos())wheelEvent(newEvent);
             delete newEvent;
+        }break;
+        case QEvent::KeyPress:
+        {
+            QKeyEvent *event=static_cast<QKeyEvent*>(ev);
+            switch(event->key())
+            {
+            case Qt::Key_Space:
+            case Qt::Key_Return:
+                finishFocusShape();
+                update();
+                break;
+            case Qt::Key_Escape:
+                clearFocusShape();
+                update();
+                break;
+            }
         }break;
         default:
             break;
