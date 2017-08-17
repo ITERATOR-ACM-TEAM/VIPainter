@@ -68,6 +68,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //工具栏编组 bar group
     barGroup = new QActionGroup(this);
     barGroup->addAction(ui->actionChoose);
+    barGroup->addAction(ui->actionMarquee);
     barGroup->addAction(ui->actionMove);
     barGroup->addAction(ui->actionRotate);
     barGroup->addAction(ui->actionPen);
@@ -202,7 +203,7 @@ VectorgraphWidget* MainWindow::newVectorgraphWidget()
     widget->changeCursor(this->cursorState,this->plugin);
     widget->installEventFilter(this);
 
-    connect(widget,&VectorgraphWidget::selected,[this,widget]{
+    connect(widget,&PaintWidget::selected,[this,widget]{
         if(widget==getPaintWidget())
         {
             changeMenuAction(widget,true);
@@ -318,7 +319,7 @@ bool MainWindow::openFile(QString filename)
         widget->setCanvas(QImage(filename));
         widget->setDock(newDock(widget->getScrollArea(),filename.split("/").back() + " - " + widget->windowTitle()));
         //widget->getScrollArea()->update();
-        widget->saveSwp();
+        widget->saveSwp(tr("打开"));
         widget->update();
     }
     else
@@ -585,17 +586,20 @@ bool MainWindow::eventFilter(QObject * obj, QEvent * ev)
 #undef KCONNECT
 
             focus = dock;
+            listView->setModel(widget->listModel);
+            listView->setSelectionModel(widget->selectionModel);
+            widget->updateList();
             VectorgraphWidget *vectorgraphWidget=qobject_cast<VectorgraphWidget *>(widget);
             if(vectorgraphWidget!=nullptr)
             {
-                listView->setModel(vectorgraphWidget->listModel);
-                listView->setSelectionModel(vectorgraphWidget->selectionModel);
-                vectorgraphWidget->updateList();
+                listView->setSelectionMode(QListView::ExtendedSelection);
+                listView->setEditTriggers(QListView::DoubleClicked);
                 changeMenuAction(vectorgraphWidget,true);
             }
             else
             {
-                //TODO::
+                listView->setSelectionMode(QListView::SingleSelection);
+                listView->setEditTriggers(QListView::NoEditTriggers);
                 ui->actionDelete->setEnabled(true);
                 ui->actionPaste->setEnabled(true);
                 ui->actionCopy->setEnabled(true);
@@ -879,6 +883,14 @@ void MainWindow::on_actionNewImage_triggered()
     widget->setCanvas(std::move(image));
     widget->setDock(newDock(widget->getScrollArea()));
     //widget->getScrollArea()->update();
-    widget->saveSwp();
+    widget->saveSwp(tr("新建"));
     widget->update();
+}
+
+void MainWindow::on_actionMarquee_triggered()
+{
+    if(ui->actionMarquee->isChecked())
+        emit cursorChange(VCursorType::MARQUEE);
+    else
+        emit cursorChange(VCursorType::DEFAULT);
 }

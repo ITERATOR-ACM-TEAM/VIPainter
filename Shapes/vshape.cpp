@@ -275,8 +275,23 @@ int VShape::atCrPoints(const VPoint & point,double scale)
     for(auto it: points)
     {
         VPoint pos = VPoint(point.x-it.x, point.y-it.y);
-        //qDebug() << pow(pos.x * siz.height, 2)+pow(pos.y*siz.width, 2) << pow(siz.width*siz.height, 2);
+        //qDebug()<<point<<it<<scale;
         if(pow(pos.x * siz.height, 2)+pow(pos.y*siz.width, 2) <= pow(siz.width*siz.height, 2))
+            return cnt;
+        cnt++;
+    }
+    return -1;
+}
+
+int VShape::atCrPoints(const VPoint & point, VMagnification mag)
+{
+    VVector ve(mag.horizontal,mag.vertical);
+    QVector<VPoint> points = this->getRect();
+    int cnt = 0;
+    for(auto it: points)
+    {
+        VPoint tmp=reverseTransformPoint(it);
+        if(reverseTransformPoint(point)-VPoint(tmp.x-0.5,tmp.y-0.5)<=std::max(1.0,crDis/ve.norm()))
             return cnt;
         cnt++;
     }

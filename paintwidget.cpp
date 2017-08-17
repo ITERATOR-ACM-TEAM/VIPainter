@@ -24,7 +24,12 @@
 
 PaintWidget::PaintWidget(QMainWindow *mainwindow, bool antialiasing) : QWidget(mainwindow),antialiasing(antialiasing),cursorType(VCursorType::CHOOSE),mainwindow(mainwindow)
 {
-
+    listModel=new QStringListModel(this);
+    selectionModel=new QItemSelectionModel(listModel,this);
+    connect(selectionModel,SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &))
+            ,this,SLOT(changeSelected()));
+    connect(this,SIGNAL(selected(const QItemSelection&,QItemSelectionModel::SelectionFlags)),
+            selectionModel,SLOT(select(const QItemSelection&,QItemSelectionModel::SelectionFlags)));
 }
 
 
@@ -32,6 +37,16 @@ void PaintWidget::changeModelData(const QModelIndex &index)
 {
     Q_UNUSED(index);
     //do nothing
+}
+
+void PaintWidget::changeSelected()
+{
+//do nothing
+}
+
+void PaintWidget::updateList()
+{
+//do nothing
 }
 
 void PaintWidget::on_actionCanvasSize_triggered()
@@ -201,7 +216,6 @@ void PaintWidget::changeCursor(VCursorType type,VShape *plugin)
     }break;
     default:
     {
-        this->setCursor(Qt::ArrowCursor);
     }
     }
 }

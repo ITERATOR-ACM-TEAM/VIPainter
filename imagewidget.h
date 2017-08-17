@@ -9,7 +9,9 @@
 #include <QPaintEvent>
 #include <QDebug>
 #include <QScrollArea>
+#include <QColor>
 #include <QResizeEvent>
+#include <QFocusEvent>
 
 class ImageWidget : public PaintWidget
 {
@@ -42,19 +44,24 @@ public:
     VPoint getLoc(const VPoint &point);
     void setScale(double scale)override;
     VMagnification getScale();
-    void saveSwp();
+    void saveSwp(QString name);
 private:
     void finishFocusShape();
     void clearFocusShape();
+    void cutCanvas(int x,int y,int width,int height,const QColor &color);
+    void emitSelected();
 protected:
     void paintEvent(QPaintEvent *event)override;
     void mouseMoveEvent(QMouseEvent *event)override;
+    void mouseDoubleClickEvent(QMouseEvent* event) override;
     void mousePressEvent(QMouseEvent *event)override;
     void mouseReleaseEvent(QMouseEvent *event)override;
     void wheelEvent(QWheelEvent * event)override;
     bool eventFilter(QObject * obj, QEvent * ev)override;
 
 public slots:
+    void updateList()override;
+    void changeSelected()override;
     void changeCursor(VCursorType type, VShape *plugin)override;
     void on_actionZoomIn_triggered()override;
     void on_actionZoomOut_triggered()override;
@@ -70,7 +77,7 @@ public slots:
 //    void on_actionCut_triggered()override;
 //    void on_actionPaste_triggered()override;
 //    void on_actionGroup_triggered()override;
-//    void on_actionSelectAll_triggered()override;
+    void on_actionSelectAll_triggered()override;
 //    void on_actionBrushColor_triggered()override;
 //    void on_actionPenColor_triggered()override;
 //    void on_actionPenStyle_triggered()override;

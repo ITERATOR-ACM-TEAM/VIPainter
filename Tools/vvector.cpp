@@ -23,6 +23,11 @@ VVector::VVector(double _x,double _y):x(_x), y(_y)
 {
 }
 
+bool VVector::operator ==(const VVector & Right)const
+{
+    return std::abs(x-Right.x)<=1e-9&&std::abs(y-Right.y)<=1e-9;
+}
+
 VVector::VVector(const VPoint & from, const VPoint & to)
 {
     x=to.x - from.x;

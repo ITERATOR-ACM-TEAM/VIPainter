@@ -21,6 +21,7 @@ enum class VCursorType
 {
     MOVE,
     CHOOSE,
+    MARQUEE,
     DEFAULT,
     SHAPE,
     PEN,

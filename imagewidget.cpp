@@ -12,8 +12,10 @@
 #include <cmath>
 #include <QApplication>
 #include "canvassizedialog.h"
+#include "vtype.h"
 #include "vtransform.h"
 #include "vpointgroupshape.h"
+#include "vimageshape.h"
 
 ImageWidget::ImageWidget(QMainWindow *mainwindow, bool antialiasing):PaintWidget(mainwindow,antialiasing)
 {
@@ -92,15 +94,49 @@ VMagnification ImageWidget::getScale()
     return VSize(this->width(),this->height())/getCanvasSize();
 }
 
+void ImageWidget::emitSelected()
+{
+    QItemSelection list;
+    QModelIndex index=listModel->index(swapQueue.getNow());
+    list.select(index,index);
+    emit selected(list,QItemSelectionModel::ClearAndSelect);
+}
+
+void ImageWidget::changeSelected()
+{
+    if(selectionModel->selectedRows().empty())
+    {
+        emitSelected();
+        return;
+    }
+    int row=selectionModel->selectedRows().first().row();
+    if(row!=swapQueue.getNow())
+    {
+        clearFocusShape();
+        canvas=swapQueue.todo(row);
+        update();
+    }
+}
+
+void ImageWidget::updateList()
+{
+    listModel->setStringList(swapQueue.namelist());
+    emitSelected();
+}
+
 void ImageWidget::on_actionCanvasSize_triggered()
 {
+    finishFocusShape();
     setCanvasSize(CanvasSizeDialog::showDialog(tr("画布大小"),getCanvasSize()));
+    saveSwp(tr("调整画布大小"));
     update();
 }
 
 void ImageWidget::on_actionShapeSize_triggered()
 {
+    finishFocusShape();
     setImageSize(CanvasSizeDialog::showDialog(tr("图像大小"),getCanvasSize()));
+    saveSwp(tr("调整图像大小"));
     update();
 }
 
@@ -139,6 +175,17 @@ void ImageWidget::paintEvent(QPaintEvent *event)
         VTransform trans;
         trans.scale(mag);
         focusShape->drawCR(&painter,focusShape->getTransform()*trans,mag.horizontal);
+    }
+
+    if(isPressing&&cursorType==VCursorType::MARQUEE)
+    {
+        painter.save();
+        VPoint point=locMove;
+        painter.setPen(QPen(QBrush(Qt::gray),2,Qt::DotLine,Qt::SquareCap,Qt::MiterJoin));
+        painter.setBrush(QColor(0xaa,0xaa,0xaa,9));
+        painter.drawRect(locPress.x*scale,locPress.y*scale,
+                         (point.x-locPress.x)*scale,(point.y-locPress.y)*scale);
+        painter.restore();
     }
 
     painter.setPen(QPen(QBrush(Qt::lightGray),0,Qt::SolidLine,Qt::RoundCap,Qt::RoundJoin));
@@ -208,13 +255,13 @@ void ImageWidget::mousePressEvent(QMouseEvent *event)
         {
             if(focusShape!=nullptr)
             {
-                crPos = focusShape->atCrPoints(focusShape->transformPoint(loc),scale);
+                crPos = focusShape->atCrPoints(focusShape->transformPoint(loc),getScale());
                 if(crPos == -1)
                 {
                     VPointGroupShape * pgs = dynamic_cast<VPointGroupShape *>(focusShape);
                     if (pgs != nullptr)
                     {
-                        int tmp = pgs->atPoints(focusShape->transformPoint(loc),scale);
+                        int tmp = pgs->atPoints(focusShape->transformPoint(loc),getScale());
                         if(tmp != -1)
                         {
                             crPos = tmp+8;
@@ -250,6 +297,11 @@ void ImageWidget::mousePressEvent(QMouseEvent *event)
             focusShape->changeMag(0,focusShape->transformPoint(loc+VPoint(1,1)),true);
             update();
         }break;
+        case VCursorType::MARQUEE:
+        {
+            finishFocusShape();
+            update();
+        }break;
         default:
             break;
         }
@@ -264,6 +316,33 @@ void ImageWidget::changeCursor(VCursorType type,VShape *plugin)
 {
     PaintWidget::changeCursor(type,plugin);
     crPos=-1;
+    if(type==VCursorType::MARQUEE)setCursor(Qt::ArrowCursor);
+}
+
+void ImageWidget::on_actionSelectAll_triggered()
+{
+    finishFocusShape();
+    cutCanvas(0,0,canvas.width(),canvas.height(),Qt::transparent);
+    update();
+}
+
+void ImageWidget::mouseDoubleClickEvent(QMouseEvent *event)
+{
+    QPoint qpoint=event->pos();
+    VPoint vpoint(qpoint.x(), qpoint.y());
+    VPoint loc = getLoc(vpoint);
+    if(cursorType==VCursorType::CHOOSE)
+    {
+        if(focusShape!=nullptr)
+        {
+            if(focusShape->contains(focusShape->transformPoint(loc)))
+            {
+                finishFocusShape();
+                setCursor(Qt::ArrowCursor);
+                update();
+            }
+        }
+    }
 }
 
 void ImageWidget::mouseMoveEvent(QMouseEvent *event)
@@ -279,7 +358,7 @@ void ImageWidget::mouseMoveEvent(QMouseEvent *event)
         if(focusShape!=nullptr)
         {
             bool flag=true;
-            if(crPos < 8 && (crPos >= 0 || (focusShape->atCrPoints(focusShape->transformPoint(loc),scale) != -1)))
+            if(crPos < 8 && (crPos >= 0 || (focusShape->atCrPoints(focusShape->transformPoint(loc),getScale()) != -1)))
             {
                 this->setCursor(QCursor(VSizeAll, 15, 15));
                 flag=false;
@@ -287,7 +366,7 @@ void ImageWidget::mouseMoveEvent(QMouseEvent *event)
             if(flag)
             {
                 VPointGroupShape * pgs = dynamic_cast<VPointGroupShape *>(focusShape);
-                if(crPos>=8||(pgs != nullptr && pgs->atPoints(pgs->transformPoint(loc),scale) != -1))
+                if(crPos>=8||(pgs != nullptr && pgs->atPoints(pgs->transformPoint(loc),getScale()) != -1))
                 {
                     this->setCursor(Qt::ArrowCursor);
                     flag=false;
@@ -348,23 +427,27 @@ void ImageWidget::mouseMoveEvent(QMouseEvent *event)
             {
                 VVector vlp(focusShape->getLocation(), locMove),
                         vnow(focusShape->getLocation(), loc);
-                VPoint loc=focusShape->getLocation();
-                focusShape->getTransform().translate(
-                            focusShape->getTransform().inverted().map(VPoint(0,0))
-                            );
-                VTransform trans;
-                trans.rotate(VVector::rotationAngle(vlp, vnow));
-                focusShape->getTransform()*=trans;
-                focusShape->getTransform().translate(
-                            focusShape->getTransform().inverted().map(loc)
-                            );
-                update();
+                if(!(vlp==vnow))
+                {
+                    VPoint loc=focusShape->getLocation();
+                    focusShape->getTransform().translate(
+                                focusShape->getTransform().inverted().map(VPoint(0,0))
+                                );
+                    VTransform trans;
+                    trans.rotate(VVector::rotationAngle(vlp, vnow));
+                    focusShape->getTransform()*=trans;
+                    focusShape->getTransform().translate(
+                                focusShape->getTransform().inverted().map(loc)
+                                );
+                    update();
+                }
             }
         }break;
         case VCursorType::PEN:
         {
             if(loc!=locMove)
             {
+                finishFocusShape();
                 QPainter painter(&canvas);
                 if(antialiasing)painter.setRenderHint(QPainter::Antialiasing);
                 painter.drawLine(locMove.toQPointF(),loc.toQPointF());
@@ -383,6 +466,10 @@ void ImageWidget::mouseMoveEvent(QMouseEvent *event)
                 update();
             }
         }break;
+        case VCursorType::MARQUEE:
+        {
+            update();
+        }break;
         default:
             break;
         }
@@ -392,10 +479,21 @@ void ImageWidget::mouseMoveEvent(QMouseEvent *event)
     globalMove=globalPoint;
 }
 
+void ImageWidget::cutCanvas(int x,int y,int width,int height,const QColor &color)
+{
+    focusShape=new VImageShape(canvas.copy(x,y,width,height));
+    VTransform trans;
+    trans.translate(VPoint(floor(x+width/2.0),floor(y+height/2.0)));
+    focusShape->setTransform(trans);
+    for(int i=x;i<x+width;i++)
+        for(int j=y;j<y+height;j++)
+            canvas.setPixelColor(i,j,color);
+}
+
 void ImageWidget::mouseReleaseEvent(QMouseEvent *event)
 {
-//    QPoint qpoint=event->pos();
-//    VPoint loc=getLoc(VPoint(qpoint.x(),qpoint.y()));
+    QPoint qpoint=event->pos();
+    VPoint loc=getLoc(VPoint(qpoint.x(),qpoint.y()));
     if(event->button()==Qt::LeftButton)
     {
         isPressing=false;
@@ -413,10 +511,28 @@ void ImageWidget::mouseReleaseEvent(QMouseEvent *event)
         }break;
         case VCursorType::PEN:
         {
-            saveSwp();
+            saveSwp(tr("画笔"));
         }break;
         case VCursorType::PLUGIN:
         {
+        }break;
+        case VCursorType::MARQUEE:
+        {
+            VPoint a,b;
+            a.x=std::min(loc.x,locPress.x);
+            a.y=std::min(loc.y,locPress.y);
+            b.x=std::max(loc.x,locPress.x);
+            b.y=std::max(loc.y,locPress.y);
+            if(a.x<canvas.width()&&b.x>=0&&a.y<canvas.height()&&b.y>=0)
+            {
+                a.x=std::max(a.x,0.0);a.y=std::max(a.y,0.0);
+                b.x=std::min(b.x,(double)canvas.width());b.y=std::min(b.y,(double)canvas.height());
+                if(a!=b)
+                {
+                    cutCanvas(a.x,a.y,b.x-a.x,b.y-a.y,Qt::transparent);
+                    update();
+                }
+            }
         }break;
         default:
             break;
@@ -428,12 +544,15 @@ void ImageWidget::mouseReleaseEvent(QMouseEvent *event)
 void ImageWidget::finishFocusShape()
 {
     if(focusShape==nullptr)return;
-    QPainter painter(&canvas);
+    QPainter painter;
+    painter.begin(&canvas);
     if(antialiasing)painter.setRenderHint(QPainter::Antialiasing);
     focusShape->draw(&painter,focusShape->getTransform());
+    painter.end();
+    if(focusShape->type()==VType::Image)saveSwp(tr("变换"));
+    else saveSwp(tr("加入图形(")+focusShape->getName()+")");
     delete focusShape;
     focusShape=nullptr;
-    saveSwp();
 }
 
 
@@ -450,6 +569,10 @@ bool ImageWidget::eventFilter(QObject * obj, QEvent * ev)
     if(scrollArea!=nullptr)
     {
         switch (ev->type()) {
+        case QEvent::FocusIn:
+        {
+            qApp->postEvent(dock, new QFocusEvent(QEvent::FocusIn));
+        }break;
         case QEvent::MouseMove:
         {
             QMouseEvent *event=static_cast<QMouseEvent*>(ev);
@@ -507,9 +630,10 @@ bool ImageWidget::eventFilter(QObject * obj, QEvent * ev)
     return false;
 }
 
-void ImageWidget::saveSwp()
+void ImageWidget::saveSwp(QString name)
 {
-    swapQueue.push(canvas);
+    swapQueue.push(canvas,name);
+    updateList();
 }
 
 void ImageWidget::on_actionSaveAs_triggered()
@@ -534,6 +658,7 @@ void ImageWidget::on_actionUndo_triggered()
     canvas=swapQueue.undo();
     setScale(scale);
     update();
+    emitSelected();
 }
 
 void ImageWidget::on_actionRedo_triggered()
@@ -543,4 +668,5 @@ void ImageWidget::on_actionRedo_triggered()
     canvas=swapQueue.redo();
     setScale(scale);
     update();
+    emitSelected();
 }

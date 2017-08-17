@@ -133,6 +133,8 @@ private slots:
 
     void on_actionNewImage_triggered();
 
+    void on_actionMarquee_triggered();
+
 private:
     QVector<VShape*>plugins;
     Ui::MainWindow *ui;

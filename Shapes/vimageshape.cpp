@@ -29,7 +29,7 @@ VImageShape::~VImageShape()
 void VImageShape::draw(QPainter *painter, const VTransform &transform)
 {
     painter->setTransform(transform,true);
-    painter->drawImage(image.width()/2,image.height()/2,image);
+    painter->drawImage(-image.width()/2,-image.height()/2,image);
 }
 
 QJsonObject VImageShape::toJsonObject()const
@@ -45,7 +45,7 @@ VShape* VImageShape::clone() const
 
 bool VImageShape::contains(VPoint point)
 {
-    return image.rect().contains(point.toQPointF().toPoint());
+    return image.rect().contains(point.x+image.width()/2,point.y+image.height()/2);
 }
 
 QString VImageShape::type()const

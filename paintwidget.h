@@ -20,6 +20,9 @@
 #include <QWidget>
 #include <QDockWidget>
 #include <QMainWindow>
+#include <QModelIndex>
+#include <QStringListModel>
+#include <QItemSelectionModel>
 #include "vpoint.h"
 #include "vcursortype.h"
 #include "vshape.h"
@@ -31,6 +34,8 @@ public:
     QPixmap VSizeAll = QPixmap("://icon/mover.png").scaled(30,30);
     QPixmap VRotate = QPixmap("://icon/undo.png").scaled(20,20);
     explicit PaintWidget(QMainWindow *mainwindow, bool antialiasing=true);
+    QStringListModel *listModel;
+    QItemSelectionModel *selectionModel;
 
 protected:
     QString filename;
@@ -52,8 +57,11 @@ public:
     virtual bool fileChanged()=0;
 
 signals:
+    void selected(const QItemSelection &list,QItemSelectionModel::SelectionFlags command);
 
 public slots:
+    virtual void updateList()/*=0*/;
+    virtual void changeSelected()/*=0*/;
     virtual void changeCursor(VCursorType type,VShape *plugin=nullptr);
     virtual void changeModelData(const QModelIndex &index)/*=0*/;
     virtual void on_actionAntialiasing_toggled(bool antialiasing);

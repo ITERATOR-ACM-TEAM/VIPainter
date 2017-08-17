@@ -62,12 +62,6 @@ VectorgraphWidget::VectorgraphWidget(QMainWindow *parent, bool antialiasing) :
 //    groupShape.setName("main shape");
 //    groupShape.setLocation(VPoint(0,0));
 //    groupShape.setSize(VSize(10,10));
-    listModel=new QStringListModel(this);
-    selectionModel=new QItemSelectionModel(listModel,this);
-    connect(selectionModel,SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &))
-            ,this,SLOT(changeFocus()));
-    connect(this,SIGNAL(selected(const QItemSelection&,QItemSelectionModel::SelectionFlags)),
-            selectionModel,SLOT(select(const QItemSelection&,QItemSelectionModel::SelectionFlags)));
 }
 
 VectorgraphWidget::~VectorgraphWidget()
@@ -565,6 +559,11 @@ void VectorgraphWidget::changeCursor(VCursorType type,VShape *plugin)
     crPos=-1;
     switch(type)
     {
+    case VCursorType::MARQUEE:
+    {
+        this->cursorType=VCursorType::CHOOSE;
+        this->setCursor(Qt::ArrowCursor);
+    }break;
     case VCursorType::POLYLINE:
     case VCursorType::PEN:
     case VCursorType::BEZIERCURVE:
@@ -617,7 +616,7 @@ void VectorgraphWidget::updateList()
     emitSelected();
 }
 
-void VectorgraphWidget::changeFocus()
+void VectorgraphWidget::changeSelected()
 {
     if(cursorType == VCursorType::BEZIERCURVE || cursorType == VCursorType::POLYLINE || cursorType == VCursorType::PEN) return;
     decltype(focusShapes) newFocus;

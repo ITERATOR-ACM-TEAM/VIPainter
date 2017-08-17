@@ -590,6 +590,13 @@
    </property>
   </action>
   <action name="actionMarquee">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resourse.qrc">
+     <normaloff>:/icon/marquee.png</normaloff>:/icon/marquee.png</iconset>
+   </property>
    <property name="text">
     <string>选框</string>
    </property>

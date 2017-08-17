@@ -175,6 +175,20 @@ int VPointGroupShape::atPoints(const VPoint & point,double scale)const
     return -1;
 }
 
+int VPointGroupShape::atPoints(const VPoint & point,VMagnification mag)const
+{
+    VVector ve(mag.horizontal,mag.vertical);
+    for(int i=points.size()-1;i>=0;i--)
+    {
+        VPoint tmp=reverseTransformPoint(points[i]);
+        if(VPoint(tmp.x-0.5,tmp.y-0.5)-reverseTransformPoint(point) <= std::max(1.0,crDis*1.5/ve.norm()))
+        {
+            return i;
+        }
+    }
+    return -1;
+}
+
 void VPointGroupShape::drawCR(QPainter *painter, const VTransform &trans, double scale)
 {
     QBrush bru;

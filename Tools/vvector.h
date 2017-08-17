@@ -44,6 +44,7 @@ public:
     VVector operator *(const VMagnification & Right)const;
     VVector operator /(double Right)const;
     VVector operator /(const VMagnification & Right)const;
+    bool operator ==(const VVector & Right)const;
 
     VVector rotate(double angle)const;
 

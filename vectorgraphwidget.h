@@ -28,9 +28,6 @@
 #include <QContextMenuEvent>
 #include <QMenu>
 #include <QKeyEvent>
-#include <QModelIndex>
-#include <QStringListModel>
-#include <QItemSelectionModel>
 #include <QList>
 #include <QString>
 #include <QJsonObject>
@@ -54,8 +51,6 @@ public:
     QVector<VShape*> focusShapes;
     VSize canvasSize;
     VPoint canvasLocation;
-    QStringListModel *listModel;
-    QItemSelectionModel *selectionModel;
     QMenu *contextMenu;
     ~VectorgraphWidget();
     VPoint getLoc(const VPoint & point);
@@ -84,8 +79,8 @@ private:
     void emitSelected();
 
 public slots:
-    void updateList();
-    void changeFocus();
+    void updateList()override;
+    void changeSelected()override;
     void saveSwp();
     void changeCursor(VCursorType type, VShape *plugin)override;
     void on_actionSaveAs_triggered()override;
@@ -106,9 +101,6 @@ public slots:
     void on_actionPenColor_triggered()override;
     void on_actionPenStyle_triggered()override;
     void on_actionForceGroup_triggered()override;
-
-signals:
-    void selected(const QItemSelection &list,QItemSelectionModel::SelectionFlags command);
 };
 
 #endif // TESTWIDGET_H

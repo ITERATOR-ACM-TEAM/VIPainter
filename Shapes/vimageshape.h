@@ -24,6 +24,7 @@ class VImageShape:public VShape
 private:
     QImage image;
 public:
+    template<class IMAGE>VImageShape(IMAGE &&image);
     QJsonObject toJsonObject()const override;
 
     void draw(QPainter *painter,const VTransform & transform)override;
@@ -33,5 +34,11 @@ public:
     VShape* clone()const override;
     ~VImageShape()override;
 };
+
+
+template<class IMAGE>
+VImageShape::VImageShape(IMAGE &&image):image(std::forward<IMAGE>(image))
+{
+}
 
 #endif // VIMAGESHAPE_H

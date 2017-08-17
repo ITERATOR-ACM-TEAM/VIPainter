@@ -49,6 +49,7 @@ public:
 //    void setSize(const VSize &size) override;
 
     int atPoints(const VPoint & point, double scale)const;
+    int atPoints(const VPoint & point, VMagnification mag)const;
     bool changePoint(int i, const VPoint & point);
     void drawCR(QPainter *painter, const VTransform &trans, double scale);
 
