@@ -878,12 +878,6 @@ void VectorgraphWidget::on_actionCopy_triggered()
     }
 }
 
-void VectorgraphWidget::on_actionCut_triggered()
-{
-    on_actionCopy_triggered();
-    on_actionDelete_triggered();
-}
-
 void VectorgraphWidget::on_actionPaste_triggered()
 {
         //  Get clipboard

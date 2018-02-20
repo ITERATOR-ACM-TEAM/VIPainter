@@ -9,8 +9,12 @@
 #include <QPen>
 #include <QMessageBox>
 #include <QKeyEvent>
+#include <QMimeData>
+#include <QClipboard>
+#include <QJsonDocument>
 #include <cmath>
 #include <QApplication>
+#include <QTransform>
 #include "canvassizedialog.h"
 #include "vtype.h"
 #include "vtransform.h"
@@ -235,6 +239,53 @@ void ImageWidget::on_actionResume_triggered()
 void ImageWidget::on_actionDelete_triggered()
 {
     clearFocusShape();
+    update();
+}
+
+void ImageWidget::on_actionCopy_triggered()
+{
+    if(focusShape==nullptr)return;
+    QClipboard *cb = QApplication::clipboard();
+    QMimeData *mimeData=new QMimeData();
+    if(focusShape->type()==VType::Image)
+    {
+        VImageShape *ims=dynamic_cast<VImageShape*>(focusShape);
+        mimeData->setImageData(ims->getImage());
+    }
+    else
+    {
+        QJsonDocument doc;
+        doc.setObject(focusShape->toJsonObject());
+        mimeData->setData("application/x-JavaScript", doc.toBinaryData());
+    }
+    cb->setMimeData(mimeData);
+}
+
+void ImageWidget::on_actionPaste_triggered()
+{
+    if(focusShape!=nullptr)finishFocusShape();
+    QClipboard *cb = QApplication::clipboard();
+    const QMimeData* mimeData = cb->mimeData();
+    if(mimeData->hasImage())
+    {
+        QImage image=mimeData->imageData().value<QImage>();
+        focusShape=new VImageShape(image);
+    }
+    else if(mimeData->hasFormat("application/x-JavaScript"))
+    {
+        QJsonDocument doc=QJsonDocument::fromBinaryData(mimeData->data("application/x-JavaScript"));
+        if(doc.isObject())
+        {
+            focusShape=VShape::fromJsonObject(doc.object());
+            //qDebug()<<*shape;
+        }
+    }
+    VPoint point((canvas.width())/2,canvas.height()/2);
+    if(focusShape!=nullptr)
+    {
+        pasting=true;
+        focusShape->moveLoc(focusShape->transformPoint(point));
+    }
     update();
 }
 
@@ -549,10 +600,10 @@ void ImageWidget::finishFocusShape()
     if(antialiasing)painter.setRenderHint(QPainter::Antialiasing);
     focusShape->draw(&painter,focusShape->getTransform());
     painter.end();
-    if(focusShape->type()==VType::Image)saveSwp(tr("变换"));
+    if(pasting)saveSwp(tr("粘贴"));
+    else if(focusShape->type()==VType::Image)saveSwp(tr("变换"));
     else saveSwp(tr("加入图形(")+focusShape->getName()+")");
-    delete focusShape;
-    focusShape=nullptr;
+    clearFocusShape();
 }
 
 
@@ -561,6 +612,7 @@ void ImageWidget::clearFocusShape()
     if(focusShape==nullptr)return;
     delete focusShape;
     focusShape=nullptr;
+    pasting=false;
 }
 
 bool ImageWidget::eventFilter(QObject * obj, QEvent * ev)

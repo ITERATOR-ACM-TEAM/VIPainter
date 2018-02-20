@@ -32,6 +32,11 @@ void VImageShape::draw(QPainter *painter, const VTransform &transform)
     painter->drawImage(-image.width()/2,-image.height()/2,image);
 }
 
+const QImage& VImageShape::getImage()const
+{
+    return image;
+}
+
 QJsonObject VImageShape::toJsonObject()const
 {
     qDebug()<<"ImageShape can't save as JsonObject";

@@ -86,7 +86,8 @@ void PaintWidget::on_actionCopy_triggered()
 
 void PaintWidget::on_actionCut_triggered()
 {
-//do nothing
+    on_actionCopy_triggered();
+    on_actionDelete_triggered();
 }
 
 void PaintWidget::on_actionPaste_triggered()

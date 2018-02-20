@@ -32,6 +32,7 @@ public:
     virtual bool contains(VPoint point)override;
     virtual QString type()const override;
     VShape* clone()const override;
+    const QImage& getImage()const;
     ~VImageShape()override;
 };
 

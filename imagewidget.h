@@ -27,6 +27,7 @@ private:
     bool isPressing=false;
     QScrollArea *scrollArea;
     SwapQueue<QImage,20>swapQueue;
+    bool pasting=false;
 
 public:
     ImageWidget(QMainWindow *mainwindow, bool antialiasing=true);
@@ -73,9 +74,9 @@ public slots:
     void on_actionRedo_triggered()override;
     void on_actionUndo_triggered()override;
     void on_actionDelete_triggered()override;
-//    void on_actionCopy_triggered()override;
+    void on_actionCopy_triggered()override;
 //    void on_actionCut_triggered()override;
-//    void on_actionPaste_triggered()override;
+    void on_actionPaste_triggered()override;
 //    void on_actionGroup_triggered()override;
     void on_actionSelectAll_triggered()override;
 //    void on_actionBrushColor_triggered()override;
