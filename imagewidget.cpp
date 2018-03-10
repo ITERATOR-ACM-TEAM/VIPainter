@@ -269,6 +269,7 @@ void ImageWidget::on_actionPaste_triggered()
     if(mimeData->hasImage())
     {
         QImage image=mimeData->imageData().value<QImage>();
+        if(swapQueue.atFirst())setImageSize(VSize(image.width(),image.height()));
         focusShape=new VImageShape(image);
     }
     else if(mimeData->hasFormat("application/x-JavaScript"))
