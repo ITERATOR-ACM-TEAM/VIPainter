@@ -23,8 +23,8 @@ CanvasSizeDialog::CanvasSizeDialog(QWidget *parent) :
     ui(new Ui::CanvasSizeDialog)
 {
     ui->setupUi(this);
-//    ui->buttonBox->button(QDialogButtonBox::Ok)->setText(tr("确定"));
-//    ui->buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("取消"));
+//    ui->buttonBox->button(QDialogButtonBox::Ok)->setText(tr(u8"确定"));
+//    ui->buttonBox->button(QDialogButtonBox::Cancel)->setText(tr(u8"取消"));
 }
 
 CanvasSizeDialog::~CanvasSizeDialog()

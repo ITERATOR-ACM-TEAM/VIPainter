@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Copyright (C) 2017 VIPainter
  *
  * This program is free software: you can redistribute it and/or modify
@@ -118,7 +118,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 void MainWindow::loadPlugin(QString filename)
 {
-    ui->statusBar->showMessage(tr("加载插件 ")+filename);
+    ui->statusBar->showMessage(tr(u8"加载插件 ")+filename);
     QFile file(filename);
     if(!file.open(QFile::ReadOnly|QFile::Text))return;
     QJsonDocument doc=QJsonDocument::fromJson(file.readAll());
@@ -136,7 +136,7 @@ void MainWindow::loadPlugin(QString filename)
         if(groupshape->getShapes().size()==1)shape=VGroupShape::breakUp(groupshape).first();
     }
     else if(doc.isObject())shape=VShape::fromJsonObject(doc.object());
-    else ui->statusBar->showMessage(tr("加载插件 ")+filename+" 失败");
+    else ui->statusBar->showMessage(tr(u8"加载插件 ")+filename+" 失败");
     if(shape==nullptr)return;
     if(shape->getName()==QString(""))shape->setName(filename.split('/').back().split('.').first());
     plugins.append(shape);
@@ -310,7 +310,7 @@ bool MainWindow::openFile(QString filename)
         }
     }
     if(flag)return false;
-    ui->statusBar->showMessage(tr("打开文件 ")+filename);
+    ui->statusBar->showMessage(tr(u8"打开文件 ")+filename);
     QString format=filename.split('.').back().toUpper();
     if(format=="JPG"||format=="PNG"||format=="BMP")
     {
@@ -319,7 +319,7 @@ bool MainWindow::openFile(QString filename)
         widget->setCanvas(QImage(filename));
         widget->setDock(newDock(widget->getScrollArea(),filename.split("/").back() + " - " + widget->windowTitle()));
         //widget->getScrollArea()->update();
-        widget->saveSwp(tr("打开"));
+        widget->saveSwp(tr(u8"打开"));
         widget->update();
     }
     else
@@ -330,7 +330,7 @@ bool MainWindow::openFile(QString filename)
         file.close();
         if(!doc.isArray()&&!doc.isObject())
         {
-            QMessageBox::warning(this,tr("错误"),tr("打开文件 ")+filename+tr("失败"));
+            QMessageBox::warning(this,tr(u8"错误"),tr(u8"打开文件 ")+filename+tr(u8"失败"));
             return false;
         }
         VectorgraphWidget *widget=newVectorgraphWidget();
@@ -357,9 +357,9 @@ void MainWindow::on_actionOpen_triggered()
 {
     QStringList filenames=
             QFileDialog::getOpenFileNames(this,
-                                         tr("打开文件"),
-                                         tr(""),
-                                         tr("json file (*.json);;"
+                                         tr(u8"打开文件"),
+                                         tr(u8""),
+                                         tr(u8"json file (*.json);;"
                                             "jpg file (*.jpg);;"
                                             "bmp file (*.bmp);;"
                                             "png file (*.png);;"
@@ -400,6 +400,7 @@ void MainWindow::on_actionNew_triggered()
 }
 
 //判断Action的显示状态
+
 void MainWindow::changeMenuAction(VectorgraphWidget *widget,bool flag)
 {
     ui->actionResume->setVisible(true);
@@ -495,8 +496,8 @@ bool MainWindow::closeWidget(PaintWidget *widget)
     if(widget->fileChanged())
     {
         int button
-                =QMessageBox::information(this,tr("退出"),
-                                          widget->parentWidget()->windowTitle()+tr("已修改,是否在退出之前保存文件?"),
+                =QMessageBox::information(this,tr(u8"退出"),
+                                          widget->parentWidget()->windowTitle()+tr(u8"已修改,是否在退出之前保存文件?"),
                                           QMessageBox::Cancel,QMessageBox::No,QMessageBox::Yes);
         if(button==QMessageBox::Yes)widget->on_actionSave_triggered();
         else if(button!=QMessageBox::No)
@@ -559,9 +560,9 @@ bool MainWindow::eventFilter(QObject * obj, QEvent * ev)
         if(dock!=nullptr)
         {
             PaintWidget *widget=getPaintWidget(dock);
-            disconnect(delegate,0,0,0);
+            disconnect(delegate,nullptr,nullptr,nullptr);
             connect(delegate,SIGNAL(dataChanged(const QModelIndex &)),widget,SLOT(changeModelData(const QModelIndex &)));
-#define KCONNECT(action) disconnect(ui->action,0,0,0),\
+#define KCONNECT(action) disconnect(ui->action,nullptr,nullptr,nullptr),\
                             connect(ui->action,SIGNAL(triggered()),widget,SLOT(on_##action##_triggered()))
             KCONNECT(actionZoomIn);
             KCONNECT(actionZoomOut);
@@ -650,16 +651,15 @@ bool MainWindow::eventFilter(QObject * obj, QEvent * ev)
     {
         dropEvent(static_cast<QDropEvent*>(ev));
         return false;
-    }break;
+    }
     case QEvent::DragEnter:
     {
         dragEnterEvent(static_cast<QDragEnterEvent*>(ev));
         return false;
-    }break;
+    }
     default:
         break;
     }
-
     return false;
 }
 
@@ -747,9 +747,9 @@ void MainWindow::on_actionLoadExPlugin_triggered()
 {
     QStringList filenames=
             QFileDialog::getOpenFileNames(this,
-                                         tr("打开文件"),
-                                         tr(""),
-                                         tr("json file (*.json);;"
+                                         tr(u8"打开文件"),
+                                         tr(u8""),
+                                         tr(u8"json file (*.json);;"
                                             "all (*)"));
     for(auto &filename:filenames)loadPlugin(filename);
 }
@@ -822,8 +822,8 @@ void MainWindow::on_actionPenStyle_triggered()
 
 void MainWindow::on_actionAbout_triggered()
 {
-    QMessageBox::information(this,tr("关于VIPainter")
-                             ,tr("VIPainter是一款轻量的矢量图绘图软件\n"
+    QMessageBox::information(this,tr(u8"关于VIPainter")
+                             ,tr(u8"VIPainter是一款轻量的矢量图绘图软件\n"
                                  "\n"
                                  "版权所有(C) 2017 VIPainter\n"
                                  "本程序为自由软件；您可依据自由软件基金会所发表的GNU通用公共授权条款，对本程序再次发布和/或修改；无论您依据的是本授权的第三版，或（您可选的）任一日后发行的版本。\n"
@@ -883,7 +883,7 @@ void MainWindow::on_actionNewImage_triggered()
     widget->setCanvas(std::move(image));
     widget->setDock(newDock(widget->getScrollArea()));
     //widget->getScrollArea()->update();
-    widget->saveSwp(tr("新建"));
+    widget->saveSwp(tr(u8"新建"));
     widget->update();
 }
 

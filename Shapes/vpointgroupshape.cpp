@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Copyright (C) 2017 VIPainter
  *
  * This program is free software: you can redistribute it and/or modify
@@ -33,7 +33,7 @@ VPointGroupShape::VPointGroupShape(const VPointGroupShape &shape):VShape(shape),
 
 VPointGroupShape::VPointGroupShape(const QJsonObject &jsonObject):VShape(jsonObject),cr2(0,0){
     QJsonArray jsonArray = jsonObject.value("points").toArray();
-    for(const auto &it: jsonArray)
+    for(const auto it: jsonArray)
     {
         VPoint p(it.toObject());
         this->points.push_back(p);
@@ -88,7 +88,7 @@ const VPointGroupShape& VPointGroupShape::operator=(const QJsonObject &jsonObjec
     VShape::operator=(jsonObject);
     QJsonArray jsonArray = jsonObject.value("points").toArray();
     points.clear();
-    for(const auto &it: jsonArray)
+    for(const auto it: jsonArray)
     {
         VPoint p(it.toObject());
         this->points.push_back(p);
@@ -128,6 +128,7 @@ void VPointGroupShape::getCircumscribedRectangle(){
     double midx=(x1+x2)/2;
     double midy=(y1+y2)/2;
     //标准化，使外接矩形的左上点移到坐标原点
+
     for(int i = 0; i < points.size(); i++){
         points[i].x -= midx;
         points[i].y -= midy;

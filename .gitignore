@@ -2,3 +2,4 @@ build*
 *.o
 *.user
 *.autosave
+msvc_make.bat

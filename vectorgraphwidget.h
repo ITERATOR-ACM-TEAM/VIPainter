@@ -52,7 +52,7 @@ public:
     VSize canvasSize;
     VPoint canvasLocation;
     QMenu *contextMenu;
-    ~VectorgraphWidget();
+    ~VectorgraphWidget() override;
     VPoint getLoc(const VPoint & point);
     void saveFile(QString filename)override;
     bool fileChanged()override;

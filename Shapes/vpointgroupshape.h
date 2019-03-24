@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Copyright (C) 2017 VIPainter
  *
  * This program is free software: you can redistribute it and/or modify
@@ -24,9 +24,6 @@
 
 class VPointGroupShape:public VShape
 {
-protected:
-    QVector<VPoint> points;//折线的各个端点
-    VPoint cr1,cr2;
 public:
     VPointGroupShape();
     VPointGroupShape(const VPointGroupShape &polyline);
@@ -51,8 +48,11 @@ public:
     int atPoints(const VPoint & point, double scale)const;
     int atPoints(const VPoint & point, VMagnification mag)const;
     bool changePoint(int i, const VPoint & point);
-    void drawCR(QPainter *painter, const VTransform &trans, double scale);
+    void drawCR(QPainter *painter, const VTransform &trans, double scale) override;
 
+protected:
+    QVector<VPoint> points;//折线的各个端点
+    VPoint cr1,cr2;
 };
 
 #endif // VPOINTGROUP_H

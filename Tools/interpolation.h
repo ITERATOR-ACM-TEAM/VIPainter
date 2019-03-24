@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Copyright (C) 2017 VIPainter
  *
  * This program is free software: you can redistribute it and/or modify
@@ -57,5 +57,4 @@ public:
     double calLag(double X);
     QVector<VPoint> getFunc(double h);//返回区间[L, R]上的函数点对
 };
-
 #endif // INTERPOLATION_H

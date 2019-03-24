@@ -30,7 +30,7 @@ class ChangeTextDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit ChangeTextDialog(QWidget *parent = 0);
+    explicit ChangeTextDialog(QWidget *parent = nullptr);
     static void showDialog(VText *vt);
     ~ChangeTextDialog();
 

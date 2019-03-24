@@ -20,18 +20,21 @@
 #include <QDir>
 #include <QDebug>
 #include <QString>
+#include <QTextCodec>
 #include <QTranslator>
 #include <QLibraryInfo>
 
 int main(int argc, char *argv[])
 {
+    QTextCodec *codec = QTextCodec::codecForName("UTF-8");
+    QTextCodec::setCodecForLocale(codec);
+
     QApplication a(argc, argv);
     QTranslator qtTranslate;
     if(qtTranslate.load("qt_zh_CN.qm", QLibraryInfo::location(QLibraryInfo::TranslationsPath)))a.installTranslator(&qtTranslate);
     if(qtTranslate.load("qtbase_zh_CN.qm", ":/translate/"))a.installTranslator(&qtTranslate);
     QTranslator translate;
     if(translate.load("zh_CN.qm",":/translate/"))a.installTranslator(&translate);
-
 #if defined(Q_OS_LINUX)
     QDir home(QDir::home());
     QString workdir=".VIPainter";

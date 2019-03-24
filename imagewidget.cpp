@@ -1,4 +1,4 @@
-#include "imagewidget.h"
+﻿#include "imagewidget.h"
 #include <QFileDialog>
 #include <QPainter>
 #include <QDebug>
@@ -23,7 +23,7 @@
 
 ImageWidget::ImageWidget(QMainWindow *mainwindow, bool antialiasing):PaintWidget(mainwindow,antialiasing)
 {
-    setWindowTitle(tr("画图"));
+    setWindowTitle(tr(u8"画图"));
     setMouseTracking(true);
 
     scrollArea=new QScrollArea;
@@ -44,14 +44,14 @@ void ImageWidget::saveFile(QString filename)
     QString format=filename.split('.').back().toUpper();
     if(format=="JPG"||format=="PNG"||format=="BMP")
     {
-        if(!canvas.save(filename,format.toStdString().c_str(),100))QMessageBox::warning(this,tr("错误"),tr("保存文件")+filename+tr("失败"));
+        if(!canvas.save(filename,format.toStdString().c_str(),100))QMessageBox::warning(this,tr(u8"错误"),tr(u8"保存文件")+filename+tr(u8"失败"));
         else if(getFileName()=="")
         {
             dock->setWindowTitle(filename.split("/").back()+" - "+windowTitle());
             setFileName(filename);
         }
     }
-    else QMessageBox::warning(this,tr("错误"),format+tr("不能识别的文件格式"));
+    else QMessageBox::warning(this,tr(u8"错误"),format+tr(u8"不能识别的文件格式"));
 }
 
 bool ImageWidget::fileChanged()
@@ -131,16 +131,16 @@ void ImageWidget::updateList()
 void ImageWidget::on_actionCanvasSize_triggered()
 {
     finishFocusShape();
-    setCanvasSize(CanvasSizeDialog::showDialog(tr("画布大小"),getCanvasSize()));
-    saveSwp(tr("调整画布大小"));
+    setCanvasSize(CanvasSizeDialog::showDialog(tr(u8"画布大小"),getCanvasSize()));
+    saveSwp(tr(u8"调整画布大小"));
     update();
 }
 
 void ImageWidget::on_actionShapeSize_triggered()
 {
     finishFocusShape();
-    setImageSize(CanvasSizeDialog::showDialog(tr("图像大小"),getCanvasSize()));
-    saveSwp(tr("调整图像大小"));
+    setImageSize(CanvasSizeDialog::showDialog(tr(u8"图像大小"),getCanvasSize()));
+    saveSwp(tr(u8"调整图像大小"));
     update();
 }
 
@@ -563,7 +563,7 @@ void ImageWidget::mouseReleaseEvent(QMouseEvent *event)
         }break;
         case VCursorType::PEN:
         {
-            saveSwp(tr("画笔"));
+            saveSwp(tr(u8"画笔"));
         }break;
         case VCursorType::PLUGIN:
         {
@@ -601,9 +601,9 @@ void ImageWidget::finishFocusShape()
     if(antialiasing)painter.setRenderHint(QPainter::Antialiasing);
     focusShape->draw(&painter,focusShape->getTransform());
     painter.end();
-    if(pasting)saveSwp(tr("粘贴"));
-    else if(focusShape->type()==VType::Image)saveSwp(tr("变换"));
-    else saveSwp(tr("加入图形(")+focusShape->getName()+")");
+    if(pasting)saveSwp(tr(u8"粘贴"));
+    else if(focusShape->type()==VType::Image)saveSwp(tr(u8"变换"));
+    else saveSwp(tr(u8"加入图形(")+focusShape->getName()+")");
     clearFocusShape();
 }
 
@@ -695,7 +695,7 @@ void ImageWidget::on_actionSaveAs_triggered()
     if(filename=="")filename="image.jpg";
     filename=
             QFileDialog::getSaveFileName(this,
-                                         tr("保存文件"),
+                                         tr(u8"保存文件"),
                                          filename,
                                          tr(
                                             "jpg file (*.jpg);;"

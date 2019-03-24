@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Copyright (C) 2017 VIPainter
  *
  * This program is free software: you can redistribute it and/or modify
@@ -57,7 +57,7 @@
 VectorgraphWidget::VectorgraphWidget(QMainWindow *parent, bool antialiasing) :
     PaintWidget(parent,antialiasing),crPos(-1),canvasSize(800,600),canvasLocation(0,0)
 {
-    setWindowTitle(tr("矢量图"));
+    setWindowTitle(tr(u8"矢量图"));
     setMouseTracking(true);
 //    groupShape.setName("main shape");
 //    groupShape.setLocation(VPoint(0,0));
@@ -181,7 +181,7 @@ void VectorgraphWidget::mousePressEvent(QMouseEvent *event)
         case VCursorType::PEN:
         case VCursorType::BEZIERCURVE:
         {
-            VPointGroupShape * pl;
+            VPointGroupShape * pl=nullptr;
             if(crPos == -1)
             {
 //                qDebug() << "!!!!!!";
@@ -460,7 +460,7 @@ void VectorgraphWidget::paintEvent(QPaintEvent *event)
         {
             painter.setBrush(QBrush(Qt::white));
             painter.setPen(QPen(Qt::lightGray,1));
-            painter.drawRect(-canvasSize.width/2, -canvasSize.height/2, canvasSize.width, canvasSize.height);
+            painter.drawRect(-canvasSize.width/2.0, -canvasSize.height/2.0, canvasSize.width, canvasSize.height);
         }
         painter.restore();
         groupShape.draw(&painter,groupShape.getTransform());
@@ -609,7 +609,7 @@ void VectorgraphWidget::updateList()
     QStringList list;
     for(int i=groupShape.getShapes().size()-1;i>=0;i--)
     {
-        if(groupShape.getShapes().at(i)->getName()=="")groupShape.getShapes().at(i)->setName(tr("没有名字的图形"));
+        if(groupShape.getShapes().at(i)->getName()=="")groupShape.getShapes().at(i)->setName(tr(u8"没有名字的图形"));
         list.append(groupShape.getShapes().at(i)->getName());
     }
     listModel->setStringList(list);
@@ -654,9 +654,9 @@ void VectorgraphWidget::on_actionSaveAs_triggered()
     if(filename=="")filename="image.json";
     filename=
             QFileDialog::getSaveFileName(this,
-                                         tr("保存文件"),
+                                         tr(u8"保存文件"),
                                          filename,
-                                         tr("json file (*.json);;"
+                                         tr(u8"json file (*.json);;"
                                             "svg file (*.svg);;"
                                             "png file (*.png);;"
                                             "jpg file (*.jpg);;"
@@ -686,7 +686,7 @@ void VectorgraphWidget::saveFile(QString filename)
 {
     if(filename=="")return;
     QString format=filename.split('.').back().toUpper();
-    if(format==tr("JSON"))
+    if(format==tr(u8"JSON"))
     {
         QJsonDocument jsonDocument(toJsonObject());
         QFile file(filename);
@@ -697,7 +697,7 @@ void VectorgraphWidget::saveFile(QString filename)
             dock->setWindowTitle(filename.split("/").back()+" - "+this->windowTitle());
             setFileName(filename);
         }
-        else QMessageBox::warning(this,tr("错误"),tr("保存文件")+filename+tr("失败"));
+        else QMessageBox::warning(this,tr(u8"错误"),tr(u8"保存文件")+filename+tr(u8"失败"));
     }
     else if(format=="JPG"||format=="PNG"||format=="BMP")
     {
@@ -707,7 +707,7 @@ void VectorgraphWidget::saveFile(QString filename)
         if(antialiasing)painter.setRenderHint(QPainter::Antialiasing);
         painter.translate(getCanvasSize().width/2,getCanvasSize().height/2);
         groupShape.draw(&painter,groupShape.getTransform());
-        if(!image.save(filename,format.toStdString().c_str(),100))QMessageBox::warning(this,tr("错误"),tr("保存文件")+filename+tr("失败"));
+        if(!image.save(filename,format.toStdString().c_str(),100))QMessageBox::warning(this,tr(u8"错误"),tr(u8"保存文件")+filename+tr(u8"失败"));
     }
     else if(format=="SVG")
     {
@@ -720,7 +720,7 @@ void VectorgraphWidget::saveFile(QString filename)
         QPainter painter(&svgGenerator);
         groupShape.draw(&painter,groupShape.getTransform());
     }
-    else QMessageBox::warning(this,tr("错误"),format+tr("不能识别的文件格式"));
+    else QMessageBox::warning(this,tr(u8"错误"),format+tr(u8"不能识别的文件格式"));
 }
 
 void VectorgraphWidget::on_actionResume_triggered()
@@ -731,7 +731,7 @@ void VectorgraphWidget::on_actionResume_triggered()
 
 void VectorgraphWidget::on_actionCanvasSize_triggered()
 {
-    setCanvasSize(CanvasSizeDialog::showDialog(tr("画布大小"),getCanvasSize()));
+    setCanvasSize(CanvasSizeDialog::showDialog(tr(u8"画布大小"),getCanvasSize()));
 }
 
 
@@ -750,7 +750,7 @@ void VectorgraphWidget::on_actionShapeSize_triggered()
     VSize size=
             groupShape.getSize()*
             groupShape.getTransform();
-    VSize toSize=CanvasSizeDialog::showDialog(tr("图像大小"),size);
+    VSize toSize=CanvasSizeDialog::showDialog(tr(u8"图像大小"),size);
     VMagnification mag=toSize/size;
     for(auto &i:groupShape.getShapes())
     {
@@ -853,7 +853,7 @@ void VectorgraphWidget::on_actionCopy_triggered()
                 //qDebug()<<*(group.getShapeVector().back());
                 group.draw(&painter,group.getTransform());
                 painter.end();
-                //newMimeData->setImageData(image);
+                newMimeData->setImageData(image);
             }
 
             ////////////////////////////////////SVG
@@ -1017,7 +1017,7 @@ void VectorgraphWidget::on_actionPenColor_triggered()
 void VectorgraphWidget::on_actionPenStyle_triggered()
 {
     if(focusShapes.empty())return;
-    PenStyleDialog::showDialog(tr("线条设置"),focusShapes);
+    PenStyleDialog::showDialog(tr(u8"线条设置"),focusShapes);
     update();
     saveSwp();
 }

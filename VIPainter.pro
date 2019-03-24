@@ -3,6 +3,7 @@
 # Project created by QtCreator 2017-06-26T11:24:42
 #
 #-------------------------------------------------
+W
 
 QT       += core gui svg
 CONFIG   += c++11
@@ -63,7 +64,6 @@ HEADERS  += \
     Tools/vsize.h \
     Tools/vpoint.h \
     Tools/vmagnification.h \
-    Tools/interpolation.h \
     Shapes/vtype.h \
     Shapes/vtext.h \
     Shapes/vshape.h \
@@ -79,7 +79,8 @@ HEADERS  += \
     paintwidget.h \
     Tools/swapqueue.h \
     imagewidget.h \
-    Shapes/vimageshape.h
+    Shapes/vimageshape.h \
+    Tools/interpolation.h
 
 FORMS    += mainwindow.ui \
     canvassizedialog.ui \
@@ -97,4 +98,6 @@ inst.files += VIPainter
 inst.path = /usr/bin
 
 INSTALLS += inst
+
+DISTFILES +=
 

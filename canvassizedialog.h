@@ -30,7 +30,7 @@ class CanvasSizeDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit CanvasSizeDialog(QWidget *parent = 0);
+    explicit CanvasSizeDialog(QWidget *parent = nullptr);
     ~CanvasSizeDialog();
     static VSize showDialog(const QString title, const VSize &size);
 
